@@ -50,6 +50,9 @@ $data_json = json_encode($data);
   <!-- chart  -->
   <script src="./../../../assets/libs/apexcharts/dist/apexcharts.min.js"></script>
 
+  <!-- voice recognation -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <body>
@@ -453,6 +456,9 @@ include('./../../../View/callback.php')
   <script src="user_charts.js" data-json="<?php echo htmlspecialchars($data_json); ?>"></script>
 
   <script src="./../finition.js"></script>
+
+  <!-- voice recognation -->
+	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation_dashboard.js"></script>
 
 </body>
 

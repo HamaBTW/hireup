@@ -233,6 +233,9 @@ if (isset($_GET['search_inp'])) {
 
     <link rel="stylesheet" href="../../../assets/css/search_bar_style.css" />
 
+    <!-- voice recognation -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <?php 
@@ -763,6 +766,9 @@ if (isset($_GET['search_inp'])) {
         errorElement.classList.toggle("text-success", !isError);
     }
 </script>
+
+<!-- voice recognation -->
+<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation_dashboard.js"></script>
 
 <?php
 

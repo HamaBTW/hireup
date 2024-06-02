@@ -26,6 +26,9 @@
 		});
 	</script>
 
+	<!-- voice recognation -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 
@@ -246,7 +249,8 @@ if (isset($_SESSION['user id'])) {
 	<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
 
 
-
+	<!-- voice recognation -->
+	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 
 	<?php

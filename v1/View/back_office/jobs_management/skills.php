@@ -170,6 +170,9 @@ $id_category_options = $skillController->generateCategoryOptions();
         }
     </style>
 
+    <!-- voice recognation -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <body>
@@ -682,7 +685,8 @@ $id_category_options = $skillController->generateCategoryOptions();
         });
     </script>
 
-
+    <!-- voice recognation -->
+	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation_dashboard.js"></script>
 
 
 </body>

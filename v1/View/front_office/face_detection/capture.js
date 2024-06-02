@@ -24,12 +24,14 @@ function captureFrame() {
             contentType: false,
             success: function(response) {
                 console.log('Image uploaded successfully:', response);
+                window.location.href = './capture_resualt_ui.php'
             },
             error: function(xhr, status, error) {
                 console.error('Error uploading image:', error);
             }
         });
     }, 'image/png');
+
 }
 
 // Event listener for the capture button

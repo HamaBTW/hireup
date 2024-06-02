@@ -33,6 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['profile_id'])) {
     <script src="https://kit.fontawesome.com/86ecaa3fdb.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="./../../../../front office assets/css/chatbot.css" />
 
+    <!-- voice recognation -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <body>
@@ -205,6 +208,10 @@ include('./../../../../View/callback.php')
 
 
     <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js'></script>
+
+    <!-- voice recognation -->
+	<script type="text/javascript" src="./../../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
+
     <?php
         include './../../jobs management/chatbot.php';
     ?>

@@ -29,6 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['feature_id'])) {
 
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
         
+            <!-- voice recognation -->
+            <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
         </head>
 
         <body>
@@ -114,6 +117,9 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['feature_id'])) {
             
             <script src="./../../js/finition.js"></script>
             <script src="./../../js/inputC_feat.js"></script>
+
+            <!-- voice recognation -->
+	        <script type="text/javascript" src="./../../../../../View\front_office\voice recognation\voice_recognation_and_navigation_dashboard.js"></script>
 
         </body>
 

@@ -125,6 +125,22 @@ class FaceController
         }
     }
 
+    public function getFaceByUserId($id)
+    {
+        $sql = "SELECT * FROM faces WHERE user_id = :id";
+        $db = config::getConnexion();
+
+        try {
+            $query = $db->prepare($sql);
+            $query->bindParam(':id', $id);
+            $query->execute();
+            $face = $query->fetch();
+            return $face;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+
     public function getImageExtension($imageBlob)
     {
         $bytes = substr($imageBlob, 0, 2);
@@ -198,6 +214,22 @@ class FaceController
         // Get the ID from the second part, trim any whitespace
         $id = trim($parts[1]);
         return $id;
+    }
+
+    public function faceExistsByUserId($id)
+    {
+        $sql = "SELECT COUNT(*) as count FROM faces WHERE user_id = :id";
+        $db = config::getConnexion();
+
+        try {
+            $query = $db->prepare($sql);
+            $query->bindParam(':id', $id);
+            $query->execute();
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            return $result['count'] > 0; // Return true if count > 0, indicating existence
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
     }
 
 }

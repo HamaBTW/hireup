@@ -1,12 +1,16 @@
+var scriptSrc = document.currentScript.src;
+var scriptDirectory = scriptSrc.substring(0, scriptSrc.lastIndexOf("/"));
+
 const video = document.getElementById("video");
 cap_btn = document.getElementById("captureBtn");
 
+
 Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri("./models"),
-  faceapi.nets.faceLandmark68Net.loadFromUri("./models"),
-  faceapi.nets.faceRecognitionNet.loadFromUri("./models"),
-  faceapi.nets.faceExpressionNet.loadFromUri("./models"),
-  faceapi.nets.ageGenderNet.loadFromUri("./models"),
+  faceapi.nets.tinyFaceDetector.loadFromUri(scriptDirectory+"/models"),
+  faceapi.nets.faceLandmark68Net.loadFromUri(scriptDirectory+"/models"),
+  faceapi.nets.faceRecognitionNet.loadFromUri(scriptDirectory+"/models"),
+  faceapi.nets.faceExpressionNet.loadFromUri(scriptDirectory+"/models"),
+  faceapi.nets.ageGenderNet.loadFromUri(scriptDirectory+"/models"),
 ]).then(webCam);
 
 function webCam() {
@@ -53,6 +57,7 @@ video.addEventListener("play", () => {
       drawBox.draw(canvas);
     });
 
+    // console.log(detection);
     console.log(detection);
 
     //change the capteur btn state

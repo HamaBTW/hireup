@@ -20,6 +20,9 @@
 
   <script src="https://kit.fontawesome.com/86ecaa3fdb.js" crossorigin="anonymous"></script>
 
+  <!-- voice recognation -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <?php
@@ -139,6 +142,9 @@ include('./../../../View/callback.php')
   <script src="../../../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   
   <script src="./SignIn_SignUp.js"></script>
+
+  <!-- voice recognation -->
+	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
   <!-- php error check -->
   <?php

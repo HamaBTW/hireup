@@ -92,6 +92,10 @@ $schedules = $scheduleController->getAllSchedulesWhereProfileId($user_profile_id
       content: url("../profiles_management/assets/img/logos/HireUp_darkMode.png");
     }
   </style>
+
+    <!-- voice recognation -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <body class="bg-light">
@@ -269,6 +273,9 @@ $schedules = $scheduleController->getAllSchedulesWhereProfileId($user_profile_id
     </div>
   </div>
   <!-- Event Details Modal -->
+
+  <!-- voice recognation -->
+	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 
   <?php

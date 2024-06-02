@@ -45,6 +45,9 @@ $list_rec = $recC->listRecsByIdUser($user_id);
 	<link rel="stylesheet" href="../../../front office assets/css/font-awesome.css">
 	<link rel="stylesheet" href="../../../front office assets/css/main.css" class="color-switcher-link">
 	<script src="../../../front office assets/js/vendor/modernizr-2.6.2.min.js"></script>
+
+	<!-- voice recognation -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
 	
 
 </head>
@@ -167,6 +170,9 @@ $list_rec = $recC->listRecsByIdUser($user_id);
 
 		<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
 		<script src="../../../View/back_office/reclamations managment/recs_management_js.js"></script>
+
+		<!-- voice recognation -->
+		<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 	</body>
 

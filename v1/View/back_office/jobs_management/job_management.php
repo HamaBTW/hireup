@@ -90,6 +90,10 @@ $id_category_options = $jobController->generateCategoryOptions();
 
 $profile_id_options = $jobController->generateProfileOptions();
 
+$block_call_back = 'false';
+$access_level = "admin";
+include ('./../../../View/callback.php')
+
 ?>
 
 
@@ -238,15 +242,18 @@ $profile_id_options = $jobController->generateProfileOptions();
 
     </style>
 
+    <!-- voice recognation -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <body>
 
-    <?php
-    $block_call_back = 'false';
-    $access_level = "admin";
-    include ('./../../../View/callback.php')
-        ?>
+    <!-- <?php
+    // $block_call_back = 'false';
+    // $access_level = "admin";
+    // include ('./../../../View/callback.php')
+        ?> -->
 
 
     <!--  Body Wrapper -->
@@ -1155,7 +1162,8 @@ $profile_id_options = $jobController->generateProfileOptions();
         scrollToTopBtn.addEventListener("click", scrollToTop);
     </script>
 
-    
+    <!-- voice recognation -->
+	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation_dashboard.js"></script>
 
 
 </body>

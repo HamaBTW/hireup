@@ -334,6 +334,9 @@ if (array_key_exists($profile['profile_subscription'], $subs_type)) {
     }
   </style>
 
+  <!-- voice recognation -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <body style="min-width: 735px">
@@ -1882,6 +1885,9 @@ if (array_key_exists($profile['profile_subscription'], $subs_type)) {
 
 
     </script>
+
+    <!-- voice recognation -->
+	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
     <?php
     include './../jobs management/chatbot.php';

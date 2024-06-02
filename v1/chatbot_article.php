@@ -14,6 +14,9 @@
     <script src="./front office assets/js/vendor/modernizr-2.6.2.min.js"></script>
     <link href="./front office assets/images/HireUp_icon.ico" rel="icon" />
 
+    <!-- voice recognation -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <?php
@@ -212,6 +215,9 @@ if (isset($_SESSION['user id'])) {
     <script src="./front office assets/js/switcher.js"></script>
 
     <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
+
+    <!-- voice recognation -->
+    <script type="text/javascript" src=".\View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 </body>
 

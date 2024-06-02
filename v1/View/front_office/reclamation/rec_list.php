@@ -75,6 +75,9 @@ $list_rec = $recC->listRecsByIdUser($user_id);
 		}
 	</style>
 
+	<!-- voice recognation -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
 </head>
 
 <body>
@@ -214,6 +217,9 @@ $list_rec = $recC->listRecsByIdUser($user_id);
 
 		<script src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
 		<script src="../../../View/back_office/reclamations managment/recs_management_js.js"></script>
+
+		<!-- voice recognation -->
+		<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 		<?php
 		include './../jobs management/chatbot.php';

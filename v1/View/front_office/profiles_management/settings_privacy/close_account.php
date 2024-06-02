@@ -75,6 +75,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     font-size: large;
                 }
             </style>
+
+            <!-- voice recognation -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
         </head>
 
         <body>
@@ -289,6 +293,9 @@ include('./../../../../View/callback.php')
                     window.location.href = "./delete_account.php?profile_id=<?php echo $profile['profile_id']; ?>";                    
                 });
             </script>
+
+            <!-- voice recognation -->
+	<script type="text/javascript" src="./../../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
             <?php
             include './../../jobs management/chatbot.php';

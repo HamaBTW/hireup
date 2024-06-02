@@ -102,6 +102,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     font-size: large;
                 }
             </style>
+
+            <!-- voice recognation -->
+            <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
         </head>
 
         <body>
@@ -303,6 +307,9 @@ include('./../../../../View/callback.php')
             <script src="../../../../assets/js/app.min.js"></script>
             <script src="../../../../assets/libs/simplebar/dist/simplebar.js"></script>
             <script src="../../../../assets/js/finition.js"></script>
+
+            <!-- voice recognation -->
+	        <script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 
             <?php

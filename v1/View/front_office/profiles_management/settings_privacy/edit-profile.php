@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../../../Controller/profileController.php';
 include_once __DIR__ . '/../../../../Controller/user_con.php';
+include_once __DIR__ . '/../../../../Controller/faces_con.php';
 
 $folder_name = "/hireup/v1/";
 $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
@@ -34,6 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
     // Create an instance of the controller
     $profileController = new ProfileC();
+    $faceController = new FaceController();
 
     // Get profile ID from the URL
     $profile_id = $profileController->getProfileIdByUserId($user_id);
@@ -43,6 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
 
     $current_profile_link = $current_url . "View/front_office/profiles_management/profile.php?profile_id=" . $profile_id;
+
+    $block_call_back = 'false';
+    $access_level = "else";
+    include ('./../../../../View/callback.php')
 
     ?>
 
@@ -86,14 +92,116 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             }
         </style>
 
+        <style>
+            .popup-card {
+                display: none;
+                position: fixed;
+                z-index: 99999999999;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(245, 245, 245, 0.4);
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+                max-width: 100%;
+                max-height: 100%;
+                min-height: auto;
+                min-width: auto;
+                padding: 20px;
+                border-radius: 5px;
+            }
+
+            .popup-content {
+                background-color: #fefefe;
+                margin: 5% auto;
+                border: 1px solid #888;
+                width: 80%;
+                height: 82%;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+            .popup-content iframe {
+                width: 100%;
+                height: 82%;
+                /* Set the height to adjust based on content */
+            }
+        </style>
+
+        <style>
+            .container-ui {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
+
+            h1 {
+                margin-bottom: 20px;
+                color: #333;
+            }
+
+            #videoContainer {
+                position: relative;
+                width: 100%;
+                height: 400px;
+                overflow: hidden;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+
+            #videoElement {
+                width: 100%;
+                height: auto;
+            }
+
+            #captureBtn,
+            #cancelBtn {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin: 0 10px;
+                transition: all 0.3s ease;
+            }
+
+            #captureBtn:hover,
+            #cancelBtn:hover {
+                background-color: #45a049;
+            }
+        </style>
+
+    <!-- voice recognation -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
+
     </head>
 
     <body>
 
         <?php
-        $block_call_back = 'false';
-        $access_level = "else";
-        include ('./../../../../View/callback.php')
+        // $block_call_back = 'false';
+        // $access_level = "else";
+        // include ('./../../../../View/callback.php')
             ?>
 
         <!-- Header Navbar -->
@@ -126,12 +234,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                         }
                         ?>
 
-                        <li><a class="dropdown-item" href="./../../../../View/front_office/jobs management/career_explorers.php">Career Explorers</a></li>
+                        <li><a class="dropdown-item"
+                                href="./../../../../View/front_office/jobs management/career_explorers.php">Career
+                                Explorers</a></li>
 
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-header" href="../subscription/subscriptionCards.php">Try Premium for $0</a></li>
+                        <li><a class="dropdown-header" href="../subscription/subscriptionCards.php">Try Premium for $0</a>
+                        </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -177,7 +288,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             </nav>
             <hr class="mt-0 mb-4">
             <div class="row">
-                
+
                 <div class="col-xl-4">
                     <!-- Profile picture card-->
                     <div class="card mb-4 mb-xl-0">
@@ -222,7 +333,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                     <!-- qr link end -->
 
                 </div>
-                
+
                 <div class="col-xl-8">
                     <!-- Account details card-->
                     <div class="card mb-4">
@@ -386,25 +497,29 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 </div>
 
                 <div class="col-xl-8">
-                    <!-- Account details card-->
+                    <?php $does_user_have_a_face = $faceController->faceExistsByUserId($user_id); ?>
+                    <!-- Face ID card-->
                     <div class="card mb-4">
-                        <div class="card-header">Account Details</div>
-                        <div class="card-body">
-                            <form id="profileForm" action="./update.php" method="POST">
-                               
-                                <!-- Form Group (username)-->
-                                <div class="mb-3">
-                                    <label class="small mb-1" for="inputUsername">Username (how your name will appear to
-                                        other users on the site)</label>
-                                    <input class="form-control" id="inputUsername" type="text"
-                                        placeholder="Enter your username"
-                                        value="<?php echo isset($user_infos['user_name']) ? $user_infos['user_name'] : ''; ?>"
-                                        disabled>
-                                </div>
-                                <!-- Form Row-->
-                                
-                            </form>
+                        <div class="card-header">Face ID</div>
+                        <div class="card-body text-center" id="face_id_card_btns">
+                            <?php if (!$does_user_have_a_face) { ?>
+                                <button type="button" class="btn btn-primary" onclick="show_pop_up()">Join Now</button>
+                            <?php } else { ?>
+                                <button type="button" class="btn btn-primary" onclick="show_pop_up_edit()">Edit</button>
+                                &nbsp;
+                                <button type="button" class="btn btn-outline-danger"
+                                    onclick="UnsubscribeClicked()">Unsubscribe</button>
+                            <?php } ?>
                         </div>
+                    </div>
+                </div>
+
+                <div id="popup-card" class="popup-card">
+                    <div class="popup-content">
+                        <span id="close-popup" class="close">&times;</span>
+                        <h3 id="popup-Name" class="text-capitalize">Face ID</h3>
+                        <hr><br>
+                        <iframe id="face_detection_iframe" src="./../../face_detection/index_ui.html"></iframe>
                     </div>
                 </div>
 
@@ -442,6 +557,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 </div>
             </form>
         </div>
+
 
         <script>
             function changeActionForPhoneNbUpdate() {
@@ -747,11 +863,85 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         </script>
         <!-- end -->
 
+        <script>
 
-        <?php
-            include './../../jobs management/chatbot.php';
+            function show_pop_up() {
+                var face_detection_iframe = document.getElementById("face_detection_iframe");
+                var modal = document.getElementById("popup-card");
+
+                face_detection_iframe.src = "./../../face_detection/index_ui.html";
+                modal.style.display = "block";
+            }
+
+            function show_pop_up_edit() {
+                var face_detection_iframe = document.getElementById("face_detection_iframe");
+                var modal = document.getElementById("popup-card");
+
+                face_detection_iframe.src = "./../../face_detection/view_capture_ui.php";
+                modal.style.display = "block";
+            }
+
+            function UnsubscribeClicked() {
+                var result = window.confirm("Are you sure you want to unsubscribe from the face id service?");
+                if (result) {
+                    window.location.href = "./../../face_detection/delete_a_face.php";
+                }
+            }
+
+            var modal = document.getElementById("popup-card");
+            var closeButton = document.getElementById("close-popup");
+            var face_detection_iframe = document.getElementById("face_detection_iframe");
+
+            closeButton.onclick = function () {
+                modal.style.display = "none";
+                face_detection_iframe.src = "";
+            };
+
+            window.onclick = function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                    face_detection_iframe.src = "";
+                }
+            };
+
+
+        </script>
+
+        <script>
+            // Function to handle messages from the iframe
+            function handleMessage(event) {
+                // if (event.data === 'captureFrameCompleted') {
+                //     face_detection_iframe.src = "./../../face_detection/capture_resualt_ui.php";
+                // } 
+                if (event.data === 'accepted') {
+                    closePopupAfterSaving();
+                } else if (event.data === 'tryAgain') {
+                    face_detection_iframe.src = "./../../face_detection/index_ui.html";
+                }
+            }
+
+            // Add event listener to listen for messages from the iframe
+            window.addEventListener('message', handleMessage);
+
+            function closePopupAfterSaving() {
+                var modal = document.getElementById("popup-card");
+                var face_detection_iframe = document.getElementById("face_detection_iframe");
+                var face_id_card_btns = document.getElementById("face_id_card_btns");
+
+                modal.style.display = "none";
+                face_detection_iframe.src = "";
+                face_id_card_btns.innerHTML = '<button type="button" class="btn btn-primary" onclick="show_pop_up_edit()">Edit</button> &nbsp; <button type="button" class="btn btn-outline-danger" onclick="UnsubscribeClicked()">Unsubscribe</button>';
+            }
+        </script>
+
+        <!-- voice recognation -->
+	    <script type="text/javascript" src="./../../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
+
+
+        <!-- <?php
+        //include './../../jobs management/chatbot.php';
         ?>
-        <script src="./../../../../front office assets/js/chatbot.js"></script>
+        <script src="./../../../../front office assets/js/chatbot.js"></script> -->
 
     </body>
 
