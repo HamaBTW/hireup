@@ -1,9 +1,34 @@
+
+<?php
+function getUserLocation() {
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $api_url = "https://freegeoip.app/json/";
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirections
+    $response = curl_exec($ch);
+    //var_dump($response);
+    curl_close($ch);
+
+    if ($response) {
+        return $response;
+    } else {
+        return false;
+    }
+}
+?>
+
+
+
 <?php
 // Include the controller file
 require_once __DIR__ . '/../../../Controller/JobC.php';
 require_once __DIR__ . '/../../../Controller/profileController.php';
 require_once __DIR__ . '/../../../Controller/applyController.php';
 require_once __DIR__ . '/../../../Controller/resume_con.php';
+require_once __DIR__ . '/../../../Controller/categoryC.php';
 
 if (session_status() == PHP_SESSION_NONE) {
     session_set_cookie_params(0, '/', '', true, true);
@@ -16,6 +41,7 @@ $jobController = new JobController();
 $profileController = new ProfileC();
 $applyController = new ApplyController();
 $resumeController = new ResumeController();
+$categoryC = new categoryController();
 
 
 $user_id = '';
@@ -93,50 +119,20 @@ $id_category_options = $jobController->generateCategoryOptions();
 $userId = $user_profile_id;
 
 // Fetch all jobs sorted by profile education
-$jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
+//old one by nessrine
+//$jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
 
-/*
-  $userId = 267126;
-  // Fetch user's profile education
-  $userProfileEducation = $jobController->getUserProfileEducation($userId); // Assuming you have a method to retrieve user profile education
-  // Sort jobs based on relevance to user's education
-  $sortedJobs = [];
-  foreach ($jobs as $job) {
-    // Check if the job category matches the user's education
-    if ($job['category_name'] === $userProfileEducation) {
-      // If the job category matches, add it to the beginning of the sorted jobs array
-      array_unshift($job, $sortedJobs);
-    } else {
-      // If the job category doesn't match, add it to the end of the sorted jobs array
-      $sortedJobs[] = $job;
-    }
-  }
+// new one by hama (by distance)
+//$jobs = $jobController->SortJobsByDistance();
 
-  $userProfileId = "267126"; // Assuming the profile ID is stored in the session
+// new one by hama (by category)
+$desired_categories = ['Software Developer', 'Web Dev', 'Content Creator'];
+$desired_categories1 = ['Content Creator', 'Software Developer', 'Web Dev'];
+$jobs = $jobController->SortJobsByCategory($desired_categories1);
 
-  // Instantiate JobController
-  $jobController = new JobController();
+// var_dump($jobs);
+// exit();
 
-  // Fetch Jobs Matching Profile Attributes
-  $filteredJobs = $jobController->fetchJobsByEducationLevel($userProfileId);
-
-  // Fetch Additional Jobs from Other Categories without a limit
-  $otherJobs = $jobController->fetchJobsByCategory('otherCategoryId'); // Replace 'otherCategoryId' with the ID of the category you want to fetch jobs from
-
-  // Ensure $filteredJobs is an array
-  if (!is_array($filteredJobs)) {
-    $filteredJobs = [];
-  }
-
-  // Ensure $otherJobs is an array
-  if (!is_array($otherJobs)) {
-    $otherJobs = [];
-  }
-
-  // Merge the arrays of filtered jobs and other jobs
-  $allJobs = array_merge($filteredJobs, $otherJobs);
-
-*/
 
 
 $block_call_back = 'false';
@@ -415,6 +411,55 @@ include ('./../../../View/callback.php');
             text-align: center;
             color: white;
             line-height: 20px;
+        }
+    </style>
+
+<style>
+        .popup-card {
+            display: none;
+            position: fixed;
+            z-index: 99999999999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(245, 245, 245, 0.4);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            max-width: 100%;
+            max-height: 100%;
+            min-height: auto;
+            min-width: auto;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            border: 1px solid #888;
+            width: 80%;
+            height: 82%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .popup-content iframe {
+            width: 100%;
+            height: 82%;
+            /* Set the height to adjust based on content */
         }
     </style>
 
@@ -714,6 +759,10 @@ include ('./../../../View/callback.php');
 
 
                                 <?php foreach ($jobs as $job): ?>
+                                <?php 
+                                    $job_category_data = $categoryC->getCategoryById($job['id_category']);
+                                    $job_category_name = $job_category_data['name_category'];
+                                 ?>
                                     <!-- Display job image if exists -->
                                     <?php if (!empty($job['job_image'])): ?>
                                         <div class="item-media post-thumbnail embed-responsive-3by2">
@@ -778,11 +827,13 @@ include ('./../../../View/callback.php');
                                                 <i class="color-main fa fa-calendar"></i>
                                                 <a href="#"> <?= $job['date_posted']; ?> </a>
                                                 <i class="color-main fa fa-map"></i>
-                                                <a href="#"> <?= $job['location']; ?> </a>
+                                                <a href="#" 
+                                                onclick="mapStaticMapPopUp('<?= $job['lng']; ?>', '<?= $job['lat']; ?>', '<?= $job['location']; ?>')">
+                                                 <?= $job['location']; ?> </a>
                                                 <i class="color-main fa fa-money"></i>
                                                 <a href="#"> <?= $job['salary']; ?> </a>
                                                 <i class="color-main fa fa-tag"></i>
-                                                <a href="#"> <?= $job['name_category']; ?> </a>
+                                                <a href="#"> <?= $job_category_name; ?> </a>
                                                 <!-- Display category here -->
                                                 <!-- Apply form based on status -->
                                                 <?php
@@ -1056,6 +1107,14 @@ include ('./../../../View/callback.php');
                 </div>
             </div>
 
+
+            <div id="popup-card-map-static" class="popup-card">
+                <div class="popup-content">
+                    <span id="close-popup-map-static" class="close">&times;</span>
+                    <h3 id="popup-Name" class="text-capitalize">Map</h3>
+                    <iframe id="popup-card-map-static-iframe" src="./../map/map_static.php"></iframe>
+                </div>
+            </div>
 
             <!-- Footer -->
             <?php include (__DIR__ . '/../../../View/front_office/front_footer.php') ?>
@@ -1434,6 +1493,31 @@ include ('./../../../View/callback.php');
         };
 
 
+    </script>
+
+    <!-- Map Static Popup Modal -->
+    <script>
+        function mapStaticMapPopUp(lng, lat, place) {
+            console.log("Map selection popup opened");
+            var modal = document.getElementById("popup-card-map-static");
+            var map_iframe = document.getElementById("popup-card-map-static-iframe");
+            map_iframe.src = `./../map/map_static.php?lng=${lng}&lat=${lat}&place=${place}`;
+            modal.style.display = "block";
+
+        }
+
+        var modal_map2 = document.getElementById("popup-card-map-static");
+        var closeButton_map2 = document.getElementById("close-popup-map-static");
+
+        closeButton_map2.onclick = function () {
+            modal_map2.style.display = "none";
+        };
+
+        window.onclick = function (event) {
+            if (event.target == modal_map2) {
+                modal_map2.style.display = "none";
+            }
+        };
     </script>
 
     <!-- voice recognation -->

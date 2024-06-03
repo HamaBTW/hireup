@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config.php';
 require_once 'profileController.php';
+require_once 'categoryC.php';
 
 class JobController
 {
@@ -82,7 +83,7 @@ public function getUserProfileEducation($userId) {
     }
     // Create a new job
     // Create a new job
-    public function createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $profile_id, $lng='', $lat='')
+    public function createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $profile_id, $lng = '', $lat = '')
     {
         try {
             // Fetch the id_category based on the selected category
@@ -106,7 +107,7 @@ public function getUserProfileEducation($userId) {
 
 
     // Update a job
-    public function updateJob($id, $title, $company, $location, $description, $salary, $category, $job_image, $lng='', $lat='')
+    public function updateJob($id, $title, $company, $location, $description, $salary, $category, $job_image, $lng = '', $lat = '')
     {
         try {
 
@@ -123,7 +124,7 @@ public function getUserProfileEducation($userId) {
         }
     }
 
-    public function updateJobWithoutImage($id, $title, $company, $location, $description, $salary, $category, $lat='', $lng='')
+    public function updateJobWithoutImage($id, $title, $company, $location, $description, $salary, $category, $lat = '', $lng = '')
     {
         try {
 
@@ -482,4 +483,250 @@ public function getUserProfileEducation($userId) {
             return "Error: " . $e->getMessage();
         }
     }
+
+    function getUserLocation()
+    {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $api_url = "https://freegeoip.app/json/";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $api_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirections
+        $response = curl_exec($ch);
+        //var_dump($response);
+        curl_close($ch);
+
+        if ($response) {
+            return $response;
+        } else {
+            return false;
+        }
+    }
+
+    public function haversineCalculateDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        // Radius of the Earth in kilometers
+        $R = 6371.0;
+
+        // Convert latitude and longitude from strings to floats
+        $lat1 = floatval($lat1);
+        $lon1 = floatval($lon1);
+        $lat2 = floatval($lat2);
+        $lon2 = floatval($lon2);
+
+        // Convert latitude and longitude from degrees to radians
+        $lat1 = deg2rad($lat1);
+        $lon1 = deg2rad($lon1);
+        $lat2 = deg2rad($lat2);
+        $lon2 = deg2rad($lon2);
+
+        // Compute the differences in coordinates
+        $dlon = $lon2 - $lon1;
+        $dlat = $lat2 - $lat1;
+
+        // Haversine formula
+        $a = sin($dlat / 2) ** 2 + cos($lat1) * cos($lat2) * sin($dlon / 2) ** 2;
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        // Distance calculation
+        $distance = $R * $c;
+        return $distance;
+    }
+
+    public function SortJobsByCategoryAndDistance0()
+    {
+
+        $categoryC = new categoryController();
+
+        $user_infos_string = $this->getUserLocation();
+        $user_infos = json_decode($user_infos_string, true);
+        //var_dump($user_infos);
+        if ($user_infos != false) {
+            $user_latitude = $user_infos['latitude'];
+            $user_longitude = $user_infos['longitude'];
+            $all_jobs = $this->getAllJobs();
+            $jobs_by_category = array();
+            foreach ($all_jobs as $job) {
+                $job_category_data = $categoryC->getCategoryById($job['id_category']);
+                $job_category_name = $job_category_data['name_category'];
+                if (!isset($jobs_by_category[$job_category_name])) {
+                    $jobs_by_category[$job_category_name] = array();
+                }
+                $jobs_by_category[$job_category_name][] = $job;
+            }
+
+            // Sort jobs within each category by distance
+            foreach ($jobs_by_category as $category => $jobs) {
+                foreach ($jobs as &$job) { // Note the '&' to reference the original array element
+                    $job['distance'] = $this->haversineCalculateDistance($user_latitude, $user_longitude, $job['lat'], $job['lng']);
+                }
+
+                //var_dump($job['distance']);
+                usort($jobs, function ($a, $b) {
+                    return $a['distance'] <=> $b['distance'];
+                });
+                $jobs_by_category[$category] = $jobs;
+            }
+
+            // Sort categories by importance (if applicable)
+            // For now, let's assume categories are sorted by importance already
+
+            // Combine jobs from all categories
+            $sorted_jobs = array();
+            $categories = array_keys($jobs_by_category);
+            rsort($categories);
+            foreach ($categories as $category) {
+                $sorted_jobs = array_merge($sorted_jobs, $jobs_by_category[$category]);
+            }
+            return $sorted_jobs;
+        } else {
+            return $all_jobs = $this->getAllJobs();
+        }
+    }
+
+    public function SortJobsByCategoryAndDistance1($desired_category)
+    {
+        $categoryC = new categoryController();
+
+        $user_infos_string = $this->getUserLocation();
+        $user_infos = json_decode($user_infos_string, true);
+
+        if ($user_infos != false) {
+            $user_latitude = $user_infos['latitude'];
+            $user_longitude = $user_infos['longitude'];
+            $all_jobs = $this->getAllJobs();
+            $jobs_by_category = array();
+
+            // Sort jobs within the desired category by distance first
+            $desired_jobs = array();
+            foreach ($all_jobs as $job) {
+                $job_category_data = $categoryC->getCategoryById($job['id_category']);
+                $job_category_name = $job_category_data['name_category'];
+                if ($job_category_name == $desired_category) {
+                    $job['distance'] = $this->haversineCalculateDistance($user_latitude, $user_longitude, $job['lat'], $job['lng']);
+                    $desired_jobs[] = $job;
+                } else {
+                    if (!isset($jobs_by_category[$job_category_name])) {
+                        $jobs_by_category[$job_category_name] = array();
+                    }
+                    $jobs_by_category[$job_category_name][] = $job;
+                }
+            }
+
+            // Sort the desired category's jobs by distance
+            usort($desired_jobs, function ($a, $b) {
+                return $a['distance'] <=> $b['distance'];
+            });
+
+            // Sort jobs within each category by distance
+            foreach ($jobs_by_category as $category => $jobs) {
+                foreach ($jobs as &$job) {
+                    $job['distance'] = $this->haversineCalculateDistance($user_latitude, $user_longitude, $job['lat'], $job['lng']);
+                }
+
+                usort($jobs, function ($a, $b) {
+                    return $a['distance'] <=> $b['distance'];
+                });
+                $jobs_by_category[$category] = $jobs;
+            }
+
+            // Define the importance order of categories
+            $category_importance = array(
+                $desired_category => 0, // Desired category has the highest importance (0)
+                // Define other categories and their importance levels here
+                // For example:
+                // 'SecondCategory' => 1,
+                // 'ThirdCategory' => 2,
+                // ...
+            );
+
+            // Sort categories by importance
+            uksort($jobs_by_category, function ($a, $b) use ($category_importance) {
+                if (!isset($category_importance[$a])) {
+                    return 1; // If importance is not defined, consider $a higher
+                } elseif (!isset($category_importance[$b])) {
+                    return -1; // If importance is not defined, consider $b higher
+                } else {
+                    return $category_importance[$a] <=> $category_importance[$b];
+                }
+            });
+
+            // Combine jobs from all categories, with desired category first
+            $sorted_jobs = $desired_jobs;
+            foreach ($jobs_by_category as $category => $jobs) {
+                $sorted_jobs = array_merge($sorted_jobs, $jobs);
+            }
+            return $sorted_jobs;
+        } else {
+            return $this->getAllJobs();
+        }
+    }
+
+    public function SortJobsByDistance()
+    {
+        $categoryC = new categoryController();
+
+        $user_infos_string = $this->getUserLocation();
+        $user_infos = json_decode($user_infos_string, true);
+
+        if ($user_infos == false) {
+            return $this->getAllJobs();
+        } else {
+            $user_latitude = $user_infos['latitude'];
+            $user_longitude = $user_infos['longitude'];
+            $all_jobs = $this->getAllJobs();
+            $sorted_jobs = [];
+
+            foreach ($all_jobs as $job) {
+                $current_job_distance = $this->haversineCalculateDistance($user_latitude, $user_longitude, $job['lat'], $job['lng']);
+                $job['distance'] = $current_job_distance; // Store the distance in the job array
+                $sorted_jobs[] = $job; // Add job to array for sorting
+            }
+
+            // Custom sorting function to sort by distance
+            usort($sorted_jobs, function ($a, $b) {
+                return $a['distance'] - $b['distance'];
+            });
+
+            return $sorted_jobs;
+        }
+    }
+
+
+    public function SortJobsByCategory($desired_categories)
+    {
+        $categoryC = new categoryController();
+        $all_jobs = $this->getAllJobs();
+        $sorted_jobs = [];
+
+        // Initialize arrays for each desired category
+        foreach ($desired_categories as $category) {
+            $sorted_jobs[$category] = [];
+        }
+
+        // Group jobs by category
+        foreach ($all_jobs as $job) {
+            $job_category_data = $categoryC->getCategoryById($job['id_category']);
+            $job_category_name = $job_category_data['name_category'];
+
+            // Check if job category matches any desired category
+            if (in_array($job_category_name, $desired_categories)) {
+                $sorted_jobs[$job_category_name][] = $job;
+            }
+        }
+
+        // Concatenate jobs in desired category order
+        foreach ($desired_categories as $category) {
+            $sorted_jobs[$category] = array_merge($sorted_jobs[$category]); // Merge the arrays of each category
+        }
+
+        // Flatten the array
+        $sorted_jobs = array_merge(...array_values($sorted_jobs));
+
+        return $sorted_jobs;
+    }
+
+
+
 }
