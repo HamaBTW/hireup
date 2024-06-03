@@ -13,6 +13,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST["description"];
     $salary = $_POST["salary"];
     $category = $_POST["category"];
+    $lng = $_POST["longitude"];
+    $lat = $_POST["latitude"];
 
     // Include the controller file
     $jobController = new JobController();
@@ -24,11 +26,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $job_image = file_get_contents($job_image_tmp_name);
 
         // Only redirect if the job creation is successful
-        $result = $jobController->createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $userProfileId);
+        $result = $jobController->createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $userProfileId, $lng, $lat);
 
         if ($result !== false) {
             // Redirect to prevent form resubmission
-            header("Location: ./jobs.php?creation-image=true");
+            header("Location: ./myJobs_list.php?creation-image=true");
             exit;
         }
     } else {
@@ -36,11 +38,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $job_image = null;
 
         // Only redirect if the job creation is successful
-        $result = $jobController->createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $userProfileId);
+        $result = $jobController->createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $userProfileId, $lng, $lat);
 
         if ($result !== false) {
             // Redirect to prevent form resubmission
-            header("Location: ./jobs.php?creation-job=true");
+            header("Location: ./myJobs_list.php?creation-job=true");
             exit;
         }
     }

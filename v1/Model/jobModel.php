@@ -10,9 +10,11 @@ class JobModel
     private $salary;
     private $datePosted;
     private $category;
+    private $lng;
+    private $lat;
 
     // Constructor
-    public function __construct($jobTitle, $company, $location, $description, $salary, $datePosted,$category) {
+    public function __construct($jobTitle, $company, $location, $description, $salary, $datePosted,$category,$lng,$lat) {
         $this->jobTitle = $jobTitle;
         $this->company = $company;
         $this->location = $location;
@@ -20,6 +22,8 @@ class JobModel
         $this->salary = $salary;
         $this->datePosted = $datePosted;
         $this->$category = $category;
+        $this->$lng = $lng;
+        $this->$lat = $lat;
     }
 
     // Getters
@@ -53,6 +57,14 @@ class JobModel
         return $this->datePosted;
     }
 
+    public function getLng() {
+        return $this->lng;
+    }
+
+    public function getLat() {
+        return $this->lat;
+    }
+
     // Setters
     public function setJobTitle($jobTitle) {
         $this->jobTitle = $jobTitle;
@@ -80,6 +92,14 @@ class JobModel
 
     public function setDatePosted($datePosted) {
         $this->datePosted = $datePosted;
+    }
+
+    public function setLng($lng) {
+        $this->lng = $lng;
+    }
+
+    public function setLat($lat) {
+        $this->lat = $lat;
     }
 }
 ?>

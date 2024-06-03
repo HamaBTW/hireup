@@ -735,19 +735,21 @@ include ('./../../../View/callback.php');
                                                     style="cursor: pointer; color: #000; font-size: 35px;">...</span>
                                                 <div class="dropdown-menu dropdown-menu-end"
                                                     aria-labelledby="dropdownMenuButton">
-                                                    <button class="dropdown-item edit-btn" data-job-id="<?= $job['id'] ?>"
-                                                        data-job-title="<?= $job['title'] ?>"
-                                                        data-company="<?= $job['company'] ?>"
-                                                        data-location="<?= $job['location'] ?>"
-                                                        data-description="<?= $job['description'] ?>"
-                                                        data-salary="<?= $job['salary'] ?>"
-                                                        data-category="<?= $job['name_category'] ?>"
-                                                        data-jobImg="<?php echo base64_encode($job['job_image']) ?>">Edit</button>
+                                                    <!-- <button class="dropdown-item edit-btn" data-job-id="<?//= $job['id'] ?>"
+                                                        data-job-title="<?//= $job['title'] ?>"
+                                                        data-company="<?//= $job['company'] ?>"
+                                                        data-location="<?//= $job['location'] ?>"
+                                                        data-description="<?//= $job['description'] ?>"
+                                                        data-salary="<?//= $job['salary'] ?>"
+                                                        data-category="<?//= $job['name_category'] ?>"
+                                                        data-jobImg="<?php //echo base64_encode($job['job_image']) ?>">Edit</button>
                                                     <form method="post" style="display:inline;">
                                                         <input type="hidden" name="action" value="delete">
-                                                        <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
+                                                        <input type="hidden" name="job_id" value="<?//= $job['id'] ?>">
                                                         <button type="submit" class="dropdown-item"
-                                                            onclick="return confirm('Are you sure you want to delete this job?')">Delete</button>
+                                                            onclick="return confirm('Are you sure you want to delete this job?')">Delete</button> -->
+                                                        <button type="button" class="dropdown-item"
+                                                            onclick="window.location.href = 'myJobs_list.php#job-<?= $job['id'] ?>'">Check It</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -1037,7 +1039,7 @@ include ('./../../../View/callback.php');
                 </div>
             </section>
 
-            <div id="popup-card" class="popup-card">
+            <div id="popup-card-rank" class="popup-card">
                 <div class="popup-content">
                     <span id="close-popup" class="close">&times;</span>
                     <h3 id="popup-Name" class="text-capitalize"></h3>
@@ -1413,12 +1415,12 @@ include ('./../../../View/callback.php');
                 popupProgressBarFill.style.width = percentage + '%';
                 popupProgressBarFill.innerText = parseInt(percentage) + '%';
 
-                var modal = document.getElementById("popup-card");
+                var modal = document.getElementById("popup-card-rank");
                 modal.style.display = "block";
             });
         }
 
-        var modal = document.getElementById("popup-card");
+        var modal = document.getElementById("popup-card-rank");
         var closeButton = document.getElementById("close-popup");
 
         closeButton.onclick = function () {

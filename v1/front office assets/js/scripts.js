@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const salary = this.getAttribute("data-salary");
       const category = this.getAttribute("data-category");
       const job_image = this.getAttribute("data-jobImg");
+      const map_lng = this.getAttribute("data-lng");
+      const map_lat = this.getAttribute("data-lat");
       // Populate update form inputs with job details
       console.log(category);
       console.log("hello");
@@ -33,10 +35,13 @@ document.addEventListener("DOMContentLoaded", function () {
         description,
         salary,
         category,
-        job_image
+        job_image,
+        map_lng,
+        map_lat
       );
       // Show the update form modal
-      document.getElementById("updateModal").style.display = "block";
+      //document.getElementById("updateModal").style.display = "block";
+      document.getElementById("updateJobModal").style.display = "block";
     });
   });
 });
@@ -50,7 +55,9 @@ function populateUpdateForm(
   description,
   salary,
   category,
-  job_image
+  job_image,
+  map_lng,
+  map_lat
 ) {
   console.log(category);
   console.log("hiiiiiii");
@@ -62,9 +69,13 @@ function populateUpdateForm(
   document.getElementById("update_description").value = description;
   document.getElementById("update_salary").value = salary;
   document.getElementById("update_category").value = category;
-  console.log("data:image/jpeg;base64," + job_image);
+  //console.log("data:image/jpeg;base64," + job_image);
   document.getElementById("update_job_img").src =
     "data:image/jpeg;base64," + job_image;
+  document.getElementById("latitude").value = map_lng;  
+  document.getElementById("longitude").value = map_lat;  
+  console.log(map_lng);
+  console.log(map_lat);
 }
 
 // When the user clicks on the edit button, open the modal

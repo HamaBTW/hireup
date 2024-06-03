@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if ($result !== false) {
         // Redirect to prevent form resubmission
 
-        header("Location: {$_SERVER['REQUEST_URI']}");
+        header("Location: ./myJobs_list.php");
         exit;
       }
     }
@@ -91,6 +91,10 @@ $userId = $user_profile_id;
 
 // Fetch all jobs sorted by profile education
 $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
+
+$block_call_back = 'false';
+$access_level = "else";
+include ('./../../../View/callback.php');
 
 /*
   $userId = 267126;
@@ -260,6 +264,55 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
     }
   </style>
 
+  <style>
+    .popup-card {
+      display: none;
+      position: fixed;
+      z-index: 99999999999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(245, 245, 245, 0.4);
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+      max-width: 100%;
+      max-height: 100%;
+      min-height: auto;
+      min-width: auto;
+      padding: 20px;
+      border-radius: 5px;
+    }
+
+    .popup-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      border: 1px solid #888;
+      width: 80%;
+      height: 82%;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .popup-content iframe {
+      width: 100%;
+      height: 82%;
+      /* Set the height to adjust based on content */
+    }
+  </style>
+
 
   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
@@ -271,9 +324,9 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
 <body>
 
   <?php
-  $block_call_back = 'false';
-  $access_level = "else";
-  include ('./../../../View/callback.php');
+  // $block_call_back = 'false';
+  // $access_level = "else";
+  // include ('./../../../View/callback.php');
   ?>
 
 
@@ -357,7 +410,11 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
                     <label for="location">Location</label>
                     <div class="input-group">
                       <input type="text" class="form-control" id="location" name="location">
-                      <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('location')"></i>
+                      <i class="fa-solid fa-map-location-dot" onclick="mapSelectionPopUp()"></i>
+                      <!-- Hidden inputs to store longitude and latitude -->
+                      <input type="hidden" id="latitude" name="latitude" value="">
+                      <input type="hidden" id="longitude" name="longitude" value="">
+                      <input type="hidden" id="place-name" name="place-name" value="Unknown place">
                     </div>
                     <span id="job_location_error" class="text-danger"></span> <!-- Error message placeholder -->
                   </div>
@@ -409,6 +466,14 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
 
         </div>
       </section>
+
+      <div id="popup-card" class="popup-card">
+        <div class="popup-content">
+          <span id="close-popup" class="close">&times;</span>
+          <h3 id="popup-Name" class="text-capitalize">Map</h3>
+          <iframe id="face_detection_iframe" src="./../map/map_interective.php"></iframe>
+        </div>
+      </div>
 
 
       <!-- Footer -->
@@ -482,6 +547,8 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
       var description = document.getElementById("description").value.trim();
       var salary = document.getElementById("salary").value.trim();
       var category = document.getElementById("category").value.trim();
+      var mapLng = document.getElementById("longitude").value.trim();
+      var mapLat = document.getElementById("latitude").value.trim();
       // Variable to store the common error message
       var errorMessage = "";
 
@@ -520,6 +587,11 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
       // Check if any input field is empty
       if (location === "") {
         errorMessage = "Location is required."; // Set common error message
+        displayError("job_location_error", errorMessage, true); // Display error message
+      }
+
+      if (mapLat == "" || mapLng == "") {
+        errorMessage = "Please selecte your location on the map."; // Set common error message
         displayError("job_location_error", errorMessage, true); // Display error message
       }
 
@@ -590,10 +662,16 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
     // Listen for input event on location field
     document.getElementById("location").addEventListener("input", function (event) {
       var location = this.value.trim(); // Get value of location field
+      var mapLat = document.getElementById("latitude").value.trim();
+      var mapLng = document.getElementById("longitude").value.trim();
 
       // Validate if location is empty
-      if (location === "") {
-        displayError("job_location_error", "Location is required.", true); // Display error message for empty location
+      if (location === "" || mapLat == "" || mapLng == "") {
+        if (location === "") {
+          displayError("job_location_error", "Location is required.", true); // Display error message for empty location
+        } else {
+          displayError("job_location_error", "Please selecte your location on the map.", true); // Display error message for empty map selection
+        }
       } else {
         displayError("job_location_error", "Valid location", false); // Display valid message for location
       }
@@ -640,9 +718,11 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
         var allPopulated = true;
         inputs.forEach(function (input) {
           if (input.value.trim() === "") {
+            //console.log(input);
             allPopulated = false;
           }
         });
+        //console.log("===================================================================================================");
         return allPopulated;
       }
 
@@ -665,8 +745,90 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
     });
   </script>
 
+  <!-- Map Selection Popup Modal -->
+  <script>
+    function mapSelectionPopUp() {
+      var modal = document.getElementById("popup-card");
+      modal.style.display = "block";
+    }
+
+    var modal = document.getElementById("popup-card");
+    var closeButton = document.getElementById("close-popup");
+
+    closeButton.onclick = function () {
+      modal.style.display = "none";
+    };
+
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    };
+  </script>
+
+  <script>
+    window.addEventListener('message', receiveMessageFromIframe, false);
+
+    function receiveMessageFromIframe(event) {
+      console.log('Message received from iframe:', event.data);
+      if (event.data) {
+        console.log(event.data);
+        if (event.data.message == "the location is :") {
+          // Parse JSON data received from the iframe
+
+          // Access properties of the JSON object
+          //console.log('Message:', jsonData.message);
+          //console.log('Data:', jsonData.data);
+          document.getElementById('latitude').value = event.data.data.lat;
+          document.getElementById('longitude').value = event.data.data.lng;
+
+          // Listen for input event on location field
+
+          var location = document.getElementById('location').value.trim(); // Get value of location field
+          var mapLat = document.getElementById("latitude").value.trim();
+          var mapLng = document.getElementById("longitude").value.trim();
+
+          // Validate if location is empty
+          if (location === "" || mapLat == "" || mapLng == "") {
+            if (location === "") {
+              displayError("job_location_error", "Location is required.", true); // Display error message for empty location
+            } else {
+              displayError("job_location_error", "Please selecte your location on the map.", true); // Display error message for empty map selection
+            }
+          } else {
+            displayError("job_location_error", "Valid location", false); // Display valid message for location
+          };
+
+          function checkInputFields() {
+            var inputs = document.querySelectorAll("#createJobForm input ,#description ,#category");
+            var allPopulated = true;
+            inputs.forEach(function (input) {
+              if (input.value.trim() === "") {
+                console.log(input);
+                allPopulated = false;
+              }
+            });
+            console.log("===================================================================================================");
+            return allPopulated;
+          }
+
+          // Function to enable/disable submit button based on input fields
+          function toggleSubmitButton() {
+            var submitButton = document.querySelector("#createJobForm button[type='submit']");
+            submitButton.disabled = !checkInputFields();
+          }
+
+          toggleSubmitButton();
+
+
+        }
+      }
+    }
+  </script>
+
   <!-- voice recognation -->
-	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
+  <script type="text/javascript"
+    src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 
 </body>

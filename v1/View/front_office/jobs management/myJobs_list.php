@@ -44,6 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $description = $_POST["description"];
         $salary = $_POST["salary"];
         $category = $_POST["category"];
+        $map_lat = $_POST["longitude"];
+        $map_lng = $_POST["latitude"];
 
         if (!empty($_FILES['job_image']['name']) && $_FILES['job_image']['error'] === 0) {
 
@@ -52,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $job_image = file_get_contents($job_image_tmp_name);
 
             // Only echo the result if the job update is successful
-            $result = $jobController->updateJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image);
+            $result = $jobController->updateJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $map_lng, $map_lat);
 
             if ($result !== false) {
                 // Redirect to prevent form resubmission
@@ -62,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else {
             // Only echo the result if the job update is successful
-            $result = $jobController->updateJobWithoutImage($job_id, $title, $company, $location, $description, $salary, $category);
+            $result = $jobController->updateJobWithoutImage($job_id, $title, $company, $location, $description, $salary, $category, $map_lng, $map_lat);
 
             if ($result !== false) {
                 // Redirect to prevent form resubmission
@@ -77,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $deleted = $jobController->deleteJob($job_id);
         if ($deleted) {
             echo "Job deleted successfully.";
-            header("Location: jobs_list.php");
+            header("Location: myJobs_list.php");
             exit();
         } else {
             echo "Error deleting job.";
@@ -139,9 +141,9 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
 */
 
 
-    $block_call_back = 'false';
-    $access_level = "else";
-    include ('./../../../View/callback.php');
+$block_call_back = 'false';
+$access_level = "else";
+include ('./../../../View/callback.php');
 
 
 ?>
@@ -270,34 +272,83 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
     </style>
 
     <style>
-    /* Styling for the popup */
-    .popup {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        z-index: 9999;
+        /* Styling for the popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+        }
+
+        /* Styling for the overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+        }
+    </style>
+
+<style>
+    .popup-card {
+      display: none;
+      position: fixed;
+      z-index: 99999999999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(245, 245, 245, 0.4);
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+      max-width: 100%;
+      max-height: 100%;
+      min-height: auto;
+      min-width: auto;
+      padding: 20px;
+      border-radius: 5px;
     }
-    
-    /* Styling for the overlay */
-    .overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 9998;
+
+    .popup-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      border: 1px solid #888;
+      width: 80%;
+      height: 82%;
     }
-</style>
-  
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .popup-content iframe {
+      width: 100%;
+      height: 82%;
+      /* Set the height to adjust based on content */
+    }
+  </style>
+
 
 
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
@@ -312,7 +363,7 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
     <!-- Overlay to cover the background -->
     <div id="overlay" class="overlay"></div>
 
-    
+
 
 
     <div class="preloader">
@@ -367,7 +418,7 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                         class="far fa-plus-square"></i> Jobs</button>
                 <button onclick="window.location.href = './applyJobs_list.php'" class="btn btn-success ml-3"><i
                         class="far fa-list-alt"></i> My Applies</button>
-                <button onclick="window.location.href = './jobs_list.php'" class="btn btn-maincolor2 ml-3"><i 
+                <button onclick="window.location.href = './jobs_list.php'" class="btn btn-maincolor2 ml-3"><i
                         class="far fa-list-alt"></i> Jobs List</button>
             </div>
 
@@ -489,7 +540,13 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                                 </div>
                                 <div class="form-group">
                                     <label for="update_location">Location:</label>
+                                    <input type="hidden" id="latitude" name="latitude" value="">
+                                    <input type="hidden" id="longitude" name="longitude" value="">
+                                    <input type="hidden" id="place-name" name="place-name" value="Unknown place">
                                     <input type="text" id="update_location" name="location" class="form-control">
+                                    <!-- <i class="fa-solid fa-map-location-dot" onclick="mapSelectionPopUp()"></i> -->
+                                    <i class="fa-solid fa-map-location-dot" onclick="mapSelectionPopUp()"></i>
+
                                     <span id="update_location_error" class="text-danger"></span>
                                     <!-- Error message placeholder -->
                                 </div>
@@ -570,6 +627,7 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                                     <!-- Display job image if exists -->
                                     <?php if (!empty($job['job_image'])): ?>
                                         <div class="item-media post-thumbnail embed-responsive-3by2">
+                                            <div id="job-<?= $job['id'] ?>"></div>
                                             <a href="#"
                                                 onclick="openFullScreenImage('<?= base64_encode($job['job_image']) ?>')">
                                                 <img src="data:image/jpeg;base64,<?= base64_encode($job['job_image']) ?>"
@@ -581,6 +639,11 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                                         class="text-center text-md-left vertical-item content-padding bordered post type-post status-publish format-standard has-post-thumbnail sticky position-relative">
                                         <!-- Dropdown menu -->
                                         <?php if ($user_profile_id == $job['jobs_profile']) { ?>
+
+                                            <?php
+                                            $cat_data = $categoryC->getCategoryById($job['id_category']);
+                                            $category_name = $cat_data['name_category'];
+                                            ?>
 
                                             <div class="dropdow mr-3" style="position: absolute; top: 10px; right: 10px;">
                                                 <span class="dropdown" id="dropdownMenuButton" data-toggle="dropdown"
@@ -594,8 +657,10 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                                                         data-location="<?= $job['location'] ?>"
                                                         data-description="<?= $job['description'] ?>"
                                                         data-salary="<?= $job['salary'] ?>"
-                                                        data-category="<?= $job['name_category'] ?>"
-                                                        data-jobImg="<?php echo base64_encode($job['job_image']) ?>">Edit</button>
+                                                        data-category="<?= $category_name ?>"
+                                                        data-jobImg="<?php echo base64_encode($job['job_image']) ?>"
+                                                        data-lng="<?php echo $job['lng']; ?>"
+                                                        data-lat="<?php echo $job['lat']; ?>">Edit</button>
                                                     <form method="post" style="display:inline;">
                                                         <input type="hidden" name="action" value="delete">
                                                         <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
@@ -623,10 +688,10 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                                                 </p>
                                             </div>
                                             <!-- Job attributes -->
-                                            <?php 
-                                            $cat_data = $categoryC->getCategoryById($job['id_category']); 
+                                            <?php
+                                            $cat_data = $categoryC->getCategoryById($job['id_category']);
                                             $job_name_category = $cat_data['name_category'];
-                                            
+
                                             ?>
                                             <div class="entry-footer">
                                                 <i class="color-main fa fa-user"></i>
@@ -634,7 +699,7 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                                                 <i class="color-main fa fa-calendar"></i>
                                                 <a href="#"> <?= $job['date_posted']; ?> </a>
                                                 <i class="color-main fa fa-map"></i>
-                                                <a href="#"> <?= $job['location']; ?> </a>
+                                                <a href="#" onclick="mapStaticMapPopUp('<?= $job['lng']; ?>', '<?= $job['lat']; ?>', '<?= $job['location']; ?>')"> <?= $job['location']; ?> </a>
                                                 <i class="color-main fa fa-money"></i>
                                                 <a href="#"> <?= $job['salary']; ?> </a>
                                                 <i class="color-main fa fa-tag"></i>
@@ -673,18 +738,21 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                                                                     value="<?php echo $job['id']; ?>">
                                                                 <input type="hidden" id="userId" name="userId"
                                                                     value="<?php echo $userId; ?>">
-                                                                <button type="button" id="applyButton"
-                                                                    class="btn btn-outline-info" onclick="togglePopup()">Apply</button>
+                                                                <button type="button" id="applyButton" class="btn btn-outline-info"
+                                                                    onclick="togglePopup()">Apply</button>
 
-                                                                    <!-- Popup -->
-                                                                    <div id="popup" class="popup">
-                                                                        <div class="text-end mx-4">
-                                                                            <p>Discription</p>
-                                                                            <textarea name="apply_desc" id="apply_desc" class="form-control mb-3"></textarea>
-                                                                            <button type="button" onclick="togglePopup()" class="btn btn-outline-danger mr-3">Decline</button>
-                                                                            <button type="submit" onclick="togglePopup()" class="btn btn-success">Apply</button>
-                                                                        </div>
+                                                                <!-- Popup -->
+                                                                <div id="popup" class="popup">
+                                                                    <div class="text-end mx-4">
+                                                                        <p>Discription</p>
+                                                                        <textarea name="apply_desc" id="apply_desc"
+                                                                            class="form-control mb-3"></textarea>
+                                                                        <button type="button" onclick="togglePopup()"
+                                                                            class="btn btn-outline-danger mr-3">Decline</button>
+                                                                        <button type="submit" onclick="togglePopup()"
+                                                                            class="btn btn-success">Apply</button>
                                                                     </div>
+                                                                </div>
                                                             </form>
                                                         </div>
                                                     <?php endif; ?>
@@ -888,6 +956,22 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
                     </div>
                 </div>
             </section>
+
+            <div id="popup-card-map" class="popup-card">
+                <div class="popup-content">
+                    <span id="close-popup-map" class="close">&times;</span>
+                    <h3 id="popup-Name" class="text-capitalize">Map</h3>
+                    <iframe id="face_detection_iframe" src="./../map/map_interective.php"></iframe>
+                </div>
+            </div>
+
+            <div id="popup-card-map-static" class="popup-card">
+                <div class="popup-content">
+                    <span id="close-popup-map-static" class="close">&times;</span>
+                    <h3 id="popup-Name" class="text-capitalize">Map</h3>
+                    <iframe id="popup-card-map-static-iframe" src="./../map/map_static.php"></iframe>
+                </div>
+            </div>
 
 
             <!-- Footer -->
@@ -1138,19 +1222,113 @@ $jobs = $jobController->getAllJobsWhereProfileId($userId);
         function togglePopup() {
             var popup = document.getElementById('popup');
             var overlay = document.getElementById('overlay');
-            
+
             if (popup.style.display === 'block') {
-            popup.style.display = 'none';
-            overlay.style.display = 'none';
+                popup.style.display = 'none';
+                overlay.style.display = 'none';
             } else {
-            popup.style.display = 'block';
-            overlay.style.display = 'block';
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
             }
         }
     </script>
 
+    <!-- Map Selection Popup Modal -->
+    <script>
+        function mapSelectionPopUp() {
+            console.log("Map selection popup opened");
+            lat = document.getElementById("longitude").value;
+            lng = document.getElementById("latitude").value;
+            place = document.getElementById("update_location").value;
+            var modal = document.getElementById("popup-card-map");
+            var map_iframe = document.getElementById("face_detection_iframe");
+            modal.style.display = "block";
+            map_iframe.src = `./../map/map_interective.php?lng=${lng}&lat=${lat}&place=${place}`;
+        }
+
+        var modal_map = document.getElementById("popup-card-map");
+        var closeButton_map = document.getElementById("close-popup-map");
+
+        closeButton_map.onclick = function () {
+            modal_map.style.display = "none";
+        };
+
+        window.onclick = function (event) {
+            if (event.target == modal_map) {
+                modal_map.style.display = "none";
+            }
+        };
+    </script>
+
+    <script>
+        window.addEventListener('message', receiveMessageFromIframe, false);
+
+        function receiveMessageFromIframe(event) {
+            console.log('Message received from iframe:', event.data);
+            if (event.data) {
+                console.log(event.data);
+                if (event.data.message == "the location is :") {
+                    // Parse JSON data received from the iframe
+
+                    // Access properties of the JSON object
+                    //console.log('Message:', jsonData.message);
+                    //console.log('Data:', jsonData.data);
+                    document.getElementById('latitude').value = event.data.data.lat;
+                    document.getElementById('longitude').value = event.data.data.lng;
+
+                    // Listen for input event on location field
+
+                    var location = document.getElementById('update_location').value.trim(); // Get value of location field
+                    var mapLat = document.getElementById("latitude").value.trim();
+                    var mapLng = document.getElementById("longitude").value.trim();
+
+                    // Validate if location is empty
+                    if (location === "" || mapLat == "" || mapLng == "") {
+                        if (location === "") {
+                            displayError("update_location_error", "Location is required.", true); // Display error message for empty location
+                        } else {
+                            displayError("update_location_error", "Please selecte your location on the map.", true); // Display error message for empty map selection
+                        }
+                    } else {
+                        displayError("update_location_error", "Valid location", false); // Display valid message for location
+                    };
+
+                    
+
+
+                }
+            }
+        }
+    </script>
+
+    <!-- Map Static Popup Modal -->
+    <script>
+        function mapStaticMapPopUp(lng, lat, place) {
+            console.log("Map selection popup opened");
+            var modal = document.getElementById("popup-card-map-static");
+            var map_iframe = document.getElementById("popup-card-map-static-iframe");
+            map_iframe.src = `./../map/map_static.php?lng=${lng}&lat=${lat}&place=${place}`;
+            modal.style.display = "block";
+
+        }
+
+        var modal_map2 = document.getElementById("popup-card-map-static");
+        var closeButton_map2 = document.getElementById("close-popup-map-static");
+
+        closeButton_map2.onclick = function () {
+            modal_map2.style.display = "none";
+        };
+
+        window.onclick = function (event) {
+            if (event.target == modal_map2) {
+                modal_map2.style.display = "none";
+            }
+        };
+    </script>
+
     <!-- voice recognation -->
-	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
+    <script type="text/javascript"
+        src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 
 </body>

@@ -82,7 +82,7 @@ public function getUserProfileEducation($userId) {
     }
     // Create a new job
     // Create a new job
-    public function createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $profile_id)
+    public function createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $profile_id, $lng='', $lat='')
     {
         try {
             // Fetch the id_category based on the selected category
@@ -95,8 +95,8 @@ public function getUserProfileEducation($userId) {
             $date_posted = date("Y-m-d H:i:s");
 
             // Insert the job into the database with the provided profile ID
-            $stmt = $this->conn->prepare("INSERT INTO jobs (id, title, company, location, description, salary, date_posted, job_image, id_category, jobs_profile) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$job_id, $title, $company, $location, $description, $salary, $date_posted, $job_image, $categoryID, $profile_id]);
+            $stmt = $this->conn->prepare("INSERT INTO jobs (id, title, company, location, description, salary, date_posted, job_image, id_category, jobs_profile, lng, lat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$job_id, $title, $company, $location, $description, $salary, $date_posted, $job_image, $categoryID, $profile_id, $lng, $lat]);
 
             return "New job created successfully";
         } catch (PDOException $e) {
@@ -106,7 +106,7 @@ public function getUserProfileEducation($userId) {
 
 
     // Update a job
-    public function updateJob($id, $title, $company, $location, $description, $salary, $category, $job_image)
+    public function updateJob($id, $title, $company, $location, $description, $salary, $category, $job_image, $lng='', $lat='')
     {
         try {
 
@@ -116,14 +116,14 @@ public function getUserProfileEducation($userId) {
             $categoryResult = $stmt->fetch(PDO::FETCH_ASSOC);
             $categoryID = $categoryResult['id_category'];
 
-            $stmt = $this->conn->prepare("UPDATE jobs SET title=?, company=?, location=?, description=?, salary=? , id_category=? , job_image=? WHERE id=?");
-            $stmt->execute([$title, $company, $location, $description, $salary, $categoryID, $job_image, $id]);
+            $stmt = $this->conn->prepare("UPDATE jobs SET title=?, company=?, location=?, description=?, salary=? , id_category=? , job_image=? , lng=? , lat=? WHERE id=?");
+            $stmt->execute([$title, $company, $location, $description, $salary, $categoryID, $job_image, $lng, $lat, $id]);
         } catch (PDOException $e) {
             return "Error: " . $e->getMessage();
         }
     }
 
-    public function updateJobWithoutImage($id, $title, $company, $location, $description, $salary, $category)
+    public function updateJobWithoutImage($id, $title, $company, $location, $description, $salary, $category, $lat='', $lng='')
     {
         try {
 
@@ -133,8 +133,8 @@ public function getUserProfileEducation($userId) {
             $categoryResult = $stmt->fetch(PDO::FETCH_ASSOC);
             $categoryID = $categoryResult['id_category'];
 
-            $stmt = $this->conn->prepare("UPDATE jobs SET title=?, company=?, location=?, description=?, salary=? , id_category=? WHERE id=?");
-            $stmt->execute([$title, $company, $location, $description, $salary, $categoryID, $id]);
+            $stmt = $this->conn->prepare("UPDATE jobs SET title=?, company=?, location=?, description=?, salary=? , id_category=? , lng=? , lat=? WHERE id=?");
+            $stmt->execute([$title, $company, $location, $description, $salary, $categoryID, $lng, $lat, $id]);
         } catch (PDOException $e) {
             return "Error: " . $e->getMessage();
         }
