@@ -300,54 +300,54 @@ include ('./../../../View/callback.php');
         }
     </style>
 
-<style>
-    .popup-card {
-      display: none;
-      position: fixed;
-      z-index: 99999999999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(245, 245, 245, 0.4);
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-      max-width: 100%;
-      max-height: 100%;
-      min-height: auto;
-      min-width: auto;
-      padding: 20px;
-      border-radius: 5px;
-    }
+    <style>
+        .popup-card {
+            display: none;
+            position: fixed;
+            z-index: 99999999999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(245, 245, 245, 0.4);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            max-width: 100%;
+            max-height: 100%;
+            min-height: auto;
+            min-width: auto;
+            padding: 20px;
+            border-radius: 5px;
+        }
 
-    .popup-content {
-      background-color: #fefefe;
-      margin: 5% auto;
-      border: 1px solid #888;
-      width: 80%;
-      height: 82%;
-    }
+        .popup-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            border: 1px solid #888;
+            width: 80%;
+            height: 82%;
+        }
 
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-    }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
 
-    .close:hover,
-    .close:focus {
-      color: black;
-      text-decoration: none;
-      cursor: pointer;
-    }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-    .popup-content iframe {
-      width: 100%;
-      height: 82%;
-      /* Set the height to adjust based on content */
-    }
-  </style>
+        .popup-content iframe {
+            width: 100%;
+            height: 82%;
+            /* Set the height to adjust based on content */
+        }
+    </style>
 
 
 
@@ -699,7 +699,9 @@ include ('./../../../View/callback.php');
                                                 <i class="color-main fa fa-calendar"></i>
                                                 <a href="#"> <?= $job['date_posted']; ?> </a>
                                                 <i class="color-main fa fa-map"></i>
-                                                <a href="#" onclick="mapStaticMapPopUp('<?= $job['lng']; ?>', '<?= $job['lat']; ?>', '<?= $job['location']; ?>')"> <?= $job['location']; ?> </a>
+                                                <a href="#"
+                                                    onclick="mapStaticMapPopUp('<?= $job['lng']; ?>', '<?= $job['lat']; ?>', '<?= $job['location']; ?>')">
+                                                    <?= $job['location']; ?> </a>
                                                 <i class="color-main fa fa-money"></i>
                                                 <a href="#"> <?= $job['salary']; ?> </a>
                                                 <i class="color-main fa fa-tag"></i>
@@ -1293,7 +1295,7 @@ include ('./../../../View/callback.php');
                         displayError("update_location_error", "Valid location", false); // Display valid message for location
                     };
 
-                    
+
 
 
                 }

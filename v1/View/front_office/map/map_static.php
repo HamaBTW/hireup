@@ -7,9 +7,23 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <style>
-    #map { /* Set the size of the map */
+    body {
+      /* Style the body */
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #map {
+      /* Set the size of the map */
+      margin: auto;
       width: 800px;
       height: 600px;
+    }
+
+    #search-container {
+      /* Style the search container */
+      display: none;
     }
   </style>
 </head>

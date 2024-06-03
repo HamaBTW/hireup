@@ -18,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $salary = $_POST["salary"];
         $category = $_POST["category"];
         $job_id = $jobController->generateJobId(7);
+        $lng = $_POST["longitude"];
+        $lat = $_POST["latitude"];
 
         if (!empty($_FILES['jobimage']['name'])) {
 
@@ -26,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $job_image = file_get_contents($job_image_tmp_name);
 
             // Only echo the result if the job creation is successful
-            $result = $jobController->createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $userProfileId);
+            $result = $jobController->createJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $userProfileId, $lng, $lat);
             if ($result !== false) {
                 // Redirect to prevent form resubmission
                 header("Location: {$_SERVER['REQUEST_URI']}");
@@ -44,6 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $description = $_POST["description"];
         $salary = $_POST["salary"];
         $category = $_POST["category"];
+        $lng = $_POST["update_lang"];
+        $lat = $_POST["update_latd"];
 
 
         if (!empty($_FILES['job_image']['name']) && $_FILES['job_image']['error'] === 0) {
@@ -53,7 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $job_image = file_get_contents($job_image_tmp_name);
 
             // Only echo the result if the job update is successful
-            $result = $jobController->updateJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image);
+            $result = $jobController->updateJob($job_id, $title, $company, $location, $description, $salary, $category, $job_image, $lat, $lng);
 
             if ($result !== false) {
                 // Redirect to prevent form resubmission
@@ -63,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else {
             // Only echo the result if the job update is successful
-            $result = $jobController->updateJobWithoutImage($job_id, $title, $company, $location, $description, $salary, $category);
+            $result = $jobController->updateJobWithoutImage($job_id, $title, $company, $location, $description, $salary, $category, $lat, $lng);
 
             if ($result !== false) {
                 // Redirect to prevent form resubmission
@@ -94,7 +98,7 @@ $block_call_back = 'false';
 $access_level = "admin";
 include ('./../../../View/callback.php')
 
-?>
+    ?>
 
 
 <!doctype html>
@@ -239,11 +243,59 @@ include ('./../../../View/callback.php')
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             /* Shadow effect */
         }
+    </style>
 
+    <style>
+        .popup-card {
+        display: none;
+        position: fixed;
+        z-index: 99999999999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(245, 245, 245, 0.4);
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        max-width: 100%;
+        max-height: 100%;
+        min-height: auto;
+        min-width: auto;
+        padding: 20px;
+        border-radius: 5px;
+        }
+
+        .popup-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        border: 1px solid #888;
+        width: 80%;
+        height: 82%;
+        }
+
+        .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        }
+
+        .popup-content iframe {
+        width: 100%;
+        height: 82%;
+        /* Set the height to adjust based on content */
+        }
     </style>
 
     <!-- voice recognation -->
-  <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
 
 </head>
 
@@ -253,7 +305,7 @@ include ('./../../../View/callback.php')
     // $block_call_back = 'false';
     // $access_level = "admin";
     // include ('./../../../View/callback.php')
-        ?> -->
+    ?> -->
 
 
     <!--  Body Wrapper -->
@@ -277,7 +329,7 @@ include ('./../../../View/callback.php')
             <!--  Header End -->
             <div class="container-fluid">
 
-            
+
 
                 <div class="container-fluid">
                     <div class="card">
@@ -303,9 +355,13 @@ include ('./../../../View/callback.php')
                                     <!-- Error message placeholder -->
                                 </div>
                                 <div class="mb-3">
+                                    <input type="hidden" id="latitude" name="latitude" value="">
+                                    <input type="hidden" id="longitude" name="longitude" value="">
+                                    <input type="hidden" id="place-name" name="place-name" value="Unknown place">
                                     <label for="location" class="form-label">Location *</label>
                                     <input type="text" class="form-control" id="location" name="location"
                                         placeholder="Enter location">
+                                    <i class="fa-solid fa-map-location-dot" onclick="mapSelectionPopUp()"></i>
                                     <span id="job_location_error" class="text-danger"></span>
                                     <!-- Error message placeholder -->
                                 </div>
@@ -388,8 +444,12 @@ include ('./../../../View/callback.php')
                                 </div>
                                 <div class="mb-3">
                                     <label for="update_location" class="form-label">Location *</label>
+                                    <input type="hidden" id="update_latd" name="update_latd" value="">
+                                    <input type="hidden" id="update_lang" name="update_lang" value="">
+                                    <input type="hidden" id="place-name" name="place-name" value="Unknown place">
                                     <input type="text" class="form-control" id="update_location" name="location"
                                         placeholder="Enter location">
+                                    <i class="fa-solid fa-map-location-dot" onclick="mapSelectionPopUpUpdate()"></i>
                                     <span id="update_location_error" class="text-danger"></span>
                                     <!-- Error message placeholder -->
                                 </div>
@@ -466,7 +526,8 @@ include ('./../../../View/callback.php')
                                         <!-- Populate dropdown menu with categories -->
                                         <?php foreach ($jobs as $category): ?>
                                             <option value="<?= $category['category_name'] ?>">
-                                                <?= $category['category_name'] ?></option>
+                                                <?= $category['category_name'] ?>
+                                            </option>
                                         <?php endforeach; ?>
                                     </select>
                                 </form>
@@ -519,8 +580,10 @@ include ('./../../../View/callback.php')
                                                     data-description="<?= $job['description'] ?>"
                                                     data-salary="<?= $job['salary'] ?>"
                                                     data-category="<?= $job['category_name'] ?>"
-                                                    data-jobImg="<?php echo base64_encode($job['job_image']) ?>"><a
-                                                        class="ti ti-edit text-white"></a></button>
+                                                    data-jobImg="<?php echo base64_encode($job['job_image']) ?>"
+                                                    data-lang="<?php echo $job['lng'] ?>"
+                                                    data-latd="<?php echo $job['lat'] ?>">
+                                                    <a class="ti ti-edit text-white"></a></button>
                                                 <form method="post" style="display:inline;">
                                                     <input type="hidden" name="action" value="delete">
                                                     <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
@@ -528,6 +591,14 @@ include ('./../../../View/callback.php')
                                                         onclick="return confirm('Are you sure you want to delete this job?')"><a
                                                             class="ti ti-x text-white"></a></button>
                                                 </form>
+                                                <button type="buton" id="map_view_btn" class="btn btn-primary btn-sm me-2 m-2"
+                                                    style="font-size: medium;" data-job-id="<?= $job['id'] ?>"
+                                                    data-location="<?= $job['location'] ?>"
+                                                    data-lang="<?php echo $job['lng'] ?>"
+                                                    data-latd="<?php echo $job['lat'] ?>"
+                                                    onclick="mapSelectionPopUpViewOnly()">
+                                                    <a class="fa-solid fa-map-location-dot text-white"></a>
+                                                </button>
                                             </td>
                                             <td><?= $job['id'] ?></td>
                                             <td><?= $job['title'] ?></td>
@@ -547,6 +618,15 @@ include ('./../../../View/callback.php')
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+
+    <div id="popup-card-map" class="popup-card">
+        <div class="popup-content">
+            <span id="close-popup-map" class="close">&times;</span>
+            <h3 id="popup-Name" class="text-capitalize">Map</h3>
+            <iframe id="face_detection_iframe" src="./../../front_office/map/map_interective.php"></iframe>
         </div>
     </div>
 
@@ -640,10 +720,12 @@ include ('./../../../View/callback.php')
                     const salary = this.getAttribute("data-salary");
                     const category = this.getAttribute("data-category");
                     const job_image = this.getAttribute("data-jobImg");
+                    const lang = this.getAttribute("data-lang");
+                    const latd = this.getAttribute("data-latd");
                     // Populate update form inputs with job details
                     console.log(category);
                     console.log("hello");
-                    populateUpdateForm(id, title, company, location, description, salary, category, job_image);
+                    populateUpdateForm(id, title, company, location, description, salary, category, job_image, lang, latd);
                     // Show the update form modal
                     document.getElementById("updateModal").style.display = "block";
                 });
@@ -653,7 +735,7 @@ include ('./../../../View/callback.php')
 
 
         // Function to populate the update form with job details
-        function populateUpdateForm(id, title, company, location, description, salary, category, job_image) {
+        function populateUpdateForm(id, title, company, location, description, salary, category, job_image, lang, latd) {
             console.log(category);
             console.log("hiiiiiii");
 
@@ -666,6 +748,8 @@ include ('./../../../View/callback.php')
             document.getElementById("update_category").value = category;
             // console.log("data:image/jpeg;base64," + job_image);
             document.getElementById("update_job_img").src = "data:image/jpeg;base64," + job_image;
+            document.getElementById("update_lang").value = lang;
+            document.getElementById("update_latd").value = latd;
         }
 
         // When the user clicks on the edit button, open the modal
@@ -716,6 +800,8 @@ include ('./../../../View/callback.php')
             var salary = document.getElementById("salary").value.trim();
             var category = document.getElementById("category").value.trim();
             var profile = document.getElementById("jobs_profile").value.trim();
+            var lang = document.getElementById("longitude").value.trim();
+            var latd = document.getElementById("latitude").value.trim();
             // Variable to store the common error message
             var errorMessage = "";
 
@@ -754,6 +840,11 @@ include ('./../../../View/callback.php')
             // Check if any input field is empty
             if (location === "") {
                 errorMessage = "Location is required."; // Set common error message
+                displayError("job_location_error", errorMessage, true); // Display error message
+            }
+
+            if (latd === "" || lang === "") {
+                errorMessage = "Please selecte your location on the map."; // Set common error message
                 displayError("job_location_error", errorMessage, true); // Display error message
             }
 
@@ -820,13 +911,20 @@ include ('./../../../View/callback.php')
         // Listen for input event on location field
         document.getElementById("location").addEventListener("input", function (event) {
             var location = this.value.trim(); // Get value of location field
+            var lang = document.getElementById("longitude").value.trim();
+            var latd = document.getElementById("latitude").value.trim();
 
             // Validate if location is empty
-            if (location === "") {
-                displayError("job_location_error", "Location is required.", true); // Display error message for empty location
+            if (location === "" || lang === "" || latd === "") {
+                if (location === "") {
+                    displayError("job_location_error", "Location is required.", true); // Display error message for empty location
+                } else {
+                    displayError("job_location_error", "Please selecte your location on the map.", true); // Display error message for empty location
+                }
             } else {
                 displayError("job_location_error", "Valid location", false); // Display valid message for location
             }
+
         });
 
         // Listen for input event on description field
@@ -1162,8 +1260,118 @@ include ('./../../../View/callback.php')
         scrollToTopBtn.addEventListener("click", scrollToTop);
     </script>
 
+    <!-- Map Selection Popup Modal -->
+    <script>
+        
+        function mapSelectionPopUp() {
+            console.log("Map selection popup opened");
+            lat = document.getElementById("longitude").value;
+            lng = document.getElementById("latitude").value;
+            place = document.getElementById("update_location").value;
+            var modal = document.getElementById("popup-card-map");
+            var map_iframe = document.getElementById("face_detection_iframe");
+            modal.style.display = "block";
+            map_iframe.src = `./../../front_office/map/map_interective.php`;
+        }
+
+        function mapSelectionPopUpUpdate() {
+            console.log("Map selection popup opened");
+            lng = document.getElementById("update_lang").value;
+            lat = document.getElementById("update_latd").value;
+            place = document.getElementById("update_location").value;
+            var modal = document.getElementById("popup-card-map");
+            var map_iframe = document.getElementById("face_detection_iframe");
+            modal.style.display = "block";
+            map_iframe.src = `./../../front_office/map/map_interective_special_case_update.php?lng=${lng}&lat=${lat}&place=${place}`;
+        }
+
+        function mapSelectionPopUpViewOnly() {
+            console.log("Map selection popup opened");
+            var btn = document.getElementById("map_view_btn");
+            var place = btn.getAttribute("data-location");
+            var lng = btn.getAttribute("data-lang");
+            var lat = btn.getAttribute("data-latd");
+            var modal = document.getElementById("popup-card-map");
+            var map_iframe = document.getElementById("face_detection_iframe");
+            modal.style.display = "block";
+            map_iframe.src = `./../../front_office/map/map_static.php?lng=${lng}&lat=${lat}&place=${place}`;
+        }
+
+
+        var modal_map = document.getElementById("popup-card-map");
+        var closeButton_map = document.getElementById("close-popup-map");
+
+        closeButton_map.onclick = function () {
+            modal_map.style.display = "none";
+        };
+
+        window.onclick = function (event) {
+            if (event.target == modal_map) {
+                modal_map.style.display = "none";
+            }
+        };
+    </script>
+
+    <script>
+        window.addEventListener('message', receiveMessageFromIframe, false);
+
+        function receiveMessageFromIframe(event) {
+            console.log('Message received from iframe:', event.data);
+            if (event.data) {
+                console.log(event.data);
+                if (event.data.message == "the location is :") {
+                    // Parse JSON data received from the iframe
+
+                    // Access properties of the JSON object
+                    //console.log('Message:', jsonData.message);
+                    //console.log('Data:', jsonData.data);
+                    document.getElementById('latitude').value = event.data.data.lat;
+                    document.getElementById('longitude').value = event.data.data.lng;
+
+                    // Listen for input event on location field
+
+                    var location = document.getElementById('location').value.trim(); // Get value of location field
+                    var mapLat = document.getElementById("latitude").value.trim();
+                    var mapLng = document.getElementById("longitude").value.trim();
+
+                    // Validate if location is empty
+                    if (location === "" || mapLat == "" || mapLng == "") {
+                        if (location === "") {
+                            displayError("job_location_error", "Location is required.", true); // Display error message for empty location
+                        } else {
+                            displayError("job_location_error", "Please selecte your location on the map.", true); // Display error message for empty map selection
+                        }
+                    } else {
+                        displayError("job_location_error", "Valid location", false); // Display valid message for location
+                    };
+
+
+
+
+                }
+            
+                if (event.data.message == "the update location is :") {
+                    // Parse JSON data received from the iframe
+
+                    // Access properties of the JSON object
+                    //console.log('Message:', jsonData.message);
+                    //console.log('Data:', jsonData.data);
+                    document.getElementById('update_latd').value = event.data.data.lat;
+                    document.getElementById('update_lang').value = event.data.data.lng;
+
+                    // Listen for input event on location field
+
+                    var location = document.getElementById('location').value.trim(); // Get value of location field
+
+
+
+                }
+            }
+        }
+    </script>
+
     <!-- voice recognation -->
-	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation_dashboard.js"></script>
+    <script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation_dashboard.js"></script>
 
 
 </body>

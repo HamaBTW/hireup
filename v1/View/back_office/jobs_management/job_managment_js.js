@@ -20,6 +20,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const description = this.getAttribute("data-description");
       const salary = this.getAttribute("data-salary");
       const datePosted = this.getAttribute("data-date-posted");
+      const lang = this.getAttribute("data-lang");
+      const latd = this.getAttribute("data-latd");
+      console.log("pls....");
 
       // Populate update form inputs with job details
       document.getElementById("update_job_title").value = title;
@@ -28,6 +31,8 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("update_description").value = description;
       document.getElementById("update_salary").value = salary;
       document.getElementById("update_date_posted").value = datePosted;
+      document.getElementById("update_lang").value = lang;
+      document.getElementById("update_latd").value = latd;
 
       // Show the update form modal
       document.getElementById("updateModal").style.display = "block";
