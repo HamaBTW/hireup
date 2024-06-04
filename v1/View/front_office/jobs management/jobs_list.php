@@ -1,9 +1,9 @@
-
 <?php
-function getUserLocation() {
+function getUserLocation()
+{
     $ip = $_SERVER['REMOTE_ADDR'];
     $api_url = "https://freegeoip.app/json/";
-    
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -123,12 +123,30 @@ $userId = $user_profile_id;
 //$jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
 
 // new one by hama (by distance)
-//$jobs = $jobController->SortJobsByDistance();
+$jobs_by_distance = $jobController->SortJobsByDistance();
 
 // new one by hama (by category)
 $desired_categories = ['Software Developer', 'Web Dev', 'Content Creator'];
 $desired_categories1 = ['Content Creator', 'Software Developer', 'Web Dev'];
-$jobs = $jobController->SortJobsByCategory($desired_categories1);
+$jobs_by_desired_categories = $jobController->SortJobsByCategory($desired_categories1);
+
+// soeting by
+$order_by = 'distance';
+if (isset($_GET['orderby'])) {
+    if ($_GET['orderby'] == 'category') {
+        $order_by = 'category';
+    } else {
+        $order_by = 'distance';
+    }
+} else {
+    $order_by = 'distance';
+}
+
+if ($order_by == 'category') {
+    $jobs = $jobs_by_desired_categories;
+} else {
+    $jobs = $jobs_by_distance;
+}
 
 // var_dump($jobs);
 // exit();
@@ -346,10 +364,10 @@ include ('./../../../View/callback.php');
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
             max-width: 100%;
             max-height: 100%;
-			min-height: auto;
+            min-height: auto;
             min-width: auto;
             padding: 20px;
-			border-radius: 5px;
+            border-radius: 5px;
         }
 
         .popup-content {
@@ -414,7 +432,7 @@ include ('./../../../View/callback.php');
         }
     </style>
 
-<style>
+    <style>
         .popup-card {
             display: none;
             position: fixed;
@@ -709,7 +727,29 @@ include ('./../../../View/callback.php');
 
                     <div class="container">
                         <div class="row c-gutter-60 mt-20">
-                            <main class="col-lg-7 col-xl-8 order-lg-2">
+
+                            <main class="offset-lg-1 col-lg-10">
+
+                                <div style="display: flex; justify-content: space-between;">
+
+                                    <p class="woocommerce-result-count">
+                                        Showing all <?php echo count($jobs); ?> results
+                                    </p>
+
+                                    <form class="woocommerce-ordering d-none d-sm-block" method="get">
+                                        <select name="orderby" class="orderby" onchange="this.form.submit()">
+                                            <option value="distance" <?= ($order_by == 'distance') ? 'selected' : ''; ?>>Sort by distance</option>
+                                            <option value="category" <?= ($order_by == 'category') ? 'selected' : ''; ?>>Sort by preferred category</option>
+                                        </select>
+                                    </form>
+
+                                </div>
+
+                                <hr>
+
+                                <br>
+
+
                                 <!-- Front-end code to display dynamically fetched jobs -->
 
                                 <!-- Bootstrap Modal for Full-Screen Image -->
@@ -759,10 +799,10 @@ include ('./../../../View/callback.php');
 
 
                                 <?php foreach ($jobs as $job): ?>
-                                <?php 
+                                    <?php
                                     $job_category_data = $categoryC->getCategoryById($job['id_category']);
                                     $job_category_name = $job_category_data['name_category'];
-                                 ?>
+                                    ?>
                                     <!-- Display job image if exists -->
                                     <?php if (!empty($job['job_image'])): ?>
                                         <div class="item-media post-thumbnail embed-responsive-3by2">
@@ -797,8 +837,9 @@ include ('./../../../View/callback.php');
                                                         <input type="hidden" name="job_id" value="<?//= $job['id'] ?>">
                                                         <button type="submit" class="dropdown-item"
                                                             onclick="return confirm('Are you sure you want to delete this job?')">Delete</button> -->
-                                                        <button type="button" class="dropdown-item"
-                                                            onclick="window.location.href = 'myJobs_list.php#job-<?= $job['id'] ?>'">Check It</button>
+                                                    <button type="button" class="dropdown-item"
+                                                        onclick="window.location.href = 'myJobs_list.php#job-<?= $job['id'] ?>'">Check
+                                                        It</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -827,9 +868,9 @@ include ('./../../../View/callback.php');
                                                 <i class="color-main fa fa-calendar"></i>
                                                 <a href="#"> <?= $job['date_posted']; ?> </a>
                                                 <i class="color-main fa fa-map"></i>
-                                                <a href="#" 
-                                                onclick="mapStaticMapPopUp('<?= $job['lng']; ?>', '<?= $job['lat']; ?>', '<?= $job['location']; ?>')">
-                                                 <?= $job['location']; ?> </a>
+                                                <a href="#"
+                                                    onclick="mapStaticMapPopUp('<?= $job['lng']; ?>', '<?= $job['lat']; ?>', '<?= $job['location']; ?>')">
+                                                    <?= $job['location']; ?> </a>
                                                 <i class="color-main fa fa-money"></i>
                                                 <a href="#"> <?= $job['salary']; ?> </a>
                                                 <i class="color-main fa fa-tag"></i>
@@ -905,184 +946,12 @@ include ('./../../../View/callback.php');
                                     </article>
                                     <br>
                                 <?php endforeach; ?>
-
-
-
-
-                                <article
-                                    class="cover-image ds s-overlay post type-post status-publish format-status has-post-thumbnail">
-                                    <div class="post-thumbnail">
-                                        <img src="./../../../front office assets/images/blog-2.jpg" alt="" />
-                                    </div>
-                                    <!-- .post-thumbnail -->
-                                    <header class="entry-header">
-                                        <img src="./../../../front office assets/images/testimonial.jpg" class="avatar"
-                                            alt="" />
-                                        <div class="entry-meta">
-                                            <h6>Status</h6>
-                                            <a class="url" href="blog-left.html">June 7, 2017</a>
-                                        </div>
-                                    </header>
-                                    <h3 class="entry-title">Post format: Status</h3>
-                                </article>
+                                
                                 <!-- #post-## -->
 
-                                <nav class="ls navigation pagination" role="navigation">
-                                    <h2 class="screen-reader-text">Posts navigation</h2>
-                                    <div class="nav-links">
-                                        <a class="prev page-numbers" href="blog-left.html">
-                                            <i class="fa fa-chevron-left"></i>
-                                            <span class="screen-reader-text">Previous page</span>
-                                        </a>
-                                        <a class="page-numbers" href="blog-left.html">
-                                            <span class="meta-nav screen-reader-text">Page </span>
-                                            1
-                                        </a>
-                                        <span class="page-numbers current">
-                                            <span class="meta-nav screen-reader-text">Page </span>
-                                            2
-                                        </span>
-                                        <a class="page-numbers" href="blog-left.html">
-                                            <span class="meta-nav screen-reader-text">Page </span>
-                                            3
-                                        </a>
-                                        <a class="next page-numbers" href="blog-left.html">
-                                            <span class="screen-reader-text">Next page</span>
-                                            <i class="fa fa-chevron-right"></i>
-                                        </a>
-                                    </div>
-                                </nav>
                             </main>
 
-                            <aside class="col-lg-5 col-xl-4 order-lg-1">
-                                <div class="widget-title widget_apsc_widget">
-                                    <h3>Get In Touch</h3>
-                                    <div class="apsc-icons-wrapper clearfix apsc-theme-4">
-                                        <div class="apsc-each-profile">
-                                            <a class="apsc-facebook-icon clearfix"
-                                                href="https://www.facebook.com/profile.php?id=61557532202485">
-                                                <div class="apsc-inner-block">
-                                                    <span class="social-icon">
-                                                        <i class="fa fa-facebook apsc-facebook"></i>
-                                                        <span class="media-name">Facebook</span>
-                                                    </span>
-                                                    <span class="apsc-count">35</span>
-                                                    <span class="apsc-media-type">Fans</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="apsc-each-profile">
-                                            <a class="apsc-instagram-icon clearfix"
-                                                href="https://www.instagram.com/hire.up.tn/">
-                                                <div class="apsc-inner-block">
-                                                    <span class="social-icon">
-                                                        <i class="fa fa-instagram apsc-instagram"></i>
-                                                        <span class="media-name">Instagram</span>
-                                                    </span>
-                                                    <span class="apsc-count">0</span>
-                                                    <span class="apsc-media-type">Followers</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                        <div class="apsc-each-profile">
-                                            <a class="apsc-google-plus-icon clearfix" href="#">
-                                                <div class="apsc-inner-block">
-                                                    <span class="social-icon">
-                                                        <i class="apsc-google fa fa-google"></i>
-                                                        <span class="media-name">google+</span>
-                                                    </span>
-                                                    <span class="apsc-count">0</span>
-                                                    <span class="apsc-media-type">Followers</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                <div class="widget-title widget_mailchimp mt-50">
-                                    <h3>Newsletter</h3>
-                                    <form class="signup" action="http://webdesign-finder.com/html/invenir-consult/"
-                                        method="get">
-                                        <div class="form-group mt-0">
-                                            <input name="email" type="email" class="mailchimp_email form-control"
-                                                placeholder="Email Address" />
-                                        </div>
-                                        <p>
-                                            Enter your email address here always to be updated. We
-                                            promise not to spam!
-                                        </p>
-                                    </form>
-                                </div>
-
-                                <div class="widget widget_recent_posts mt-50">
-                                    <h3>flickr widget</h3>
-                                    <div class="widget widget_flickr">
-                                        <ul class="flickr_ul"></ul>
-                                    </div>
-                                </div>
-
-                                <div class="widget widget_recent_posts mt-50">
-                                    <h3>Recent Posts</h3>
-                                    <ul class="media-list darklinks">
-                                        <li class="media">
-                                            <a title="#" class="media-left" href="#">
-                                                <img src="./../../../front office assets/images/widget_02.jpg" alt="" />
-                                            </a>
-                                            <div class="media-body">
-                                                <h4>
-                                                    <a href="#">Modernising our Talent Programmes</a>
-                                                </h4>
-                                                <p>
-                                                    <i class="color-main fa fa-calendar"></i>
-                                                    August 11, 2017
-                                                </p>
-                                            </div>
-                                        </li>
-
-                                        <li class="media">
-                                            <a title="#" class="media-left" href="#">
-                                                <img src="./../../../front office assets/images/widget_01.jpg" alt="" />
-                                            </a>
-                                            <div class="media-body">
-                                                <h4>
-                                                    <a href="#">Franki goes to… The Philippines & Indonesia</a>
-                                                </h4>
-                                                <p>
-                                                    <i class="color-main fa fa-calendar"></i>
-                                                    August 7, 2017
-                                                </p>
-                                            </div>
-                                        </li>
-
-                                        <li class="media">
-                                            <a title="#" class="media-left" href="#">
-                                                <img src="./../../../front office assets/images/widget_03.jpg" alt="" />
-                                            </a>
-                                            <div class="media-body">
-                                                <h4>
-                                                    <a href="#">Getting More For Your Money</a>
-                                                </h4>
-                                                <p>
-                                                    <i class="color-main fa fa-calendar"></i>
-                                                    August 6, 2017
-                                                </p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div class="widget-title widget_search mt-50">
-                                    <h3>Search on Website</h3>
-                                    <form method="get" class="searchform"
-                                        action="http://webdesign-finder.com/html/invenir-consult/">
-                                        <div class="form-group">
-                                            <label class="sr-only" for="widget-search">Search for:</label>
-                                            <input id="widget-search" type="text" value="" name="search"
-                                                class="form-control" placeholder="Search Keyword" />
-                                        </div>
-                                    </form>
-                                </div>
-                            </aside>
 
                             <div class="d-none d-lg-block divider-110"></div>
                         </div>
@@ -1521,7 +1390,8 @@ include ('./../../../View/callback.php');
     </script>
 
     <!-- voice recognation -->
-	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
+    <script type="text/javascript"
+        src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 
 </body>

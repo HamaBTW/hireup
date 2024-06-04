@@ -1,8 +1,34 @@
+
+<?php
+function getUserLocation() {
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $api_url = "https://freegeoip.app/json/";
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Follow redirections
+    $response = curl_exec($ch);
+    //var_dump($response);
+    curl_close($ch);
+
+    if ($response) {
+        return $response;
+    } else {
+        return false;
+    }
+}
+?>
+
+
+
 <?php
 // Include the controller file
 require_once __DIR__ . '/../../../Controller/JobC.php';
 require_once __DIR__ . '/../../../Controller/profileController.php';
 require_once __DIR__ . '/../../../Controller/applyController.php';
+require_once __DIR__ . '/../../../Controller/resume_con.php';
+require_once __DIR__ . '/../../../Controller/categoryC.php';
 
 if (session_status() == PHP_SESSION_NONE) {
     session_set_cookie_params(0, '/', '', true, true);
@@ -14,6 +40,8 @@ if (session_status() == PHP_SESSION_NONE) {
 $jobController = new JobController();
 $profileController = new ProfileC();
 $applyController = new ApplyController();
+$resumeController = new ResumeController();
+$categoryC = new categoryController();
 
 
 $user_id = '';
@@ -91,50 +119,26 @@ $id_category_options = $jobController->generateCategoryOptions();
 $userId = $user_profile_id;
 
 // Fetch all jobs sorted by profile education
-$jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
+//old one by nessrine
+//$jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
 
-/*
-  $userId = 267126;
-  // Fetch user's profile education
-  $userProfileEducation = $jobController->getUserProfileEducation($userId); // Assuming you have a method to retrieve user profile education
-  // Sort jobs based on relevance to user's education
-  $sortedJobs = [];
-  foreach ($jobs as $job) {
-    // Check if the job category matches the user's education
-    if ($job['category_name'] === $userProfileEducation) {
-      // If the job category matches, add it to the beginning of the sorted jobs array
-      array_unshift($job, $sortedJobs);
-    } else {
-      // If the job category doesn't match, add it to the end of the sorted jobs array
-      $sortedJobs[] = $job;
-    }
-  }
+// new one by hama (by distance)
+//$jobs = $jobController->SortJobsByDistance();
 
-  $userProfileId = "267126"; // Assuming the profile ID is stored in the session
+// new one by hama (by category)
+$desired_categories = ['Software Developer', 'Web Dev', 'Content Creator'];
+$desired_categories1 = ['Content Creator', 'Software Developer', 'Web Dev'];
+$jobs = $jobController->SortJobsByCategory($desired_categories1);
 
-  // Instantiate JobController
-  $jobController = new JobController();
+// var_dump($jobs);
+// exit();
 
-  // Fetch Jobs Matching Profile Attributes
-  $filteredJobs = $jobController->fetchJobsByEducationLevel($userProfileId);
 
-  // Fetch Additional Jobs from Other Categories without a limit
-  $otherJobs = $jobController->fetchJobsByCategory('otherCategoryId'); // Replace 'otherCategoryId' with the ID of the category you want to fetch jobs from
 
-  // Ensure $filteredJobs is an array
-  if (!is_array($filteredJobs)) {
-    $filteredJobs = [];
-  }
+$block_call_back = 'false';
+$access_level = "else";
+include ('./../../../View/callback.php');
 
-  // Ensure $otherJobs is an array
-  if (!is_array($otherJobs)) {
-    $otherJobs = [];
-  }
-
-  // Merge the arrays of filtered jobs and other jobs
-  $allJobs = array_merge($filteredJobs, $otherJobs);
-
-*/
 
 ?>
 
@@ -261,6 +265,205 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
         }
     </style>
 
+    <style>
+        /* Styling for the popup */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+        }
+
+        /* Styling for the overlay */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+        }
+    </style>
+
+    <style>
+        progress {
+            display: inline-block;
+            position: relative;
+            background: none;
+            border: 0;
+            border-radius: 5px;
+            width: 100%;
+            text-align: left;
+            position: relative;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.8em;
+        }
+
+        progress::-webkit-progress-bar {
+            margin: 0 auto;
+            background-color: #CCC;
+            border-radius: 5px;
+
+        }
+
+        progress::-webkit-progress-value {
+            display: relative;
+            margin: 0px -10px 0 0;
+            background: #55bce7;
+            border-radius: 5px;
+        }
+
+        progress:after {
+            margin: -36px 0 0 7px;
+            padding: 0;
+            display: inline-block;
+            float: right;
+            content: attr(value) '%';
+            position: relative;
+        }
+    </style>
+
+    <style>
+        .popup-card {
+            display: none;
+            position: fixed;
+            z-index: 99999999999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(245, 245, 245, 0.4);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            max-width: 100%;
+            max-height: 100%;
+			min-height: auto;
+            min-width: auto;
+            padding: 20px;
+			border-radius: 5px;
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .skills-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .skills-list li {
+            margin-bottom: 5px;
+        }
+
+        .skills-list .found {
+            color: green;
+        }
+
+        .skills-list .not-found {
+            color: red;
+        }
+
+        .progress-bar-container {
+            margin-top: 10px;
+            padding: 2% 10%;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 20px;
+            background-color: #55bce7;
+            width: 0;
+            text-align: center;
+            color: white;
+            line-height: 20px;
+        }
+    </style>
+
+<style>
+        .popup-card {
+            display: none;
+            position: fixed;
+            z-index: 99999999999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(245, 245, 245, 0.4);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            max-width: 100%;
+            max-height: 100%;
+            min-height: auto;
+            min-width: auto;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            border: 1px solid #888;
+            width: 80%;
+            height: 82%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .popup-content iframe {
+            width: 100%;
+            height: 82%;
+            /* Set the height to adjust based on content */
+        }
+    </style>
+
+
 
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
@@ -271,11 +474,10 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
 
 <body>
 
-    <?php
-    $block_call_back = 'false';
-    $access_level = "else";
-    include ('./../../../View/callback.php');
-    ?>
+    <!-- Overlay to cover the background -->
+    <div id="overlay" class="overlay"></div>
+
+
 
 
     <div class="preloader">
@@ -330,6 +532,8 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
                         class="far fa-plus-square"></i> Jobs</button>
                 <button onclick="window.location.href = './applyJobs_list.php'" class="btn btn-success ml-3"><i
                         class="far fa-list-alt"></i> My Applies</button>
+                <button onclick="window.location.href = './myJobs_list.php'" class="btn btn-primary ml-3"><i
+                        class="far fa-list-alt"></i> My Jobs</button>
             </div>
 
             <section class="ls s-py-50 s-py-50">
@@ -527,7 +731,38 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
                                     </div>
                                 </div>
 
+                                <!-- decline aplly modal -->
+
+                                <form id="applyForm" action="./applyJob.php" method="post"
+                                    enctype="multipart/form-data">
+                                    <div id="popup" class="popup">
+                                        <input type="hidden" id="jobId-popup" name="jobId" value="">
+                                        <input type="hidden" id="userId-popup" name="userId" value="">
+                                        <div class="text-end mx-4">
+                                            <p>Discription</p>
+                                            <textarea name="apply_desc" id="apply_desc"
+                                                class="form-control mb-3"></textarea>
+                                            <div id="desc_error" style="color: red;"></div>
+                                            <p>Resume</p>
+                                            <input type="file" name="resume_data" id="resume_data"
+                                                accept="application/pdf" class="form-control mb-3">
+                                            <div id="resume_error" style="color: red;"></div>
+                                            <button type="button" onclick="togglePopup('', '')"
+                                                class="btn btn-outline-danger mr-3">Decline</button>
+                                            <button type="submit" onclick="return check_apply_data()"
+                                                class="btn btn-success">Apply</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- end decline aplly modal -->
+
+
                                 <?php foreach ($jobs as $job): ?>
+                                <?php 
+                                    $job_category_data = $categoryC->getCategoryById($job['id_category']);
+                                    $job_category_name = $job_category_data['name_category'];
+                                 ?>
                                     <!-- Display job image if exists -->
                                     <?php if (!empty($job['job_image'])): ?>
                                         <div class="item-media post-thumbnail embed-responsive-3by2">
@@ -549,19 +784,21 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
                                                     style="cursor: pointer; color: #000; font-size: 35px;">...</span>
                                                 <div class="dropdown-menu dropdown-menu-end"
                                                     aria-labelledby="dropdownMenuButton">
-                                                    <button class="dropdown-item edit-btn" data-job-id="<?= $job['id'] ?>"
-                                                        data-job-title="<?= $job['title'] ?>"
-                                                        data-company="<?= $job['company'] ?>"
-                                                        data-location="<?= $job['location'] ?>"
-                                                        data-description="<?= $job['description'] ?>"
-                                                        data-salary="<?= $job['salary'] ?>"
-                                                        data-category="<?= $job['name_category'] ?>"
-                                                        data-jobImg="<?php echo base64_encode($job['job_image']) ?>">Edit</button>
+                                                    <!-- <button class="dropdown-item edit-btn" data-job-id="<?//= $job['id'] ?>"
+                                                        data-job-title="<?//= $job['title'] ?>"
+                                                        data-company="<?//= $job['company'] ?>"
+                                                        data-location="<?//= $job['location'] ?>"
+                                                        data-description="<?//= $job['description'] ?>"
+                                                        data-salary="<?//= $job['salary'] ?>"
+                                                        data-category="<?//= $job['name_category'] ?>"
+                                                        data-jobImg="<?php //echo base64_encode($job['job_image']) ?>">Edit</button>
                                                     <form method="post" style="display:inline;">
                                                         <input type="hidden" name="action" value="delete">
-                                                        <input type="hidden" name="job_id" value="<?= $job['id'] ?>">
+                                                        <input type="hidden" name="job_id" value="<?//= $job['id'] ?>">
                                                         <button type="submit" class="dropdown-item"
-                                                            onclick="return confirm('Are you sure you want to delete this job?')">Delete</button>
+                                                            onclick="return confirm('Are you sure you want to delete this job?')">Delete</button> -->
+                                                        <button type="button" class="dropdown-item"
+                                                            onclick="window.location.href = 'myJobs_list.php#job-<?= $job['id'] ?>'">Check It</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -590,17 +827,21 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
                                                 <i class="color-main fa fa-calendar"></i>
                                                 <a href="#"> <?= $job['date_posted']; ?> </a>
                                                 <i class="color-main fa fa-map"></i>
-                                                <a href="#"> <?= $job['location']; ?> </a>
+                                                <a href="#" 
+                                                onclick="mapStaticMapPopUp('<?= $job['lng']; ?>', '<?= $job['lat']; ?>', '<?= $job['location']; ?>')">
+                                                 <?= $job['location']; ?> </a>
                                                 <i class="color-main fa fa-money"></i>
                                                 <a href="#"> <?= $job['salary']; ?> </a>
                                                 <i class="color-main fa fa-tag"></i>
-                                                <a href="#"> <?= $job['name_category']; ?> </a>
+                                                <a href="#"> <?= $job_category_name; ?> </a>
                                                 <!-- Display category here -->
                                                 <!-- Apply form based on status -->
                                                 <?php
 
                                                 // Assuming $applyController is already instantiated
                                                 $status = $applyController->getApplyStatusFromPrfIdJobId($userId, $job['id']);
+                                                $current_apply_id = $applyController->getApplyIdByJobIdAndProfileId($job['id'], $userId);
+                                                $current_apply = $applyController->getApplyById($current_apply_id);
                                                 ?>
                                                 <?php if ($user_profile_id != $job['jobs_profile']) { ?>
                                                     <?php if ($status == "pending"): ?>
@@ -621,18 +862,20 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
                                                             <button type="submit" disabled id="hiredupButton"
                                                                 class="btn btn-outline-success">HiredUp</button>
                                                         </div>
+                                                    <?php elseif ($status == "interview"): ?>
+                                                        <!-- HiredUp form -->
+                                                        <div class="text-end mx-4">
+                                                            <button type="submit" disabled id="hiredupButton"
+                                                                class="btn btn-outline-success"
+                                                                onclick="togglePopup1()">Interview</button>
+                                                        </div>
                                                     <?php else: ?>
                                                         <!-- Apply job form -->
                                                         <div class="text-end mx-4">
-                                                            <form id="applyForm" action="./applyJob.php" method="post">
-                                                                <input type="hidden" id="jobId" name="jobId"
-                                                                    value="<?php echo $job['id']; ?>">
-                                                                <input type="hidden" id="userId" name="userId"
-                                                                    value="<?php echo $userId; ?>">
-                                                                <button type="submit" id="applyButton"
-                                                                    class="btn btn-outline-info">Apply</button>
-                                                            </form>
+                                                            <button type="button" id="applyButton" class="btn btn-outline-info"
+                                                                onclick="togglePopup('<?php echo $job['id']; ?>', '<?php echo $userId; ?>')">Apply</button>
                                                         </div>
+
                                                     <?php endif; ?>
                                                 <?php } else { ?>
 
@@ -645,8 +888,20 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
 
                                                 <?php } ?>
                                             </div>
+
+                                            <?php if ($status == "pending") { ?>
+                                                <div>
+                                                    <p class="mt-5">Chance of Success <a href="javascript:void(0)"
+                                                            onclick="show_success_data('<?php echo $current_apply['apply_id']; ?>')">View
+                                                            more</a></p>
+                                                    <!-- progress bar -->
+                                                    <?php $value = $resumeController->getApplyRank($current_apply['apply_id']); ?>
+                                                    <progress id="progressBar" max="100"
+                                                        value="<?php echo $value; ?>"></progress>
+                                                    <!-- end progress bar -->
+                                                </div>
+                                            <?php } ?>
                                         </div>
-                                        <!-- .item-content -->
                                     </article>
                                     <br>
                                 <?php endforeach; ?>
@@ -835,6 +1090,31 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
                 </div>
             </section>
 
+            <div id="popup-card-rank" class="popup-card">
+                <div class="popup-content">
+                    <span id="close-popup" class="close">&times;</span>
+                    <h3 id="popup-Name" class="text-capitalize"></h3>
+                    <hr><br>
+                    <p id="popup-Skills"></p>
+                    <p id="popup-SkillsNbre"></p>
+                    <div id="popup-SkillsList"></div>
+                    <div class="progress-bar-container">
+                        <p id="popup-progress-title" class="text-capitalize"></p>
+                        <div class="progress-bar">
+                            <div id="popup-ProgressBarFill" class="progress-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="popup-card-map-static" class="popup-card">
+                <div class="popup-content">
+                    <span id="close-popup-map-static" class="close">&times;</span>
+                    <h3 id="popup-Name" class="text-capitalize">Map</h3>
+                    <iframe id="popup-card-map-static-iframe" src="./../map/map_static.php"></iframe>
+                </div>
+            </div>
 
             <!-- Footer -->
             <?php include (__DIR__ . '/../../../View/front_office/front_footer.php') ?>
@@ -852,6 +1132,9 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
     </div>
     <!-- eof #canvas -->
     <!-- Font Awesome library -->
+
+
+
 
     <script src="./../../../front office assets/js/compressed.js"></script>
     <script src="./../../../front office assets/js/main.js"></script>
@@ -1078,6 +1361,163 @@ $jobs = $jobController->getAllJobsSortedByProfileEducation($userId);
             errorElement.classList.toggle("text-danger", isError);
             errorElement.classList.toggle("text-success", !isError);
         }
+    </script>
+
+    <script>
+        function togglePopup(jobId, userId) {
+
+            if (jobId != '' && userId != '') {
+                document.getElementById('jobId-popup').value = jobId;
+                document.getElementById('userId-popup').value = userId;
+            }
+
+            var popup = document.getElementById('popup');
+            var overlay = document.getElementById('overlay');
+
+            if (popup.style.display === 'block') {
+                popup.style.display = 'none';
+                overlay.style.display = 'none';
+            } else {
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+            }
+        }
+
+
+        function check_apply_data() {
+            desc = document.getElementById('apply_desc').value;
+            pdf_file = document.getElementById('resume_data').value;
+
+            descWithoutSpaces = desc.replace(/ /g, '');
+            if (descWithoutSpaces == '') {
+                document.getElementById('desc_error').innerHTML = 'Please enter your description';
+                return false;
+            } else {
+                document.getElementById('desc_error').innerHTML = '';
+            }
+
+            if (pdf_file == '') {
+                document.getElementById('resume_error').innerHTML = 'Please enter your resume (PDF only)';
+                return false;
+            } else {
+                document.getElementById('resume_error').innerHTML = '';
+            }
+
+            return true;
+        }
+
+    </script>
+
+    <script>
+
+        function fetchData(apply_id, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var responseData = JSON.parse(xhr.responseText);
+                        // Call the callback function with the response data
+                        callback(responseData);
+                    } else {
+                        // Handle errors
+                        console.error('Request failed with status:', xhr.status);
+                    }
+                }
+            };
+            xhr.open('GET', 'get_apply_json_data.php?id=' + apply_id, true);
+            xhr.send();
+        }
+
+        // function show_success_data(apply_id) {
+
+        //     fetchData(apply_id, function (responseData) {
+        //         // Do something with the fetched data
+        //         console.log(responseData);
+        //     });
+
+        // }
+
+
+
+        function show_success_data(apply_id) {
+            fetchData(apply_id, function (responseData) {
+                var popupName = document.getElementById("popup-Name");
+                var popupSkills = document.getElementById("popup-Skills");
+                var popupSkillsNbre = document.getElementById("popup-SkillsNbre");
+                var popupSkillsList = document.getElementById("popup-SkillsList");
+                var popupProgressBarFill = document.getElementById("popup-ProgressBarFill");
+                var popupProgressBar = document.getElementById("popup-progress-title");
+
+                popupName.innerHTML = "<b>Category:</b> " + responseData.category_name;
+                popupSkills.innerHTML = "<b>Skills Required:</b> " + responseData.nb_of_all_skills_needed;
+                popupSkillsNbre.innerHTML = "<b>Skills Found:</b> " + responseData.nb_of_skills_found;
+
+                var skillsHTML = '<b>Skills:</b><ul class="skills-list">';
+                responseData.skills_found.forEach(function (skill) {
+                    skillsHTML += '<li class="found"><i class="fas fa-check"></i> ' + skill + '</li>';
+                });
+                if (responseData.skills_not_found.length) {
+                    responseData.skills_not_found.forEach(function (skill) {
+                        skillsHTML += '<li class="not-found"><i class="fas fa-times"></i> ' + skill + '</li>';
+                    });
+                }
+                skillsHTML += '</ul>';
+                popupSkillsList.innerHTML = skillsHTML;
+
+                popupProgressBar.innerHTML = "<b>Chance of Success</b>"
+
+                // Calculate the percentage of skills found
+                var percentage = (responseData.nb_of_skills_found / responseData.nb_of_all_skills_needed) * 100;
+                percentage = percentage.toFixed(2);
+
+                // Update the progress bar
+                popupProgressBarFill.style.width = percentage + '%';
+                popupProgressBarFill.innerText = parseInt(percentage) + '%';
+
+                var modal = document.getElementById("popup-card-rank");
+                modal.style.display = "block";
+            });
+        }
+
+        var modal = document.getElementById("popup-card-rank");
+        var closeButton = document.getElementById("close-popup");
+
+        closeButton.onclick = function () {
+            modal.style.display = "none";
+        };
+
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+
+
+    </script>
+
+    <!-- Map Static Popup Modal -->
+    <script>
+        function mapStaticMapPopUp(lng, lat, place) {
+            console.log("Map selection popup opened");
+            var modal = document.getElementById("popup-card-map-static");
+            var map_iframe = document.getElementById("popup-card-map-static-iframe");
+            map_iframe.src = `./../map/map_static.php?lng=${lng}&lat=${lat}&place=${place}`;
+            modal.style.display = "block";
+
+        }
+
+        var modal_map2 = document.getElementById("popup-card-map-static");
+        var closeButton_map2 = document.getElementById("close-popup-map-static");
+
+        closeButton_map2.onclick = function () {
+            modal_map2.style.display = "none";
+        };
+
+        window.onclick = function (event) {
+            if (event.target == modal_map2) {
+                modal_map2.style.display = "none";
+            }
+        };
     </script>
 
     <!-- voice recognation -->

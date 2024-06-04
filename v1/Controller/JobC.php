@@ -727,6 +727,254 @@ public function getUserProfileEducation($userId) {
         return $sorted_jobs;
     }
 
+    //failed
+    public function displayJobs($jobs, $user_profile_id, $categoryC, $applyController, $userId, $resumeController)
+    {
+        foreach ($jobs as $job) {
+            $job_category_data = $categoryC->getCategoryById($job['id_category']);
+            $job_category_name = $job_category_data['name_category'];
+    
+            if (!empty($job['job_image'])) {
+                echo '<div class="item-media post-thumbnail embed-responsive-3by2">';
+                echo '<a href="#" onclick="openFullScreenImage(\''.base64_encode($job['job_image']).'\')">';
+                echo '<img src="data:image/jpeg;base64,'.base64_encode($job['job_image']).'" alt="Job Image">';
+                echo '</a>';
+                echo '</div>';
+            }
+    
+            echo '<article class="text-center text-md-left vertical-item content-padding bordered post type-post status-publish format-standard has-post-thumbnail sticky position-relative">';
+    
+            if ($user_profile_id == $job['jobs_profile']) {
+                echo '<div class="dropdow mr-3" style="position: absolute; top: 10px; right: 10px;">';
+                echo '<span class="dropdown" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer; color: #000; font-size: 35px;">...</span>';
+                echo '<div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">';
+                echo '<button type="button" class="dropdown-item" onclick="window.location.href = \'myJobs_list.php#job-'.$job['id'].'\'">Check It</button>';
+                echo '</div>';
+                echo '</div>';
+            }
+    
+            echo '<div class="item-content">';
+            echo '<header class="entry-header">';
+            echo '<h3 class="entry-title">';
+            echo '<a href="#link" rel="bookmark">'.$job['title'].'</a>';
+            echo '</h3>';
+            echo '</header>';
+            echo '<div class="entry-content">';
+            echo '<p>'.$job['description'].'</p>';
+            echo '</div>';
+            echo '<div class="entry-footer">';
+            echo '<i class="color-main fa fa-user"></i>';
+            echo '<a href="#"> '.$job['company'].'</a>';
+            echo '<i class="color-main fa fa-calendar"></i>';
+            echo '<a href="#"> '.$job['date_posted'].'</a>';
+            echo '<i class="color-main fa fa-map"></i>';
+            echo '<a href="#" onclick="mapStaticMapPopUp(\''.$job['lng'].'\', \''.$job['lat'].'\', \''.$job['location'].'\')">'.$job['location'].'</a>';
+            echo '<i class="color-main fa fa-money"></i>';
+            echo '<a href="#"> '.$job['salary'].'</a>';
+            echo '<i class="color-main fa fa-tag"></i>';
+            echo '<a href="#"> '.$job_category_name.'</a>';
+    
+            $status = $applyController->getApplyStatusFromPrfIdJobId($userId, $job['id']);
+            $current_apply_id = $applyController->getApplyIdByJobIdAndProfileId($job['id'], $userId);
+            $current_apply = $applyController->getApplyById($current_apply_id);
+    
+            if ($user_profile_id != $job['jobs_profile']) {
+                if ($status == "pending") {
+                    echo '<div class="text-end mx-4">';
+                    echo '<form id="pendingForm" action="./pendingJob.php" method="post">';
+                    echo '<input type="hidden" id="jobId" name="jobId" value="'.$job['id'].'">';
+                    echo '<input type="hidden" id="userId" name="userId" value="'.$userId.'">';
+                    echo '<button type="submit" id="pendingButton" class="btn btn-outline-secondary">Pending</button>';
+                    echo '</form>';
+                    echo '</div>';
+                } elseif ($status == "HiredUp") {
+                    echo '<div class="text-end mx-4">';
+                    echo '<button type="submit" disabled id="hiredupButton" class="btn btn-outline-success">HiredUp</button>';
+                    echo '</div>';
+                } elseif ($status == "interview") {
+                    echo '<div class="text-end mx-4">';
+                    echo '<button type="submit" disabled id="hiredupButton" class="btn btn-outline-success" onclick="togglePopup1()">Interview</button>';
+                    echo '</div>';
+                } else {
+                    echo '<div class="text-end mx-4">';
+                    echo '<button type="button" id="applyButton" class="btn btn-outline-info" onclick="togglePopup(\''.$job['id'].'\', \''.$userId.'\')">Apply</button>';
+                    echo '</div>';
+                }
+            } else {
+                echo '<div class="text-end mx-4">';
+                echo '<button type="submit" id="applyButton" class="btn btn-outline-info" onclick="window.location.href=\'career_explorers.php\'">Check Appliers</button>';
+                echo '</div>';
+            }
+    
+            if ($status == "pending") {
+                echo '<div>';
+                echo '<p class="mt-5">Chance of Success <a href="javascript:void(0)" onclick="show_success_data(\''.$current_apply['apply_id'].'\')">View more</a></p>';
+                echo '<progress id="progressBar" max="100" value="'.$resumeController->getApplyRank($current_apply['apply_id']).'"></progress>';
+                echo '</div>';
+            }
+    
+            echo '</div>';
+            echo '</article>';
+            echo '<br>';
+        }
+    }
+
+    //failed
+    public function generateJobs($jobs, $user_profile_id, $categoryC, $applyController, $userId, $resumeController) {
+        foreach ($jobs as $job):
+
+            $job_category_data = $categoryC->getCategoryById($job['id_category']);
+            $job_category_name = $job_category_data['name_category'];
+
+           // Display job image if exists -->
+            if (!empty($job['job_image'])): 
+                echo '<div class="item-media post-thumbnail embed-responsive-3by2">
+                    <a href="#"
+                        onclick="openFullScreenImage(' . "'" . base64_encode($job['job_image']) . "'" . ')">
+                        <img src="data:image/jpeg;base64,'. base64_encode($job['job_image']) . '"
+                            alt="Job Image">
+                    </a>
+                </div> '; 
+            endif;
+            echo '<article
+                class="text-center text-md-left vertical-item content-padding bordered post type-post status-publish format-standard has-post-thumbnail sticky position-relative">';
+                //<!-- Dropdown menu -->
+                if ($user_profile_id == $job['jobs_profile']) { 
+
+                    echo '<div class="dropdow mr-3" style="position: absolute; top: 10px; right: 10px;">
+                        <span class="dropdown" id="dropdownMenuButton" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"
+                            style="cursor: pointer; color: #000; font-size: 35px;">...</span>
+                        <div class="dropdown-menu dropdown-menu-end"
+                            aria-labelledby="dropdownMenuButton">' .
+                            /*<!-- <button class="dropdown-item edit-btn" data-job-id="` .  $job['id'] . `"
+                                data-job-title="` . $job['title'] . `"
+                                data-company="` . $job['company'] . `"
+                                data-location="` . $job['location'] . `"
+                                data-description="` . $job['description'] . `"
+                                data-salary="` . $job['salary'] . `"
+                                data-category="` . $job['name_category'] . `"
+                                data-jobImg="` . base64_encode($job['job_image']) . `">Edit</button>
+                            <form method="post" style="display:inline;">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="job_id" value="` . $job['id'] . `">
+                                <button type="submit" class="dropdown-item"
+                                    onclick="return confirm('Are you sure you want to delete this job?')">Delete</button> -->*/
+                            '<button type="button" class="dropdown-item"
+                                onclick="window.location.href = ' . "'myJobs_list.php#job-" . $job['id'] . "'" . '>Check
+                                It</button>
+                            </form>
+                        </div>
+                    </div> ';
+
+                }
+
+                //<!-- Job content -->
+                echo '<div class="item-content">
+                    <header class="entry-header">
+                        <h3 class="entry-title">
+                            <a href="#link" rel="bookmark">' .
+                                $job['title']. 
+                            '</a>
+                        </h3>
+                    </header>
+                    <!-- Job description -->
+                    <div class="entry-content">
+                        <p>' .
+                            $job['description'] .
+                        '</p>
+                    </div>
+                    <!-- Job attributes -->
+                    <div class="entry-footer">
+                        <i class="color-main fa fa-user"></i>
+                        <a href="#">' . $job['company'] . '</a>
+                        <i class="color-main fa fa-calendar"></i>
+                        <a href="#">' . $job['date_posted'] . '</a>
+                        <i class="color-main fa fa-map"></i>
+                        <a href="#"
+                            onclick="mapStaticMapPopUp(' ."'" . $job['lng'] . "', '" . $job['lat'] . "', '" . $job['location'] . "'" . ')">' .
+                            $job['location'] . '</a>
+                        <i class="color-main fa fa-money"></i>
+                        <a href="#">' .  $job['salary'] . '</a>
+                        <i class="color-main fa fa-tag"></i>
+                        <a href="#">' . $job_category_name . '</a>
+                        <!-- Display category here -->
+                        <!-- Apply form based on status -->';
+
+
+                        // Assuming $applyController is already instantiated
+                        $status = $applyController->getApplyStatusFromPrfIdJobId($userId, $job['id']);
+                        $current_apply_id = $applyController->getApplyIdByJobIdAndProfileId($job['id'], $userId);
+                        $current_apply = $applyController->getApplyById($current_apply_id);
+
+                        if ($user_profile_id != $job['jobs_profile']) { 
+                            if ($status == "pending"): 
+                                //<!-- Pending form -->
+                                echo '<div class="text-end mx-4">
+                                    <form id="pendingForm" action="./pendingJob.php" method="post">
+                                        <input type="hidden" id="jobId" name="jobId"
+                                            value="' . $job['id'] . '">
+                                        <input type="hidden" id="userId" name="userId"
+                                            value="' . $userId . '">
+                                        <button type="submit" id="pendingButton"
+                                            class="btn btn-outline-secondary">Pending</button>
+                                    </form>
+                                </div>';
+                            elseif ($status == "HiredUp"): 
+                                //<!-- HiredUp form -->
+                                echo '<div class="text-end mx-4">
+                                    <button type="submit" disabled id="hiredupButton"
+                                        class="btn btn-outline-success">HiredUp</button>
+                                </div>';
+                            elseif ($status == "interview"):
+                                //<!-- HiredUp form -->
+                                echo '<div class="text-end mx-4">
+                                    <button type="submit" disabled id="hiredupButton"
+                                        class="btn btn-outline-success"
+                                        onclick="togglePopup1()">Interview</button>
+                                </div>';
+                            else:
+                                //<!-- Apply job form -->
+                                echo '<div class="text-end mx-4">
+                                    <button type="button" id="applyButton" class="btn btn-outline-info"
+                                        onclick="togglePopup(' . "'" . $job['id'] . "', '" . $userId . "'" . ')">Apply</button>
+                                </div>';
+
+                            endif;
+                        } else { 
+
+                            echo '<div class="text-end mx-4">
+
+                                <button type="submit" id="applyButton" class="btn btn-outline-info"
+                                    onclick="window.location.href=' . "'career_explorers.php'" . '">Check
+                                    Appliers</button>
+                            </div>';
+
+                        }
+                    echo '</div>';
+
+                   if ($status == "pending") { 
+                        echo '<div>
+                            <p class="mt-5">Chance of Success <a href="javascript:void(0)"
+                                    onclick="show_success_data(' . "'" . $current_apply['apply_id'] . "'" . ')">View
+                                    more</a></p>
+                            <!-- progress bar -->';
+                            $value = $resumeController->getApplyRank($current_apply['apply_id']);
+                            echo '<progress id="progressBar" max="100"
+                                value="' . $value . '"></progress>
+                            <!-- end progress bar -->
+                        </div>';
+                    }
+                echo '</div>
+            </article>
+            <br>';
+        endforeach;
+    }
+    
+    
+
 
 
 }
+
+?>
