@@ -92,22 +92,23 @@ function goBackTo(place) {
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
-  if (annyang) {
-    var commands = {
-      'show me :query': function(query) {
-        goTo(query);
-      },
-        'go to :query': function(query) {
-            goTo(query);
-        },
-        'go back to :query': function(query) {
-            goBackTo(query);
-        },
-    };
+document.addEventListener('DOMContentLoaded', function () {
 
-    annyang.addCommands(commands);
+    if (annyang) {
+        var commands = {
+            'show me :query': function (query) {
+                goTo(query);
+            },
+            'go to :query': function (query) {
+                goTo(query);
+            },
+            'go back to :query': function (query) {
+                goBackTo(query);
+            },
+        };
 
-    annyang.start();
-  }
+        annyang.addCommands(commands);
+
+        annyang.start();
+    }
 });

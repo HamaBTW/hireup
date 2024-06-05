@@ -1,4 +1,5 @@
-<?php
+<!-- <?php
+/*
 function getUserLocation()
 {
     $ip = $_SERVER['REMOTE_ADDR'];
@@ -18,7 +19,8 @@ function getUserLocation()
         return false;
     }
 }
-?>
+*/
+?> -->
 
 
 

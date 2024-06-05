@@ -1,11 +1,9 @@
 <?php
 
 $promt = "";
-
-$data = json_decode(file_get_contents('php://input'), true);
-$newContent = $data['newContent'];
-
-$promt = $newContent;
+if (isset($_GET['prompt'])) {
+    $promt = htmlspecialchars($_GET['prompt']);
+}
 
 // Function to execute the Python script with parameters and return its output
 function executePythonScript($scriptPath) {

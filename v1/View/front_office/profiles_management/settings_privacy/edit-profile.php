@@ -938,10 +938,10 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 	    <script type="text/javascript" src="./../../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 
-        <!-- <?php
-        //include './../../jobs management/chatbot.php';
+        <?php
+        include './../../jobs management/chatbot.php';
         ?>
-        <script src="./../../../../front office assets/js/chatbot.js"></script> -->
+        <script src="./../../../../front office assets/js/chatbot.js"></script>
 
     </body>
 

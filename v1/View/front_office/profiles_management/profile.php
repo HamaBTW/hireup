@@ -150,6 +150,20 @@ if (array_key_exists($profile['profile_subscription'], $subs_type)) {
 
 ?>
 
+<?php
+
+$folder_name = "/hireup/v1/";
+$current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
+
+include_once __DIR__ . '/../../../Controller/JobC.php';
+$jobController = new JobController();
+$user_infos_string = $jobController->getUserLocation();
+$user_infos = json_decode($user_infos_string, true);
+$country_code = strtolower($user_infos['countryCode']);
+
+?>
+
+
 
 
 <!DOCTYPE html>
@@ -336,6 +350,8 @@ if (array_key_exists($profile['profile_subscription'], $subs_type)) {
 
   <!-- voice recognation -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+
+  <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
 
 </head>
 
@@ -638,6 +654,7 @@ if (array_key_exists($profile['profile_subscription'], $subs_type)) {
             class="d-flex align-items-center justify-content-center mx-3" style="height: 100%;">
             <img src="data:image/jpeg;base64,<?= base64_encode($user_profile['profile_photo']) ?>" alt="Profile Photo"
               class="rounded-circle" width="50" height="50">
+            <span class="iconify ml-0 mb-5" data-icon="flag:<?php echo $country_code ; ?>-4x3"></span>
           </a>
 
 
@@ -734,7 +751,7 @@ if (array_key_exists($profile['profile_subscription'], $subs_type)) {
                 <!-- Profile links -->
                 <li class="position-relative">
                   <a class="text-white d-flex align-items-center justify-content-center bg-primary p-2 fs-4 rounded-circle"
-                    href="#" style="width: 48px; height: 48px; text-decoration: none;">
+                    href="https://www.facebook.com/profile.php?id=61557532202485" style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
                     <i class="fab fa-facebook"></i>
                   </a>
                 </li>
@@ -746,13 +763,13 @@ if (array_key_exists($profile['profile_subscription'], $subs_type)) {
                 </li>
                 <li class="position-relative">
                   <a class="text-white bg-secondary d-flex align-items-center justify-content-center p-2 fs-4 rounded-circle"
-                    href="#" style="width: 48px; height: 48px; text-decoration: none;">
+                    href="https://www.instagram.com/hire.up.tn/" style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
                     <i class="fab fa-instagram"></i>
                   </a>
                 </li>
                 <li class="position-relative">
                   <a class="text-white bg-danger d-flex align-items-center justify-content-center p-2 fs-4 rounded-circle"
-                    href="#" style="width: 48px; height: 48px; text-decoration: none;">
+                    href="https://youtu.be/VMWyU_d40Jo" style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
                     <i class="fab fa-youtube"></i>
                   </a>
                 </li>

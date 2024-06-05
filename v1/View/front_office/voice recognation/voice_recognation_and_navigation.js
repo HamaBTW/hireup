@@ -88,7 +88,30 @@ function goTo(place) {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-  if (annyang) {
+  
+    // Get the chatbot toggler button
+    const chatbotToggler = document.querySelector('.chatbot-toggler');
+
+    // Initialize voiceEnabled as true (initially enabled)
+    let voiceEnabled = true;
+
+    if (chatbotToggler) {
+
+        // Toggle button click event
+        chatbotToggler.addEventListener('click', function () {
+            // Toggle the value of voiceEnabled
+            voiceEnabled = !voiceEnabled;
+
+            // If voiceEnabled is true, start voice commands; otherwise, abort them
+            if (voiceEnabled) {
+                annyang.start();
+            } else {
+                annyang.abort();
+            }
+        });
+    }
+
+    if (annyang) {
     var commands = {
       'show me :query': function(query) {
         goTo(query);

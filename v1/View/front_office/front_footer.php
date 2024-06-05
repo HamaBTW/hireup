@@ -75,9 +75,9 @@ $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
         </div>
 
         <div class="author-social">
-          <a title="#" href="https://www.facebook.com/profile.php?id=61557532202485" class="fa fa-facebook color-bg-icon rounded-icon"></a>
-          <a title="#" href="https://www.instagram.com/hire.up.tn/" class="fa fa-twitter color-bg-icon rounded-icon"></a>
-          <a title="#" href="https://www.instagram.com/hire.up.tn/" class="fa fa-google color-bg-icon rounded-icon"></a>
+          <a title="#" href="https://www.facebook.com/profile.php?id=61557532202485" class="fa fa-facebook color-bg-icon rounded-icon" target="_blanck"></a>
+          <a title="#" href="https://www.instagram.com/hire.up.tn/" class="fa fa-twitter color-bg-icon rounded-icon" target="_blanck"></a>
+          <a title="#" href="https://www.instagram.com/hire.up.tn/" class="fa fa-google color-bg-icon rounded-icon" target="_blanck"></a>
         </div>
       </div>
       <div class="footer col-md-4 text-center animate" data-animation="fadeInUp">

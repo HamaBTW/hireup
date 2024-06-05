@@ -484,10 +484,17 @@ public function getUserProfileEducation($userId) {
         }
     }
 
-    function getUserLocation()
+    public function getUserLocation($link="http://ip-api.com/json/")
     {
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $api_url = "https://freegeoip.app/json/";
+        // Get user's IP address
+        $userIP = $this->getUserIP();
+    
+        // Call an IP geolocation API to get location details
+        //$apiURL = "http://ip-api.com/json/$userIP";
+        $apiURL = "http://ip-api.com/json/";
+        //$ip = $_SERVER['REMOTE_ADDR'];
+        //$api_url = "https://freegeoip.app/json/";
+        $api_url = $apiURL;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $api_url);
@@ -504,6 +511,27 @@ public function getUserProfileEducation($userId) {
         }
     }
 
+    public function getUserIP() {
+        // Initialize IP variable
+        $ip = '';
+    
+        // Check for shared internet/ISP IP
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }
+        // Check for IP behind a proxy
+        elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        // Check for a public IP address
+        else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+    
+        // Return the IP address
+        return $ip;
+    }
+    
     public function haversineCalculateDistance($lat1, $lon1, $lat2, $lon2)
     {
         // Radius of the Earth in kilometers
@@ -673,8 +701,13 @@ public function getUserProfileEducation($userId) {
         if ($user_infos == false) {
             return $this->getAllJobs();
         } else {
-            $user_latitude = $user_infos['latitude'];
-            $user_longitude = $user_infos['longitude'];
+            if (isset($user_infos['latitude']) && isset($user_infos['longitude']) ) {
+                $user_latitude = $user_infos['latitude'];
+                $user_longitude = $user_infos['longitude'];
+            } else {
+                $user_latitude = $user_infos['lat'];
+                $user_longitude = $user_infos['lon'];
+            }
             $all_jobs = $this->getAllJobs();
             $sorted_jobs = [];
 

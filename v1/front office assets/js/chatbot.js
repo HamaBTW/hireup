@@ -1,6 +1,8 @@
 var scriptSrc = document.currentScript.src;
 var scriptDirectory = scriptSrc.substring(0, scriptSrc.lastIndexOf("/"));
 
+var websit_url_const = "http://localhost/hireup/v1";
+
 const chatbotToggler = document.querySelector(".chatbot-toggler");
 const closeBtn = document.querySelector(".close-btn");
 const chatbox = document.querySelector(".chatbox");
@@ -11,6 +13,25 @@ let userMessage = null; // Variable to store user's message
 const inputInitHeight = chatInput.scrollHeight;
 
 let currentSpeech;
+
+function send_data_to_be_written(user_input) {
+  // JavaScript code (in your HTML or separate .js file)
+  //const newContent = document.getElementById('gg').value;
+  const newContent = user_input;
+
+  // Make an AJAX request to your PHP script
+  fetch('write_file.php', {
+      method: 'POST',
+      body: JSON.stringify({ newContent }), // Send data as JSON
+  })
+      .then(response => response.text())
+      .then(result => {
+          console.log(result); // Handle the response from PHP
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+}
 
 function stopSpeaking() {
   if (currentSpeech && window.speechSynthesis.speaking) {
@@ -42,6 +63,7 @@ function speakText(text) {
   // Keep track of the current speech
   currentSpeech = speech;
 }
+
 
 
 
@@ -83,6 +105,33 @@ async function chat_gpt_rep1(user_msg) {
   }
 }
 
+async function chat_gpt_rep2(user_msg) {
+  //console.log(user_msg)
+  try {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            const responseData = xhr.responseText;
+            resolve(responseData);
+          } else {
+            console.error('Error:', xhr.status);
+            reject(new Error("Failed to execute Python script"));
+          }
+        }
+      };
+      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/get_ai_respons.php?prompt=`+user_msg, true);
+      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/get_ai_respons.php`, true);
+      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/get_ai_respons.php`, true);
+      xhr.send();
+    });
+  } catch (error) {
+    console.error("Error executing Python script:", error);
+    throw error;
+  }
+}
+
 async function chat_gpt_rep(user_msg) {
   try {
     return new Promise((resolve, reject) => {
@@ -98,8 +147,19 @@ async function chat_gpt_rep(user_msg) {
           }
         }
       };
-      xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/get_ai_respons.php?prompt=`+user_msg, true);
-      xhr.send();
+
+      // Set up the request
+      //xhr.open('POST', scriptDirectory + `/../../view/front_office/chatbot/get_ai_respons.php`, true); // Replace with your PHP script URL
+      xhr.open('POST', websit_url_const+`/view/front_office/chatbot/get_ai_respons.php`, true); // Replace with your PHP script URL
+      xhr.setRequestHeader('Content-Type', 'application/json'); // Specify JSON content type
+
+      // Prepare the data to send
+      const dataToSend = {
+        newContent: user_msg, // Replace with your content
+      };
+
+      // Send the data as JSON
+      xhr.send(JSON.stringify(dataToSend));
     });
   } catch (error) {
     console.error("Error executing Python script:", error);
@@ -137,8 +197,9 @@ const fetchUserNotifications = () => {
       };
 
       console.log('baseUrl');
-      console.log(scriptDirectory);
-      xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_notifications.php`, true);
+      //console.log(scriptDirectory);
+      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_notifications.php`, true);
+      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/fetch_notifications.php`, true);
       xhr.send();
   });
 };
@@ -172,7 +233,8 @@ const fetchLatestJobs = () => {
           }
       };
 
-      xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_latest_jobs.php`, true);
+      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_latest_jobs.php`, true);
+      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/fetch_latest_jobs.php`, true);
       xhr.send();
   });
 };
@@ -193,7 +255,8 @@ const getPostedBy = (id_profile) => {
           }
       };
 
-      xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_posted_by.php?profile_id=${id_profile}`, true);
+      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_posted_by.php?profile_id=${id_profile}`, true);
+      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/fetch_posted_by.php?profile_id=${id_profile}`, true);
       xhr.send();
   });
 };
@@ -214,7 +277,8 @@ const getNotfiSender = (id_profile) => {
           }
       };
 
-      xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_notif_by.php?profile_id=${id_profile}`, true);
+      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_notif_by.php?profile_id=${id_profile}`, true);
+      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/fetch_notif_by.php?profile_id=${id_profile}`, true);
       xhr.send();
   });
 };

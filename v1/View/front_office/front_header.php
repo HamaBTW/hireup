@@ -3,7 +3,11 @@
 $folder_name = "/hireup/v1/";
 $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
 
-
+require_once __DIR__ . '/../../Controller/JobC.php';
+$jobController = new JobController();
+$user_infos_string = $jobController->getUserLocation();
+$user_infos = json_decode($user_infos_string, true);
+$country_code = strtolower($user_infos['countryCode']);
 
 ?>
 
@@ -77,6 +81,8 @@ $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
 	}
 </style>
 
+<script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+
 
 <!-- header -->
 
@@ -99,6 +105,7 @@ $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
 								<a href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" class="d-flex align-items-center justify-content-center mx-3" style="height: 100%;">
 									<img src="data:image/jpeg;base64,<?= base64_encode($profile['profile_photo']) ?>" alt="Profile Photo" class="rounded-circle" width="50" height="50">
 								</a>
+								
 								<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
 									<h5 class="dropdown-header">Account</h5>
 									<li ><a class="dropdown-item" href="<?php echo $current_url . "/view/front_office/profiles_management/profile.php" ?>">Profile</a>
@@ -244,6 +251,8 @@ $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
 										<div class="dropdown ms-auto">
 											<a href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" class="d-flex align-items-center justify-content-center mx-3" style="height: 100%;">
 												<img src="data:image/jpeg;base64,<?= base64_encode($profile['profile_photo']) ?>" alt="Profile Photo" class="rounded-circle" width="50" height="50">
+												<!-- <span class="iconify ml-0 mb-5" data-icon="flag:tn-4x3"></span> -->
+												<span class="iconify ml-0 mb-5" data-icon="flag:<?php echo $country_code ; ?>-4x3"></span>
 											</a>
 											<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
 												<h5 class="dropdown-header" style="color: gray !important;">Account</h5>
