@@ -726,8 +726,8 @@ public function getUserProfileEducation($userId) {
         }
     }
 
-
-    public function SortJobsByCategory($desired_categories)
+    // old
+    public function SortJobsByCategory0($desired_categories)
     {
         $categoryC = new categoryController();
         $all_jobs = $this->getAllJobs();
@@ -758,6 +758,87 @@ public function getUserProfileEducation($userId) {
         $sorted_jobs = array_merge(...array_values($sorted_jobs));
 
         return $sorted_jobs;
+    }
+
+    public function SortJobsByCategory($desired_categories_dict, $shuffle = false)
+    {
+
+        $desired_categories = $desired_categories_dict['table'];
+        $disired_cat = $desired_categories_dict['disired_cat'];
+        $not_disired_cat = $desired_categories_dict['not_disired_cat'];
+
+        $categoryC = new categoryController();
+        $all_jobs = $this->getAllJobs();
+        $sorted_jobs = [];
+
+        // Initialize arrays for each desired category
+        foreach ($desired_categories as $category) {
+            $sorted_jobs[$category] = [];
+        }
+
+        // Group jobs by category
+        foreach ($all_jobs as $job) {
+            $job_category_data = $categoryC->getCategoryById($job['id_category']);
+            $job_category_name = $job_category_data['name_category'];
+
+            // Check if job category matches any desired category
+            if (in_array($job_category_name, $desired_categories)) {
+                $sorted_jobs[$job_category_name][] = $job;
+            }
+        }
+
+        // Concatenate jobs in desired category order
+        foreach ($desired_categories as $category) {
+            $sorted_jobs[$category] = array_merge($sorted_jobs[$category]); // Merge the arrays of each category
+        }
+
+        // Flatten the array
+        $sorted_jobs = array_merge(...array_values($sorted_jobs));
+
+        // do the shuffle prosses
+        if ($shuffle) {
+            
+            $current_tab = 'tab 1';
+            $tab1 = array();
+            $tab2 = array();
+            $tab3 = array();
+            foreach ($sorted_jobs as $item) {
+
+                $current_cat = $categoryC->getCategoryById($item['id_category']);
+                $current_cat_name = $current_cat['name_category'];
+
+                if (in_array($current_cat_name, $disired_cat)) {
+                    $current_tab = 'tab 1';
+                } else if (in_array($current_cat_name, $not_disired_cat)) {
+                    $current_tab = 'tab 3';
+                } else {
+                    $current_tab = 'tab 2';
+                }
+
+                if ($current_tab == 'tab 1') {
+                    $tab1[] = $item;
+                } else if ($current_tab == 'tab 2') {
+                    $tab2[] = $item;
+                } else {
+                    $tab3[] = $item;
+                }
+
+            }
+
+            shuffle($tab1);
+            shuffle($tab2);
+            shuffle($tab3);
+
+
+            //merge the 3 tables
+            $sorted_jobs_final = array();
+            $sorted_jobs_final = array_merge($tab1, $tab2, $tab3);
+
+            return $sorted_jobs_final;
+    
+        } else {
+            return $sorted_jobs;
+        }
     }
 
     //failed
@@ -1003,9 +1084,6 @@ public function getUserProfileEducation($userId) {
             <br>';
         endforeach;
     }
-    
-    
-
 
 
 }

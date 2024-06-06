@@ -128,15 +128,19 @@ $userId = $user_profile_id;
 $jobs_by_distance = $jobController->SortJobsByDistance();
 
 // new one by hama (by category)
-$desired_categories = ['Software Developer', 'Web Dev', 'Content Creator'];
-$desired_categories1 = ['Content Creator', 'Software Developer', 'Web Dev'];
-$jobs_by_desired_categories = $jobController->SortJobsByCategory($desired_categories1);
+//$desired_categories = ['Software Developer', 'Web Dev', 'Content Creator'];
+//$desired_categories1 = ['Content Creator', 'Software Developer', 'Web Dev'];
+$desired_categories = $categoryC->getCategoriesThatUserIntrestedIn($user_profile_id, true);
+$jobs_by_desired_categories = $jobController->SortJobsByCategory($desired_categories);
+$jobs_by_desired_categories_mixed = $jobController->SortJobsByCategory($desired_categories, true);
 
 // soeting by
 $order_by = 'distance';
 if (isset($_GET['orderby'])) {
     if ($_GET['orderby'] == 'category') {
         $order_by = 'category';
+    } else if ($_GET['orderby'] == 'category-mix') {
+        $order_by = 'category-mix';
     } else {
         $order_by = 'distance';
     }
@@ -146,6 +150,8 @@ if (isset($_GET['orderby'])) {
 
 if ($order_by == 'category') {
     $jobs = $jobs_by_desired_categories;
+} else if ($order_by == 'category-mix') {
+    $jobs = $jobs_by_desired_categories_mixed;
 } else {
     $jobs = $jobs_by_distance;
 }
@@ -483,6 +489,19 @@ include ('./../../../View/callback.php');
         }
     </style>
 
+    <!-- Interested-btns -->
+    <style>
+        .Interested-btns-like:hover,
+        .Interested-btns-like-active {
+            color: #55bce7 !important;
+        }
+
+        .Interested-btns-dislike:hover,
+        .Interested-btns-dislike-active {
+            color: #ff0000 !important;
+        }
+    </style>
+
 
 
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
@@ -740,8 +759,12 @@ include ('./../../../View/callback.php');
 
                                     <form class="woocommerce-ordering d-none d-sm-block" method="get">
                                         <select name="orderby" class="orderby" onchange="this.form.submit()">
-                                            <option value="distance" <?= ($order_by == 'distance') ? 'selected' : ''; ?>>Sort by distance</option>
-                                            <option value="category" <?= ($order_by == 'category') ? 'selected' : ''; ?>>Sort by preferred category</option>
+                                            <option value="distance" <?= ($order_by == 'distance') ? 'selected' : ''; ?>>
+                                                Sort by distance</option>
+                                            <option value="category" <?= ($order_by == 'category') ? 'selected' : ''; ?>>
+                                                Sort by preferred category</option>
+                                            <option value="category-mix" <?= ($order_by == 'category-mix') ? 'selected' : ''; ?>>
+                                                Sort by preferred mixed categories</option>
                                         </select>
                                     </form>
 
@@ -750,7 +773,9 @@ include ('./../../../View/callback.php');
                                 <hr>
 
                                 <br>
-
+                                <!-- category Intrests Slider -->
+                                <!-- <?php //$categoryC->GenerateCategoryIntrestedSection($user_profile_id); ?> -->
+                                <!-- End category Intrests Slider -->
 
                                 <!-- Front-end code to display dynamically fetched jobs -->
 
@@ -800,8 +825,15 @@ include ('./../../../View/callback.php');
                                 <!-- end decline aplly modal -->
 
 
+                                <?php 
+                                    $i = 0; 
+                                    $max_jobs_before_showing = 4;
+                                ?>
+
                                 <?php foreach ($jobs as $job): ?>
                                     <?php
+                                    $i = $i + 1;
+
                                     $job_category_data = $categoryC->getCategoryById($job['id_category']);
                                     $job_category_name = $job_category_data['name_category'];
                                     ?>
@@ -947,8 +979,19 @@ include ('./../../../View/callback.php');
                                         </div>
                                     </article>
                                     <br>
+                                <?php 
+                                    if ($i % $max_jobs_before_showing === 0) {
+                                        $categoryC->GenerateCategoryIntrestedSection($user_profile_id);
+                                    }
+                                ?>
                                 <?php endforeach; ?>
-                                
+
+                                <?php  
+                                    if ($i <= $max_jobs_before_showing) {
+                                        $categoryC->GenerateCategoryIntrestedSection($user_profile_id);
+                                    }
+                                ?>
+
                                 <!-- #post-## -->
 
                             </main>
@@ -1011,6 +1054,7 @@ include ('./../../../View/callback.php');
     <script src="./../../../front office assets/js/main.js"></script>
     <script src="./../../../front office assets/js/scripts.js"></script>
     <script src="./../../../front office assets/js/chatbot.js"></script>
+    <script src="./../../../front office assets/js/switcher.js"></script>
 
     <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'></script>
 
@@ -1395,6 +1439,139 @@ include ('./../../../View/callback.php');
     <script type="text/javascript"
         src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
+
+    <!-- category Intrests Slider -->
+    <script>
+
+        function like_category(categoryId, profileId) {
+
+            var like_btn_a = document.getElementById('like-a-with-catid-' + categoryId);
+            var like_btn_i = document.getElementById('like-i-with-catid-' + categoryId);
+
+            var dislike_btn_a = document.getElementById('dislike-a-with-catid-' + categoryId);
+            var dislike_btn_i = document.getElementById('dislike-i-with-catid-' + categoryId);
+
+            // Create a new XMLHttpRequest object
+            const xhr = new XMLHttpRequest();
+
+            // Define the URL of your PHP script
+            const url = 'like_a_category.php';
+
+            // Define the data to be sent in the request body
+            const data = new URLSearchParams();
+            data.append('category_id', categoryId);
+            data.append('profile_id', profileId);
+
+            // Open the request
+            xhr.open('POST', url, true);
+
+            // Set the Content-Type header
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            // Set up the onload event handler
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Success! Handle the response
+                    console.log(xhr.responseText);
+                    if (xhr.responseText == 'interest added successfully' || xhr.responseText == 'interest updated successfully') {
+                        like_btn_a.classList.remove('Interested-btns-like');
+                        like_btn_a.classList.add('Interested-btns-like-active');
+                        like_btn_i.classList.remove('Interested-btns-like');
+                        like_btn_i.classList.add('Interested-btns-like-active');
+
+                        dislike_btn_a.classList.remove('Interested-btns-dislike-active');
+                        dislike_btn_a.classList.add('Interested-btns-dislike');
+                        dislike_btn_i.classList.remove('Interested-btns-dislike-active');
+                        dislike_btn_i.classList.add('Interested-btns-dislike');
+
+                    } else if (xhr.responseText == 'interest deleted successfully') {
+                        like_btn_a.classList.remove('Interested-btns-like-active');
+                        like_btn_a.classList.add('Interested-btns-like');
+                        like_btn_i.classList.remove('Interested-btns-like-active');
+                        like_btn_i.classList.add('Interested-btns-like');
+                    }
+                } else {
+                    // Request failed
+                    console.error('Request failed with status:', xhr.status);
+                }
+            };
+
+            // Set up the onerror event handler
+            xhr.onerror = function () {
+                // There was a network error
+                console.error('Network error occurred');
+            };
+
+            // Send the request
+            xhr.send(data);
+        }
+
+        function dislike_category(categoryId, profileId) {
+
+            var like_btn_a = document.getElementById('like-a-with-catid-' + categoryId);
+            var like_btn_i = document.getElementById('like-i-with-catid-' + categoryId);
+
+            var dislike_btn_a = document.getElementById('dislike-a-with-catid-' + categoryId);
+            var dislike_btn_i = document.getElementById('dislike-i-with-catid-' + categoryId);
+
+            // Create a new XMLHttpRequest object
+            const xhr = new XMLHttpRequest();
+
+            // Define the URL of your PHP script
+            const url = 'dislike_a_category.php';
+
+            // Define the data to be sent in the request body
+            const data = new URLSearchParams();
+            data.append('category_id', categoryId);
+            data.append('profile_id', profileId);
+
+            // Open the request
+            xhr.open('POST', url, true);
+
+            // Set the Content-Type header
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            // Set up the onload event handler
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Success! Handle the response
+                    console.log(xhr.responseText);
+                    if (xhr.responseText == 'interest added successfully' || xhr.responseText == 'interest updated successfully') {
+                        dislike_btn_a.classList.remove('Interested-btns-dislike');
+                        dislike_btn_a.classList.add('Interested-btns-dislike-active');
+                        dislike_btn_i.classList.remove('Interested-btns-dislike');
+                        dislike_btn_i.classList.add('Interested-btns-dislike-active');
+
+                        like_btn_a.classList.remove('Interested-btns-like-active');
+                        like_btn_a.classList.add('Interested-btns-like');
+                        like_btn_i.classList.remove('Interested-btns-like-active');
+                        like_btn_i.classList.add('Interested-btns-like');
+
+                    } else if (xhr.responseText == 'interest deleted successfully') {
+                        dislike_btn_a.classList.remove('Interested-btns-dislike-active');
+                        dislike_btn_a.classList.add('Interested-btns-dislike');
+                        dislike_btn_i.classList.remove('Interested-btns-dislike-active');
+                        dislike_btn_i.classList.add('Interested-btns-dislike');
+                    }
+                } else {
+                    // Request failed
+                    console.error('Request failed with status:', xhr.status);
+                }
+            };
+
+            // Set up the onerror event handler
+            xhr.onerror = function () {
+                // There was a network error
+                console.error('Network error occurred');
+            };
+
+            // Send the request
+            xhr.send(data);
+        }
+
+
+    </script>
+    <!-- End category Intrests Slider -->
 
 </body>
 
