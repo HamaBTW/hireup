@@ -286,8 +286,8 @@ $country_code = strtolower($user_infos['countryCode']);
 													<hr class="dropdown-divider">
 												</li>
 												<h5 class="dropdown-header" style="color: gray !important;">Manage</h5>
-												<li><a class="dropdown-item" style="color: black !important;" href="#">Posts & Activity</a></li>
 												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/jobs management/jobs_list.php"; ?>">Jobs</a></li>
+												<li><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/interests/interests.php"; ?>">Interests</a></li>
 												<li>
 													<hr class="dropdown-divider">
 												</li>

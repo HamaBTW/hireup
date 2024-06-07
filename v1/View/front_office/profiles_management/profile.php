@@ -348,6 +348,7 @@ $country_code = strtolower($user_infos['countryCode']);
     }
   </style>
 
+
   <!-- voice recognation -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
 
@@ -654,7 +655,7 @@ $country_code = strtolower($user_infos['countryCode']);
             class="d-flex align-items-center justify-content-center mx-3" style="height: 100%;">
             <img src="data:image/jpeg;base64,<?= base64_encode($user_profile['profile_photo']) ?>" alt="Profile Photo"
               class="rounded-circle" width="50" height="50">
-            <span class="iconify ml-0 mb-5" data-icon="flag:<?php echo $country_code ; ?>-4x3"></span>
+            <span class="iconify ml-0 mb-5" data-icon="flag:<?php echo $country_code; ?>-4x3"></span>
           </a>
 
 
@@ -707,6 +708,8 @@ $country_code = strtolower($user_infos['countryCode']);
             <!-- Jobs Link -->
             <li><a class="dropdown-item" href="./../jobs management/jobs_list.php"><i class="fas fa-briefcase"></i>
                 Jobs</a></li>
+            <li><a class="dropdown-item" href="./../interests/interests.php"><i class="fa fa-heart"></i>
+              Interests</a></li>
             <!-- Divider -->
             <li>
               <hr class="dropdown-divider">
@@ -751,7 +754,8 @@ $country_code = strtolower($user_infos['countryCode']);
                 <!-- Profile links -->
                 <li class="position-relative">
                   <a class="text-white d-flex align-items-center justify-content-center bg-primary p-2 fs-4 rounded-circle"
-                    href="https://www.facebook.com/profile.php?id=61557532202485" style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
+                    href="https://www.facebook.com/profile.php?id=61557532202485"
+                    style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
                     <i class="fab fa-facebook"></i>
                   </a>
                 </li>
@@ -763,13 +767,15 @@ $country_code = strtolower($user_infos['countryCode']);
                 </li>
                 <li class="position-relative">
                   <a class="text-white bg-secondary d-flex align-items-center justify-content-center p-2 fs-4 rounded-circle"
-                    href="https://www.instagram.com/hire.up.tn/" style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
+                    href="https://www.instagram.com/hire.up.tn/"
+                    style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
                     <i class="fab fa-instagram"></i>
                   </a>
                 </li>
                 <li class="position-relative">
                   <a class="text-white bg-danger d-flex align-items-center justify-content-center p-2 fs-4 rounded-circle"
-                    href="https://youtu.be/VMWyU_d40Jo" style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
+                    href="https://youtu.be/VMWyU_d40Jo" style="width: 48px; height: 48px; text-decoration: none;"
+                    target="_blanck">
                     <i class="fab fa-youtube"></i>
                   </a>
                 </li>
@@ -911,6 +917,16 @@ $country_code = strtolower($user_infos['countryCode']);
                     onclick="window.location.href = './../../../about.php' ;">
                     <i class="fa-solid fa-circle-info"></i>
                     <span class="d-none d-md-block ms-3">About</span>
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link position-relative rounded-0 d-flex align-items-center justify-content-center bg-transparent fs-3 py-6"
+                    id="pills-gallery-tab" data-bs-toggle="pill" data-bs-target="#pills-gallery" type="button"
+                    role="tab" aria-controls="pills-gallery" aria-selected="false" tabindex="-1"
+                    onclick="window.location.href = './../interests/interests.php' ;">
+                    <i class="fa-solid fa-heart"></i>
+                    <span class="d-none d-md-block ms-3">Interests</span>
                   </button>
                 </li>
               </ul>
@@ -1219,7 +1235,7 @@ $country_code = strtolower($user_infos['countryCode']);
                         var commentDropdownBtn_<?php echo $comment['id_commentaire']; ?> = document.getElementById("comment-dropdown-<?php echo $comment['id_commentaire']; ?>");
                         var commentDropdownMenu_<?php echo $comment['id_commentaire']; ?> = document.getElementById("commentDropdownMenu-<?php echo $comment['id_commentaire']; ?>");
 
-                        commentDropdownBtn_<?php echo $comment['id_commentaire']; ?>.                    addEventListener("click", function(event) {
+                        commentDropdownBtn_<?php echo $comment['id_commentaire']; ?>.                           addEventListener("click", function(event) {
                           event.stopPropagation(); // Prevent parent click event
                           if (commentDropdownMenu_<?php echo $comment['id_commentaire']; ?>.classList.contains("show")) {
                             commentDropdownMenu_<?php echo $comment['id_commentaire']; ?>.classList.remove("show");
@@ -1372,7 +1388,8 @@ $country_code = strtolower($user_infos['countryCode']);
                 <?= $user_profile['profile_family_name'] ?>
               </h5>
             </a></div>
-          <span class="close mb-3" onclick="closeCreatePostModal()">&times;</span>
+          <!-- <span class="close mb-3" onclick="closeCreatePostModal()">&times;</span> -->
+          <span class="close mb-3" id="closeButton-for-post">&times;</span>
         </div>
         <form id="createPostForm" action="../articles management/add_article.php" method="post"
           enctype="multipart/form-data">
@@ -1491,6 +1508,8 @@ $country_code = strtolower($user_infos['countryCode']);
       </div>
     </div>
 
+    
+
 
     <?php
     function generateSubtitleProfile()
@@ -1504,6 +1523,11 @@ $country_code = strtolower($user_infos['countryCode']);
     }
     ?>
 
+    <script>
+      document.getElementById("closeButton-for-post").addEventListener("click", function () {
+        closeCreatePostModal();
+      });
+    </script>
 
     <script>
       // Function to open the popup
@@ -1559,6 +1583,7 @@ $country_code = strtolower($user_infos['countryCode']);
         var modal = document.getElementById("createPostModal");
         modal.style.display = "none";
         document.body.style.overflow = "auto"; // Enable scrolling
+        console.log("Modal closed");
       }
 
 
@@ -1591,7 +1616,7 @@ $country_code = strtolower($user_infos['countryCode']);
       });
 
       // Get the modal
-      var modal = document.getElementById("createPostModal");
+      var modal1 = document.getElementById("createPostModal");
 
       // Get the input field
       var inputField = document.getElementById("createPostInput");
@@ -1617,8 +1642,8 @@ $country_code = strtolower($user_infos['countryCode']);
 
       // When the user clicks anywhere outside of the modal, close it
       window.onclick = function (event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
+        if (event.target == modal1) {
+          modal1.style.display = "none";
         }
       }
     </script>
@@ -1903,8 +1928,10 @@ $country_code = strtolower($user_infos['countryCode']);
 
     </script>
 
+
     <!-- voice recognation -->
-	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
+    <script type="text/javascript"
+      src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
     <?php
     include './../jobs management/chatbot.php';

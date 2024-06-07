@@ -21,16 +21,16 @@ function send_data_to_be_written(user_input) {
 
   // Make an AJAX request to your PHP script
   fetch('write_file.php', {
-      method: 'POST',
-      body: JSON.stringify({ newContent }), // Send data as JSON
+    method: 'POST',
+    body: JSON.stringify({ newContent }), // Send data as JSON
   })
-      .then(response => response.text())
-      .then(result => {
-          console.log(result); // Handle the response from PHP
-      })
-      .catch(error => {
-          console.error('Error:', error);
-      });
+    .then(response => response.text())
+    .then(result => {
+      console.log(result); // Handle the response from PHP
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 }
 
 function stopSpeaking() {
@@ -51,10 +51,10 @@ function speakText(text) {
 
   // Get the voices available for speech synthesis
   const voices = window.speechSynthesis.getVoices();
-  
+
   // Find a female voice
   const femaleVoice = voices.find(voice => voice.name.toLowerCase().includes('female'));
-  
+
   // Set the voice to the female voice
   speech.voice = femaleVoice;
 
@@ -110,7 +110,7 @@ async function chat_gpt_rep2(user_msg) {
   try {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
+      xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status === 200) {
             const responseData = xhr.responseText;
@@ -123,7 +123,7 @@ async function chat_gpt_rep2(user_msg) {
       };
       //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/get_ai_respons.php?prompt=`+user_msg, true);
       //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/get_ai_respons.php`, true);
-      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/get_ai_respons.php`, true);
+      xhr.open('GET', websit_url_const + `/view/front_office/chatbot/get_ai_respons.php`, true);
       xhr.send();
     });
   } catch (error) {
@@ -136,7 +136,7 @@ async function chat_gpt_rep(user_msg) {
   try {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
+      xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
           if (xhr.status === 200) {
             const responseData = xhr.responseText;
@@ -150,7 +150,7 @@ async function chat_gpt_rep(user_msg) {
 
       // Set up the request
       //xhr.open('POST', scriptDirectory + `/../../view/front_office/chatbot/get_ai_respons.php`, true); // Replace with your PHP script URL
-      xhr.open('POST', websit_url_const+`/view/front_office/chatbot/get_ai_respons.php`, true); // Replace with your PHP script URL
+      xhr.open('POST', websit_url_const + `/view/front_office/chatbot/get_ai_respons.php`, true); // Replace with your PHP script URL
       xhr.setRequestHeader('Content-Type', 'application/json'); // Specify JSON content type
 
       // Prepare the data to send
@@ -182,25 +182,25 @@ const fetchUserNotifications0 = async () => {
 
 const fetchUserNotifications = () => {
   return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      
-      xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                  console.log(xhr.responseText);
-                  const notifications = JSON.parse(xhr.responseText);
-                  resolve(notifications);
-              } else {
-                  reject(new Error("Failed to fetch user notifications"));
-              }
-          }
-      };
+    const xhr = new XMLHttpRequest();
 
-      console.log('baseUrl');
-      //console.log(scriptDirectory);
-      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_notifications.php`, true);
-      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/fetch_notifications.php`, true);
-      xhr.send();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          console.log(xhr.responseText);
+          const notifications = JSON.parse(xhr.responseText);
+          resolve(notifications);
+        } else {
+          reject(new Error("Failed to fetch user notifications"));
+        }
+      }
+    };
+
+    console.log('baseUrl');
+    //console.log(scriptDirectory);
+    //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_notifications.php`, true);
+    xhr.open('GET', websit_url_const + `/view/front_office/chatbot/fetch_notifications.php`, true);
+    xhr.send();
   });
 };
 
@@ -219,67 +219,67 @@ const fetchLatestJobs0 = async () => {
 
 const fetchLatestJobs = () => {
   return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      
-      xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                  console.log(xhr.responseText);
-                  const notifications = JSON.parse(xhr.responseText);
-                  resolve(notifications);
-              } else {
-                  reject(new Error("Failed to fetch user notifications"));
-              }
-          }
-      };
+    const xhr = new XMLHttpRequest();
 
-      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_latest_jobs.php`, true);
-      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/fetch_latest_jobs.php`, true);
-      xhr.send();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          console.log(xhr.responseText);
+          const notifications = JSON.parse(xhr.responseText);
+          resolve(notifications);
+        } else {
+          reject(new Error("Failed to fetch user notifications"));
+        }
+      }
+    };
+
+    //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_latest_jobs.php`, true);
+    xhr.open('GET', websit_url_const + `/view/front_office/chatbot/fetch_latest_jobs.php`, true);
+    xhr.send();
   });
 };
 
 const getPostedBy = (id_profile) => {
   return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      
-      xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                  console.log(xhr.responseText);
-                  const notifications = JSON.parse(xhr.responseText);
-                  resolve(notifications);
-              } else {
-                  reject(new Error("Failed to fetch user notifications"));
-              }
-          }
-      };
+    const xhr = new XMLHttpRequest();
 
-      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_posted_by.php?profile_id=${id_profile}`, true);
-      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/fetch_posted_by.php?profile_id=${id_profile}`, true);
-      xhr.send();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          console.log(xhr.responseText);
+          const notifications = JSON.parse(xhr.responseText);
+          resolve(notifications);
+        } else {
+          reject(new Error("Failed to fetch user notifications"));
+        }
+      }
+    };
+
+    //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_posted_by.php?profile_id=${id_profile}`, true);
+    xhr.open('GET', websit_url_const + `/view/front_office/chatbot/fetch_posted_by.php?profile_id=${id_profile}`, true);
+    xhr.send();
   });
 };
 
 const getNotfiSender = (id_profile) => {
   return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      
-      xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                  console.log(xhr.responseText);
-                  const notifications = JSON.parse(xhr.responseText);
-                  resolve(notifications);
-              } else {
-                  reject(new Error("Failed to fetch user notifications"));
-              }
-          }
-      };
+    const xhr = new XMLHttpRequest();
 
-      //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_notif_by.php?profile_id=${id_profile}`, true);
-      xhr.open('GET', websit_url_const+`/view/front_office/chatbot/fetch_notif_by.php?profile_id=${id_profile}`, true);
-      xhr.send();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          console.log(xhr.responseText);
+          const notifications = JSON.parse(xhr.responseText);
+          resolve(notifications);
+        } else {
+          reject(new Error("Failed to fetch user notifications"));
+        }
+      }
+    };
+
+    //xhr.open('GET', scriptDirectory + `/../../view/front_office/chatbot/fetch_notif_by.php?profile_id=${id_profile}`, true);
+    xhr.open('GET', websit_url_const + `/view/front_office/chatbot/fetch_notif_by.php?profile_id=${id_profile}`, true);
+    xhr.send();
   });
 };
 
@@ -392,14 +392,14 @@ const handleChat = async () => {
         notifications.length > 0
           ? `You have ${notifications.length} new notifications.`
           : "You have no new notifications.";*/
-      
-      if (notifications.length > 0){
-        if (notifications.length > 1){
+
+      if (notifications.length > 0) {
+        if (notifications.length > 1) {
           response = `You have ${notifications.length} new notifications. \n`
         } else {
           response = `You have ${notifications.length} new notification. \n`
         }
-        for (let i = 0; i < notifications.length; i++){
+        for (let i = 0; i < notifications.length; i++) {
           const notifBy = await getNotfiSender(notifications[i].sender_id)
           response += `${i + 1}. ${notifBy.posted_by} `
 
@@ -414,14 +414,14 @@ const handleChat = async () => {
         notifications.length > 0
           ? `You have ${notifications.length} new notifications.`
           : "You have no new notifications.";*/
-      
-      if (jobs.length > 0){
-        if (jobs.length > 1){
+
+      if (jobs.length > 0) {
+        if (jobs.length > 1) {
           response = `You have ${jobs.length} new jobs. \n`
         } else {
           response = `You have ${jobs.length} new job. \n`
         }
-        for (let i = 0; i < jobs.length; i++){
+        for (let i = 0; i < jobs.length; i++) {
           response += `${i + 1}. ${jobs[i].title} for ${jobs[i].salary} at ${jobs[i].company} located at ${jobs[i].location}\n`
 
           const postedBy = await getPostedBy(jobs[i].jobs_profile)
@@ -431,8 +431,8 @@ const handleChat = async () => {
       } else {
         response = 'You have no new jobs.'
       }
-    } 
-    
+    }
+
     else {
       response = await generateResponse();
     }
@@ -473,3 +473,56 @@ chatbotToggler.addEventListener("click", () => {
     stopSpeaking();
   }
 });
+
+
+const handleChatResumeDataGet = async (data) => {
+
+  chatInput.value = "";
+  userMessage = "Resume analyzing result";
+  chatInput.style.height = `${inputInitHeight}px`;
+
+  chatbox.appendChild(createChatLi(userMessage, "outgoing"));
+  chatbox.scrollTo(0, chatbox.scrollHeight);
+
+  const incomingChatLi = createChatLi("Thinking...", "incoming");
+  chatbox.appendChild(incomingChatLi);
+  chatbox.scrollTo(0, chatbox.scrollHeight);
+
+  setTimeout(async () => {
+    chatbox.removeChild(incomingChatLi);
+
+    data_list = JSON.parse(data);
+
+    let response;
+    list_length = data_list.length;
+    if (list_length > 0) {
+    
+      i = 0;
+      response = 'Your resume scored : \n' ;
+      data_list.forEach(function (item) {
+        // Access each dictionary item here
+        if (parseInt(item.rank) > 0) {
+          response += item.rank + '% at ' + item.category_name + ' \n';
+          //response += '<progress id="progressBar" max="100" value="' + item.rank + '"></progress>';
+          i++
+        } 
+
+      });
+
+      if (i < list_length) {
+        response += 'and the rests scored 0%\n' ;
+      }
+
+    }
+    //response = "await chat_gpt_rep1(userMessage)" + typeof data;
+
+    speakText(response);
+
+    const responseChatLi = createChatLi(response, "incoming");
+    chatbox.appendChild(responseChatLi);
+    chatbox.scrollTo(0, chatbox.scrollHeight);
+  }, 600);
+
+};
+
+

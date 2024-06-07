@@ -171,7 +171,8 @@ class ResumeController
         }
     }
 
-    public function makeResumeJsonDataByResumeId($resume_id, $resume_file_name=null) {
+    public function makeResumeJsonDataByResumeId($resume_id, $resume_file_name = null)
+    {
         if ($resume_file_name == null) {
             $resume_file_name = "temp_resume.pdf";
         }
@@ -199,7 +200,8 @@ class ResumeController
 
     }
 
-    public function makeResumeJsonDataByData($resume_data, $resume_file_name=null) {
+    public function makeResumeJsonDataByData($resume_data, $resume_file_name = null)
+    {
         if ($resume_file_name == null) {
             $resume_file_name = "temp_resume.pdf";
         }
@@ -216,8 +218,8 @@ class ResumeController
         $output = exec("python " . __DIR__ . "/py_script/make_json_data.py $param1");
 
         if ($output != "done") {
-            echo "Error from python: ". $output;
-            
+            echo "Error from python: " . $output;
+
             // delete the temp resume file if it exists
             $fileToDelete = __DIR__ . "/py_script/" . $resume_file_name;
             $fileToDelete2 = __DIR__ . "/py_script/" . "output.json";
@@ -232,7 +234,7 @@ class ResumeController
 
             return null;
         } else {
-            $jsonData = file_get_contents(__DIR__ . "/py_script/" ."output.json");
+            $jsonData = file_get_contents(__DIR__ . "/py_script/" . "output.json");
             $arrayData = json_decode($jsonData, true);
 
             // delete the temp resume file if it exists
@@ -252,17 +254,20 @@ class ResumeController
 
     }
 
-    public function getResumesJsonAsArray($json_data) {
+    public function getResumesJsonAsArray($json_data)
+    {
         return json_decode($json_data, true);
     }
 
-    public function getResumesJsonAsArrayByResumeId($resume_id) {
+    public function getResumesJsonAsArrayByResumeId($resume_id)
+    {
         $resume_data = $this->getResume($resume_id);
         $resume_json_data = $resume_data['json_data'];
         return $this->getResumesJsonAsArray($resume_json_data);
     }
 
-    public function findMatchingSkills($category_skills, $json_skills) {
+    public function findMatchingSkills($category_skills, $json_skills)
+    {
         $matching_skills = [];
         foreach ($category_skills as $skill_info) {
             $skill = strtolower($skill_info["skill"]);
@@ -275,18 +280,19 @@ class ResumeController
         return $matching_skills;
     }
 
-    public function getResumesSkillsRankingByCategory($json_array, $category_id) {
+    public function getResumesSkillsRankingByCategory($json_array, $category_id)
+    {
         $wantedSkillsCon = new WantedSkillController();
         $categoryC = new categoryController();
 
         $category = $categoryC->getCategoryById($category_id);
-        
+
         $category_name = $category['name_category'];
 
         $category_skills = $wantedSkillsCon->getCetagorySkills($category_id);
-        
+
         //all the skills name in the category
-        $category_skill_names = array_map(function($skill_info) {
+        $category_skill_names = array_map(function ($skill_info) {
             return strtolower($skill_info['skill']);
         }, $category_skills);
 
@@ -301,13 +307,14 @@ class ResumeController
         $cat_skill_ranking['skills_not_found'] = array_diff($category_skill_names, $cat_skill_ranking['skills_found']);
         $cat_skill_ranking['nb_of_skills_found'] = count($cat_skill_ranking['skills_found']);
         $cat_skill_ranking['nb_of_all_skills_needed'] = count($category_skills);
-        
+
         return $cat_skill_ranking;
 
 
     }
 
-    public function getResumesSkillsRankingByAllCategory($json_array) {
+    public function getResumesSkillsRankingByAllCategory($json_array)
+    {
         $wantedSkillsCon = new WantedSkillController();
         $categoryC = new categoryController();
 
@@ -320,17 +327,18 @@ class ResumeController
             $category_rank_data = $this->getResumesSkillsRankingByCategory($json_array, $category_id);
 
             $ranking[] = $category_rank_data;
-    
+
         }
-        
+
         return $ranking;
 
     }
 
-    public function getResumesSkillsRankingByCategoryValue($json_array, $category_id) {
+    public function getResumesSkillsRankingByCategoryValue($json_array, $category_id)
+    {
         $data = $this->getResumesSkillsRankingByCategory($json_array, $category_id);
         //var_dump($data);
-        
+
         //calculate the value of the ranking
         $skills_found = $data['nb_of_skills_found'];
         $total_skills = $data['nb_of_all_skills_needed'];
@@ -341,10 +349,15 @@ class ResumeController
         // Round the percentage to two decimal places
         $percentage = round($percentage, 2);
 
+        if ($percentage > 100) {
+            $percentage = 100;
+        }
+
         return $percentage;
     }
 
-    public function getApplyRank($apply_id) {
+    public function getApplyRank($apply_id)
+    {
         $jobC = new JobController();
         $ApplyC = new ApplyController();
 
@@ -355,14 +368,15 @@ class ResumeController
         $job_category_id = $job['id_category'];
         $resume_json_data = $resume['json_data'];
         $resume_json = $this->getResumesJsonAsArray($resume_json_data);
-        
+
         $rank = $this->getResumesSkillsRankingByCategoryValue($resume_json, $job_category_id);
 
         return $rank;
 
     }
 
-    public function getApplyRankInfos($apply_id) {
+    public function getApplyRankInfos($apply_id)
+    {
         $jobC = new JobController();
         $ApplyC = new ApplyController();
 
@@ -373,11 +387,21 @@ class ResumeController
         $job_category_id = $job['id_category'];
         $resume_json_data = $resume['json_data'];
         $resume_json = $this->getResumesJsonAsArray($resume_json_data);
-        
+
         $rank_infos = $this->getResumesSkillsRankingByCategory($resume_json, $job_category_id);
 
         return $rank_infos;
 
+    }
+
+    public function sortResumesByRank($resumes)
+    {
+        // Custom sorting function based on "rank" attribute
+        usort($resumes, function ($a, $b) {
+            return $b['rank'] - $a['rank'];
+        });
+
+        return $resumes;
     }
 
 

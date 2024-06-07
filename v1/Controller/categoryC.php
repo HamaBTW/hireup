@@ -248,6 +248,9 @@ class categoryController
     public function getCategoriesThatUserIntrestedIn($profile_id, $shuffle = false) {
         $catInterestsCon = new CategoryInterestController();
 
+        $disired_cat = array();
+        $not_disired_cat = array();
+
         $all_cats_intrest = $catInterestsCon->getInterestByProfileId($profile_id);
 
         $categories_name = array();
@@ -312,6 +315,182 @@ class categoryController
         );
 
         return $dictionary;
+
+    }
+
+
+    public function GenerateCategoryAlreadyIntrestedOrNotSection($profile_id, $liked=null)
+    {
+        $catInterestsCon = new CategoryInterestController();
+
+        $categories_prime = $this->getAllCategories();
+
+        $categories = array();
+        foreach ($categories_prime as $category) {
+            
+            $current_intrest = $catInterestsCon->getInterestByCategoryAndProfile($category['id_category'], $profile_id);
+            if ($current_intrest != false) {
+                $categories[] = $category;
+            }
+        }
+        $categories_nb = count($categories);
+
+        $random_numbers = $this->choose_random_numbers($categories_nb);
+
+        if (count($random_numbers) > 0) {
+        
+            echo '<section class="ls s-py-lg-50 main_blog">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12">';
+
+                            if ($liked == 'true') {
+                                echo '<div class="contact-header text-center">
+								<h5>
+                                    Interests 
+								</h5>
+								<h4>
+                                    That Excite You
+								</h4>
+							</div>
+                            <div class="d-none d-lg-block divider-20"></div>';
+                            } else if ($liked == 'false') {
+                                echo '<div class="contact-header text-center">
+								<h5>
+                                    Not Your 
+								</h5>
+								<h4>
+                                    Cup of Tea
+								</h4>
+							</div>
+                            <div class="d-none d-lg-block divider-20"></div>';
+                            }
+
+                            echo  '<div class="owl-carousel" data-responsive-lg="3" data-responsive-md="2" data-responsive-sm="2" data-nav="false" data-dots="false">';
+            for ($i=0; $i<count($random_numbers); $i++) {
+                $name = $categories[$random_numbers[$i]]['name_category'];
+                if ($catInterestsCon->interestExistsByCategoryAndProfile($categories[$random_numbers[$i]]['id_category'], $profile_id)){
+                    $state = $catInterestsCon->getInterestByCategoryAndProfile($categories[$random_numbers[$i]]['id_category'], $profile_id)['state'];
+                    if ( ($liked == 'true' && $state ==='liked') || ($liked === 'false' && $state == 'disliked') || ($liked == null) ){
+                
+                        echo                '<article class="box vertical-item text-center content-padding padding-small bordered post type-post status-publish format-standard has-post-thumbnail">
+                                                <div class="item-content" style="min-height: 280px !important;">
+                                                    <header class="blog-header ">
+                                                        <a href="javascript:void(0)" rel="bookmark">
+                                                            <h4>' . $name . '</h4>
+                                                        </a>
+                                                    </header>
+                                                    <div class="blog-item-icons" id="blog-item-icons-catid-'. $categories[$random_numbers[$i]]['id_category']. '">
+                                                        <div class="col-sm-4 pr-5" onclick="like_category(\'' . $categories[$random_numbers[$i]]['id_category'] . '\', \'' . $profile_id . '\')">';
+                                                    if ($state == 'liked') {
+                                                    echo        '<a href="javascript:void(0)" class="Interested-btns-like-active" id="like-a-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '">
+                                                                    <i class="fa-solid fa-heart Interested-btns-like-active" id="like-i-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '"></i> Interested
+                                                                </a>';
+                                                    } else {
+                                                        echo        '<a href="javascript:void(0)" class="Interested-btns-like" id="like-a-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '">
+                                                                        <i class="fa-solid fa-heart Interested-btns-like" id="like-i-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '"></i> Interested       
+                                                                    </a>';
+                                                    }
+                                                        echo '</div>
+                                                        <div class="col-sm-4 pr-5" onclick="dislike_category(\'' . $categories[$random_numbers[$i]]['id_category'] . '\', \'' . $profile_id . '\')">';
+                                                    if ($state == 'disliked') {
+                                                    echo '<a href="javascript:void(0)" class="Interested-btns-dislike-active" id="dislike-a-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '">
+                                                                <i class="fa-solid fa-circle-xmark Interested-btns-dislike-active" id="dislike-i-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '"></i> Skip
+                                                            </a>';
+                                                    } else {
+                                                        echo '<a href="javascript:void(0)" class="Interested-btns-dislike" id="dislike-a-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '">
+                                                                <i class="fa-solid fa-circle-xmark Interested-btns-dislike" id="dislike-i-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '"></i> Skip
+                                                            </a>';
+                                                    }
+                                                    
+                                                    echo '</div>
+                                                    </div>
+                                                </div>
+                                            </article>';
+                    }
+                }
+            }
+
+
+            echo                '</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>';
+        
+        }
+
+
+    }
+
+    public function GenerateCategoryIntrestedSuggestionsSection($profile_id)
+    {
+        $catInterestsCon = new CategoryInterestController();
+
+        $categories_prime = $this->getAllCategories();
+
+        $categories = array();
+        foreach ($categories_prime as $category) {
+            
+            $current_intrest = $catInterestsCon->getInterestByCategoryAndProfile($category['id_category'], $profile_id);
+            if ($current_intrest == false) {
+                $categories[] = $category;
+            }
+        }
+        $categories_nb = count($categories);
+
+        $random_numbers = $this->choose_random_numbers($categories_nb);
+
+        if (count($random_numbers) > 0) {
+        
+            echo '<section class="ls s-py-lg-50 main_blog">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="contact-header text-center">
+                                    <h5>
+                                        Things 
+                                    </h5>
+                                    <h4>
+                                        You Might Love
+                                    </h4>
+                                </div>
+                                <div class="d-none d-lg-block divider-20"></div>
+                                <div class="owl-carousel" data-responsive-lg="3" data-responsive-md="2" data-responsive-sm="2" data-nav="false" data-dots="false">';
+            for ($i=0; $i<count($random_numbers); $i++) {
+                $name = $categories[$random_numbers[$i]]['name_category'];
+                echo                '<article class="box vertical-item text-center content-padding padding-small bordered post type-post status-publish format-standard has-post-thumbnail">
+                                        <div class="item-content" style="min-height: 280px !important;">
+                                            <header class="blog-header ">
+                                                <a href="javascript:void(0)" rel="bookmark">
+                                                    <h4>' . $name . '</h4>
+                                                </a>
+                                            </header>
+                                            <div class="blog-item-icons" id="blog-item-icons-catid-'. $categories[$random_numbers[$i]]['id_category']. '">
+                                                <div class="col-sm-4 pr-5" onclick="like_category(\'' . $categories[$random_numbers[$i]]['id_category'] . '\', \'' . $profile_id . '\')">
+                                                    <a href="javascript:void(0)" class="Interested-btns-like" id="like-a-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '">
+                                                        <i class="fa-solid fa-heart Interested-btns-like" id="like-i-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '"></i> Interested
+                                                    </a>
+                                                </div>
+                                                <div class="col-sm-4 pr-5" onclick="dislike_category(\'' . $categories[$random_numbers[$i]]['id_category'] . '\', \'' . $profile_id . '\')">
+                                                    <a href="javascript:void(0)" class="Interested-btns-dislike" id="dislike-a-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '">
+                                                        <i class="fa-solid fa-circle-xmark Interested-btns-dislike" id="dislike-i-with-catid-'. $categories[$random_numbers[$i]]['id_category']. '"></i> Skip
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </article>';
+            }
+
+
+            echo                '</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>';
+        
+        }
+
 
     }
 

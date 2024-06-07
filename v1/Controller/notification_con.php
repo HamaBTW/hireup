@@ -204,6 +204,24 @@ class NotificationCon
         }
     }
 
+    public function listNotificationsByReceiverIdOrderedByDateTimeAndNotSeen($receiver_id)
+    {
+        $seen_val = 'not seen';
+        $sql = "SELECT * FROM $this->tab_name WHERE receiver_id = :receiver_id AND seen = :seen ORDER BY date_time DESC";
+
+        $db = config::getConnexion();
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(':receiver_id', $receiver_id);
+            $stmt->bindParam(':seen', $seen_val);
+            $stmt->execute();
+            $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $notifications;
+        } catch (Exception $e) {
+            die('Error:' . $e->getMessage());
+        }
+    }
+
 
 
 }

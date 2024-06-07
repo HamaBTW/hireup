@@ -135,7 +135,7 @@ class CategoryInterestController
             $query->bindParam(':category_id', $category_id);
             $query->bindParam(':profile_id', $profile_id);
             $query->execute();
-            $category = $query->fetchAll();
+            $category = $query->fetch();
             return $category;
         } catch (Exception $e) {
             die('Error: ' . $e->getMessage());
@@ -157,6 +157,23 @@ class CategoryInterestController
             die('Error: ' . $e->getMessage());
         }
     }
+
+    public function interestExistsByCategoryAndProfile($category_id, $profile_id)
+{
+    $sql = "SELECT * FROM category_interests WHERE category_id = :category_id AND profile_id = :profile_id";
+    $db = config::getConnexion();
+
+    try {
+        $query = $db->prepare($sql);
+        $query->bindParam(':category_id', $category_id);
+        $query->bindParam(':profile_id', $profile_id);
+        $query->execute();
+        $category = $query->fetchAll();
+        return !empty($category); // If category array is not empty, return true, otherwise false
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
 
 
 }

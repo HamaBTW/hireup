@@ -21,7 +21,7 @@ if (isset($_SESSION['user id'])) {
 }
 
 // Define dynamic profile data
-$user_notifications = $NotificationCon->listNotificationsByReceiverIdOrderedByDateTime($user_profile_id);
+$user_notifications = $NotificationCon->listNotificationsByReceiverIdOrderedByDateTimeAndNotSeen($user_profile_id);
 $user_notifications_nb = count($user_notifications);
 
 

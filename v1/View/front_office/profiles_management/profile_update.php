@@ -19,6 +19,7 @@ if (!isset($_GET['profile_id'])) {
 
 // Include database connection and profile controller
 require_once __DIR__ . '/../../../Controller/profileController.php';
+require_once __DIR__ . '/../../../Controller/user_con.php';
 //include_once __DIR__ . '/../../../Controller/user_con.php';
 
 
@@ -27,22 +28,24 @@ require_once __DIR__ . '/../../../Controller/profileController.php';
 
 // Initialize profile controller
 $profileController = new ProfileC();
+$userC = new userCon('user');
 
 // Get profile ID from the URL
 $profile_id = $_GET['profile_id'];
 
 // Fetch profile data from the database
 $profile = $profileController->getProfileById($profile_id);
+$user_profile = $profile;
 
-//$user_id = htmlspecialchars($_SESSION['user id']);
 
-//$user_role = $userC->get_user_role_by_id($user_id);
+if (isset($_SESSION['user id'])) {
 
-// Check if profile data is retrieved successfully
-// if (!$profile) {
-//     header('Location: ../pages/404.php');
-//     exit();
-// }
+    //MARK: important cz it checks if the user_id is set or not
+    $user_id = htmlspecialchars($_SESSION['user id']);
+
+    $user_role = $userC->get_user_role_by_id($user_id);
+
+}
 
 ?>
 
@@ -77,60 +80,91 @@ $profile = $profileController->getProfileById($profile_id);
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container-fluid">
             <!-- Logo -->
-            <a class="navbar-brand ms-4" href="../index.html">
+            <a class="navbar-brand ms-4" href="./../../../index.php">
                 <img class="logo-img" alt="HireUp">
             </a>
 
             <!-- Profile Dropdown -->
-            <div class="dropdown ms-auto">
+            <div class="dropdown">
+                <!-- Profile Photo -->
                 <a href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                     class="d-flex align-items-center justify-content-center mx-3" style="height: 100%;">
-                    <img src="data:image/jpeg;base64,<?= base64_encode($profile['profile_photo']) ?>"
+                    <img src="data:image/jpeg;base64,<?= base64_encode($user_profile['profile_photo']) ?>"
                         alt="Profile Photo" class="rounded-circle" width="50" height="50">
+                    <span class="iconify ml-0 mb-5" data-icon="flag:<?php echo $country_code; ?>-4x3"></span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                    <h5 class="dropdown-header">Account</h5>
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
 
-                    <?php /* if ($user_id){
-                  if ($user_role == 'admin'){
-          ?>
-                      <li><a class="dropdown-item text-success" href="../../../View/back_office/main dashboard">Dashboard</a></li>
-          <?php
-                  } 
-              }*/
+
+                <!-- Profile Dropdown Menu -->
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                    <!-- Dropdown Header -->
+                    <h5 class="dropdown-header">Account</h5>
+                    <!-- Profile Link -->
+                    <li><a class="dropdown-item" href="./profile.php"><i class="fas fa-id-card-alt"></i> Profile</a>
+                    </li>
+                    <?php
+                    if ($user_role == 'admin') {
+                        ?>
+                        <li><a class="dropdown-item text-success" href="./../../../View/back_office/main dashboard"><i
+                                    class="fas fa-calculator"></i> Dashboard</a>
+                        </li>
+                        <?php
+                    }
                     ?>
 
-                    <li><a class="dropdown-item" href="./../../../View/front_office/jobs management/career_explorers.php">Career Explorers</a></li>
-
+                    <li><a class="dropdown-item"
+                            href="./../../../View/front_office/jobs management/career_explorers.php">
+                            <i class="fas fa-user-tie"></i> Career Explorers</a></li>
+                    <!-- Divider -->
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-header" href="#">Try Premium for $0</a></li>
+                    <!-- Try Premium -->
+                    <li><a class="dropdown-header text-primary"
+                            href="./subscription/subscriptionCards.php?profile_id=<?php echo $profile['profile_id'] ?>">Try
+                            Premium
+                            for $0</a></li>
+                    <!-- Divider -->
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item" href="./profile-settings-privacy.php">Settings & Privacy</a></li>
-                    <li><a class="dropdown-item" href="#">Help</a></li>
-                    <li><a class="dropdown-item" href="#">Language</a></li>
+                    <!-- Settings & Privacy -->
+                    <li><a class="dropdown-item"
+                            href="./profile-settings-privacy.php?profile_id=<?php echo $profile['profile_id'] ?>">
+                            <i class="fas fa-cogs"></i> Settings & Privacy</a></li>
+                    <!-- Help Link -->
+                    <li><a class="dropdown-item" href="./../../../about.php"><i class="fas fa-question-circle"></i>
+                            Help</a>
+                    </li>
+                    <!-- Language Link -->
+                    <li><a class="dropdown-item" href="./settings_privacy/language_settings.php"><i
+                                class="fas fa-language"></i>
+                            Language</a></li>
+                    <!-- Divider -->
                     <li>
                         <hr class="dropdown-divider">
                     </li>
+                    <!-- Manage Header -->
                     <h5 class="dropdown-header">Manage</h5>
-                    <li><a class="dropdown-item" href="#">Posts & Activity</a></li>
-                    <li><a class="dropdown-item" href="#">Jobs</a></li>
+                    <!-- Jobs Link -->
+                    <li><a class="dropdown-item" href="./../jobs management/jobs_list.php"><i
+                                class="fas fa-briefcase"></i>
+                            Jobs</a></li>
+                    <!-- Divider -->
                     <li>
                         <hr class="dropdown-divider">
                     </li>
                     <!-- Reporting Header -->
                     <h5 class="dropdown-header">Report</h5>
-                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="openPopup()">Give Feedback</a></li>
-
+                    <li><a class="dropdown-item" href="javascript:void(0)" onclick="openPopup()"><i
+                                class="fas fa-exclamation-circle"></i> Give Feedback</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item"
-                            href="../../../View/front_office/Sign In & Sign Up/logout.php">Logout</a></li>
+                    <!-- Logout Link -->
+                    <li><a class="dropdown-item" href="./../Sign In & Sign Up/logout.php"><i
+                                class="fas fa-sign-out-alt"></i>
+                            Logout</a></li>
                 </ul>
             </div>
 
