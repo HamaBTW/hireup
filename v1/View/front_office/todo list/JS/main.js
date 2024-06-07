@@ -6,6 +6,7 @@ const toDoList = document.querySelector('.todo-list');
 const standardTheme = document.querySelector('.standard-theme');
 const lightTheme = document.querySelector('.light-theme');
 const darkerTheme = document.querySelector('.darker-theme');
+const taskForm = document.getElementById("taskForm");
 
 
 // Event Listeners
@@ -16,6 +17,13 @@ document.addEventListener("DOMContentLoaded", getTodos);
 standardTheme.addEventListener('click', () => changeTheme('standard'));
 lightTheme.addEventListener('click', () => changeTheme('light'));
 darkerTheme.addEventListener('click', () => changeTheme('darker'));
+taskForm.addEventListener("submit", function(event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+
+    // Call your function here
+    addToDoPrime(event);
+});
 
 // Check if one theme has been set previously and apply it (or std theme if not found):
 let savedTheme = localStorage.getItem('savedTheme');
@@ -37,8 +45,10 @@ function addToDoPrime(event) {
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
             var responseText = xhr.responseText;
-            if (responseText === 'Task added successfully') {
-                addToDo(event);
+            if (responseText.includes('Task added successfully')) {
+                parts = responseText.split(':');
+                id_task = parts[1].trim();
+                addToDo(event, id_task);
             }
         }
     };
@@ -52,14 +62,14 @@ function addToDoPrime(event) {
     }
 }
 
-function addToDo(event) {
+function addToDo(event, id_task) {
     // Prevents form from submitting / Prevents form from relaoding;
     event.preventDefault();
 
     // toDo DIV;
     const toDoDiv = document.createElement("div");
     toDoDiv.classList.add('todo', `${savedTheme}-todo`);
-    toDoDiv.id = 'yourIdHere';
+    toDoDiv.id = 'task-id-' + id_task;
 
     // Create LI
     const newToDo = document.createElement('li');
@@ -79,6 +89,11 @@ function addToDo(event) {
         const checked = document.createElement('button');
         checked.innerHTML = '<i class="fas fa-check"></i>';
         checked.classList.add('check-btn', `${savedTheme}-button`);
+
+        checked.addEventListener('click', function() {
+            updateTask(id_task);
+        });
+
         toDoDiv.appendChild(checked);
         // delete btn;
         const deleted = document.createElement('button');
@@ -109,8 +124,15 @@ function deletecheck(event){
 
         //removing local todos;
         //removeLocalTodos(item.parentElement);
-        console.log(item.parentElement.children[0].innerText);
-        //console.log(item.parentElement);
+        //console.log(item.parentElement.children[0].innerText);
+        //console.log(item.parentElement.id);
+
+        taskIdItem = item.parentElement.id;
+        taskId = taskIdItem.match(/\d+/)[0];
+
+        task_content = item.parentElement.children[0].innerText
+
+        deleteTask(item, taskId);
 
         item.parentElement.addEventListener('transitionend', function(){
             item.parentElement.remove();
@@ -124,6 +146,60 @@ function deletecheck(event){
     }
 
 
+}
+
+function deleteTask(item, id_task) {
+    var xhr = new XMLHttpRequest();
+    var url = './php/delete_task.php'; // URL to send the data to
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    // Prepare the data to be sent
+    var data = 'task_id=' + encodeURIComponent(id_task);
+
+    // Define what happens on successful data submission
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var responseText = xhr.responseText;
+            console.log(responseText);
+            if (responseText.includes('Task deleted successfully')) {
+                item.parentElement.addEventListener('transitionend', function(){
+                    item.parentElement.remove();
+                })
+            }
+        }
+    };
+
+    
+    // Send the data
+    xhr.send(data);
+    
+}
+
+function updateTask(id_task) {
+    var xhr = new XMLHttpRequest();
+    var url = './php/update_task_state.php'; // URL to send the data to
+    xhr.open('POST', url, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    // Prepare the data to be sent
+    var data = 'task_id=' + encodeURIComponent(id_task);
+
+    // Define what happens on successful data submission
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var responseText = xhr.responseText;
+            console.log(responseText);
+            if (responseText.includes('Task updated successfully')) {
+                console.log('Task updated successfully');
+            }
+        }
+    };
+
+    
+    // Send the data
+    xhr.send(data);
+    
 }
 
 // Saving to local storage:
@@ -143,15 +219,54 @@ function savelocal(todo){
 }
 
 
-function getTodos() {
+function getTodosAndAddThem(todos) {
+
+    todos.forEach(function(todo) {
+        // toDo DIV;
+        const toDoDiv = document.createElement("div");
+        if (todo.status === 'done') {
+            toDoDiv.classList.add("todo", `${savedTheme}-todo`, "completed");
+        } else {
+            toDoDiv.classList.add("todo", `${savedTheme}-todo`);
+        }
+
+        toDoDiv.id = 'task-id-' + todo.id;
+
+        // Create LI
+        const newToDo = document.createElement('li');
+        
+        newToDo.innerText = todo.task;
+        newToDo.classList.add('todo-item');
+        toDoDiv.appendChild(newToDo);
+
+        // check btn;
+        const checked = document.createElement('button');
+        checked.innerHTML = '<i class="fas fa-check"></i>';
+        checked.classList.add("check-btn", `${savedTheme}-button`);
+
+        checked.addEventListener('click', function() {
+            updateTask(todo.id);
+        });
+
+        toDoDiv.appendChild(checked);
+        // delete btn;
+        const deleted = document.createElement('button');
+        deleted.innerHTML = '<i class="fas fa-trash"></i>';
+        deleted.classList.add("delete-btn", `${savedTheme}-button`);
+        toDoDiv.appendChild(deleted);
+
+        // Append to list;
+        toDoList.appendChild(toDoDiv);
+    });
+}
+
+function getTodos1() {
     //Check: if item/s are there;
     let todos;
-    if(localStorage.getItem('todos') === null) {
-        todos = [];
-    }
-    else {
-        todos = JSON.parse(localStorage.getItem('todos'));
-    }
+    todos = [];
+   
+    todos = JSON.parse(localStorage.getItem('todos'));
+    
 
     todos.forEach(function(todo) {
         // toDo DIV;
@@ -179,6 +294,41 @@ function getTodos() {
         // Append to list;
         toDoList.appendChild(toDoDiv);
     });
+}
+
+function getTodos() {
+    // Create a new XMLHttpRequest object
+    const xhr = new XMLHttpRequest();
+
+    // Define the URL of the PHP script
+    const url = './php/get_profile_tasks.php';
+
+    // Define the function to handle the response
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // If the request is successful, parse the JSON response
+                console.log(xhr.responseText);
+                const response = JSON.parse(xhr.responseText);
+                // Handle the response data here
+                console.log(response);
+                // Call your function here after successful response
+                getTodosAndAddThem(response);
+            } else {
+                // If there is an error, handle it here
+                console.error('Error:', xhr.status);
+            }
+        }
+    };
+
+    // Open a GET request to the PHP script URL
+    xhr.open('POST', url, true);
+
+    // Set the Content-Type header for POST requests
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+    // Send the request with any necessary data
+    xhr.send();
 }
 
 

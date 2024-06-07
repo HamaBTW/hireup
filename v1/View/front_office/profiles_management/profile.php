@@ -420,6 +420,13 @@ $country_code = strtolower($user_infos['countryCode']);
         <!-- Buttons Bar -->
         <div class="d-flex">
 
+        <!-- calendar Dropdown -->
+        <div class="dropdown">
+            <button class="btn rounded_button_bar me-3" id="calendarsDropdown" data-bs-toggle="dropdown" onclick="window.open('./../todo list/index.php', '_blank')">
+            <i class="fa-solid fa-list-check"></i>
+            </button>
+        </div>
+
           <!-- calendar Dropdown -->
           <div class="dropdown">
             <button class="btn rounded_button_bar me-3" id="calendarsDropdown" data-bs-toggle="dropdown">

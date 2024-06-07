@@ -13,7 +13,7 @@ if (isset($_POST['task_id']) && !empty($_POST['task_id'])) {
     $new_state = ($old_state == 'still') ? 'done' : 'still';
     $todoController->updateTaskStatus($task_id, $new_state, $newDate);
 
-    echo "Task deleted successfully";
+    echo "Task updated successfully";
 }
 
 

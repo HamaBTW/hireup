@@ -42,7 +42,7 @@ if (isset($_POST['task']) && !empty($_POST['task'])) {
 
     $todoController->addTask($task);
 
-    echo "Task added successfully";
+    echo "Task added successfully:" . $task_id;
 }
 
 

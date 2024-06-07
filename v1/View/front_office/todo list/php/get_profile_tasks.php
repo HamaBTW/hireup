@@ -1,14 +1,32 @@
 <?php
 
 require_once __DIR__ . '/../../../../Controller/todo_tasks_con.php';
-require_once __DIR__ . '/../../../../Model/todo_tasks.php';
+require_once __DIR__ . '/../../../../Controller/profileController.php';
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_set_cookie_params(0, '/', '', true, true);
+    session_start();
+}
 
 $todoController = new TodoTaskCon();
+$profileController = new ProfileC();
 
-if (isset($_POST['profile_id']) && !empty($_POST['profile_id'])) {
-    $profile_id = htmlspecialchars($_POST['profile_id']);
+$user_id = '';
+$user_profile_id = '';
 
-    $todoController->listTasksByProfileId($profile_id);
+
+if (isset($_SESSION['user id'])) {
+
+    $user_id = htmlspecialchars($_SESSION['user id']);
+
+    // Get profile ID from the URL
+    $user_profile_id = $profileController->getProfileIdByUserId($user_id);
+
+}
+
+if (isset($user_profile_id) && !empty($user_profile_id)) {
+
+    $tasks = $todoController->listTasksByProfileId($user_profile_id);
 
     // Encode data into JSON format
     $json_data = json_encode($tasks);
