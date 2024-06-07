@@ -122,64 +122,114 @@
 </style>
 
 <style>
-        progress {
-            display: inline-block;
-            position: relative;
-            background: none;
-            border: 0;
-            border-radius: 5px;
-            width: 100%;
-            text-align: left;
-            position: relative;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 0.8em;
-        }
+  progress {
+    display: inline-block;
+    position: relative;
+    background: none;
+    border: 0;
+    border-radius: 5px;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.8em;
+  }
 
-        progress::-webkit-progress-bar {
-            margin: 0 auto;
-            background-color: #CCC;
-            border-radius: 5px;
+  progress::-webkit-progress-bar {
+    margin: 0 auto;
+    background-color: #CCC;
+    border-radius: 5px;
 
-        }
+  }
 
-        progress::-webkit-progress-value {
-            display: relative;
-            margin: 0px -10px 0 0;
-            background: #55bce7;
-            border-radius: 5px;
-        }
+  progress::-webkit-progress-value {
+    display: relative;
+    margin: 0px -10px 0 0;
+    background: #55bce7;
+    border-radius: 5px;
+  }
 
-        progress:after {
-            margin: -36px 0 0 7px;
-            padding: 0;
-            display: inline-block;
-            float: right;
-            content: attr(value) '%';
-            position: relative;
-        }
+  progress:after {
+    margin: -36px 0 0 7px;
+    padding: 0;
+    display: inline-block;
+    float: right;
+    content: attr(value) '%';
+    position: relative;
+  }
 
-        .progress-bar-container {
-            margin-top: 10px;
-            padding: 2% 10%;
-        }
+  .progress-bar-container {
+    margin-top: 10px;
+    padding: 2% 10%;
+  }
 
-        .progress-bar {
-            width: 100%;
-            background-color: #f3f3f3;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            overflow: hidden;
-        }
+  .progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+  }
 
-        .progress-bar-fill {
-            height: 20px;
-            background-color: #55bce7;
-            width: 0;
-            text-align: center;
-            color: white;
-            line-height: 20px;
-        }
-    </style>
+  .progress-bar-fill {
+    height: 20px;
+    background-color: #55bce7;
+    width: 0;
+    text-align: center;
+    color: white;
+    line-height: 20px;
+  }
+</style>
+
+<!-- Popup -->
+<style>
+  .popup-card {
+    display: none;
+    position: fixed;
+    z-index: 99999999999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(245, 245, 245, 0.4);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    max-width: 100%;
+    max-height: 100%;
+    min-height: auto;
+    min-width: auto;
+    padding: 20px;
+    border-radius: 5px;
+  }
+
+  .popup-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    border: 1px solid #888;
+    width: 80%;
+    height: 82%;
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .popup-content iframe {
+    width: 100%;
+    height: 82%;
+    /* Set the height to adjust based on content */
+  }
+</style>
 
 
 <?php
@@ -249,15 +299,16 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
 
     <textarea style="height: 55px !important;
                 width: 100% !important;
-                border: none !important;
-                outline: none !important;
+                /*border: none !important;*/
+                border: 1px solid rgba(0, 0, 0, 0.3) !important;
+                border-radius: 5px; 
                 resize: none !important;
                 max-height: 100px !important;
-                padding: 15px 15px 15px 0 !important;
+                padding: 15px 15px 15px 15px !important;
                 font-size: 0.95rem !important;
                 text-transform: none;
-                    resize: vertical;" id="textarea-bot" placeholder="Enter a message..." spellcheck="false" required>
-    </textarea>
+                    resize: vertical;" id="textarea-bot" placeholder="Enter a message..." spellcheck="false"
+      required></textarea>
     <span style="align-self: flex;
                 color: #40A2D8;
                 cursor: pointer;
@@ -280,7 +331,7 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
   </div>
 </div>
 
-<script src= "<?= __DIR__ ?>/../../../front office assets/js/chatbot.js"></script>
+<script src="<?= __DIR__ ?>/../../../front office assets/js/chatbot.js"></script>
 
 <script>
   function startSpeechRecognition(inputId) {
@@ -318,13 +369,16 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
       style="color: #aaa; float: left; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
 
     <h3>Resume Analyser</h3>
-    
-    <form id="resumeForm" action="<?= $current_website_link ?>/View/front_office/jobs management/chatbot_analyse_resume.php" method="post" enctype="multipart/form-data">
+
+    <form id="resumeForm"
+      action="<?= $current_website_link ?>/View/front_office/jobs management/chatbot_analyse_resume.php" method="post"
+      enctype="multipart/form-data">
       <div class="button-container">
 
         <div id="add-resume-file-div" class="shown-btn">
-          <button type="button" id="fileButton" class="pdf-button" onclick="document.getElementById('hiddenFileInput').click();">
-          <!-- <button type="button" id="fileButton" class="btn btn-primary" onclick="document.getElementById('hiddenFileInput').click();"> -->
+          <button type="button" id="fileButton" class="pdf-button"
+            onclick="document.getElementById('hiddenFileInput').click();">
+            <!-- <button type="button" id="fileButton" class="btn btn-primary" onclick="document.getElementById('hiddenFileInput').click();"> -->
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
               stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round"
@@ -339,7 +393,8 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
         </div>
 
         <div id="add-resume-file-agian-div" class="hidden-btn">
-          <button type="button" id="fileButton1" class="pdf-button" onclick="document.getElementById('hiddenFileInput1').click();">
+          <button type="button" id="fileButton1" class="pdf-button"
+            onclick="document.getElementById('hiddenFileInput1').click();">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
               stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round"
@@ -379,10 +434,30 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
           </button>
         </div>
 
-      
+
 
       </div>
     </form>
+
+    <hr>
+
+    <h3>Document Validator</h3>
+
+    <div class="button-container">
+
+      <div id="open-qr-code-reader-div" class="shown-btn">
+        <button type="button" id="fileButton" class="pdf-button" onclick="showQrCodeReaderPopUp()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+            aria-hidden="true">
+            <path
+              d="M16.8772 15L21 17C21 17 21.5 15 21.5 12C21.5 9 21 7 21 7L16.8772 9M16.8772 15C16.9538 14.0994 17 13.0728 17 12C17 10.9272 16.9538 9.9006 16.8772 9M16.8772 15C16.7318 16.7111 16.477 17.9674 16.2222 18.2222C15.8333 18.6111 13.1111 19 10 19C6.88889 19 4.16667 18.6111 3.77778 18.2222C3.38889 17.8333 3 15.1111 3 12C3 8.88889 3.38889 6.16667 3.77778 5.77778C4.16667 5.38889 6.88889 5 10 5C13.1111 5 15.8333 5.38889 16.2222 5.77778C16.477 6.03256 16.7318 7.28891 16.8772 9"
+              stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Verify Doc
+        </button>
+      </div>
+
+    </div>
 
     <hr>
 
@@ -405,6 +480,14 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
       <li class="question" style="cursor: pointer; color: #40A2D8;">How do I improve my resume?</li>
       <li class="question" style="cursor: pointer; color: #40A2D8;">What are the latest trends in the job market?</li>
     </ul>
+  </div>
+</div>
+
+<div id="popup-card-qr-code-reader" class="popup-card">
+  <div class="popup-content">
+    <span id="close-popup-qr-code-reader" class="close">&times;</span>
+    <h3 id="popup-Name" class="text-capitalize"></h3>
+    <iframe id="popup-card-qr-code-reader-iframe" src=""></iframe>
   </div>
 </div>
 
@@ -512,9 +595,9 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
     file = event.target.files[0];
     console.log(file);
     if (file) {
-      analyzeResume(file, function(res) {
-          // This code will be executed when analyzeResume completes
-          fileUploadedBtnChange(res);
+      analyzeResume(file, function (res) {
+        // This code will be executed when analyzeResume completes
+        fileUploadedBtnChange(res);
       });
 
     }
@@ -524,11 +607,11 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
     file1 = event.target.files[0];
     console.log(file1);
     if (file1) {
-      analyzeResume(file, function(res) {
-          // This code will be executed when analyzeResume completes
-          fileUploadedBtnChange(res);
+      analyzeResume(file, function (res) {
+        // This code will be executed when analyzeResume completes
+        fileUploadedBtnChange(res);
       });
-      
+
     }
   });
 
@@ -619,6 +702,51 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
 
 </script>
 
+<!-- Popup Modal -->
+<script>
+  function showQrCodeReaderPopUp(lng, lat, place) {
+    console.log("Map selection popup opened");
+    var modal = document.getElementById("popup-card-qr-code-reader");
+    var map_iframe = document.getElementById("popup-card-qr-code-reader-iframe");
+    map_iframe.src = `<?= $current_website_link ?>/View/front_office/qr code reader/index.html`;
+    modal.style.display = "block";
+
+  }
+
+  var modal_qr2 = document.getElementById("popup-card-qr-code-reader");
+  var closeButton_qr2 = document.getElementById("close-popup-qr-code-reader");
+
+  closeButton_qr2.onclick = function () {
+    modal_qr2.style.display = "none";
+  };
+
+  window.onclick = function (event) {
+    if (event.target == modal_qr2) {
+      modal_qr2.style.display = "none";
+    }
+  };
+</script>
+
+
+<script>
+  window.addEventListener('message', receiveMessageFromIframe, false);
+
+  function receiveMessageFromIframe(event) {
+    //console.log('Message received from iframe:', event.data);
+    if (event.data) {
+      console.log(event.data);
+      var modal_reader = document.getElementById("popup-card-qr-code-reader");
+      
+      if (event.data.message == "the qr is ready :") {
+        
+        modal_reader.style.display = "none";
+        closeChatModalHere();
+        handleChatQrCodeDataGet(event.data.data);
+
+      }
+    }
+  }
+</script>
 
 
 <script src="https://code.responsivevoice.org/responsivevoice.js?key=TUGpBJay"></script>

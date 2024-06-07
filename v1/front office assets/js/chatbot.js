@@ -525,4 +525,40 @@ const handleChatResumeDataGet = async (data) => {
 
 };
 
+const handleChatQrCodeDataGet = async (data) => {
+
+  chatInput.value = "";
+  userMessage = "Document validation result";
+  chatInput.style.height = `${inputInitHeight}px`;
+
+  chatbox.appendChild(createChatLi(userMessage, "outgoing"));
+  chatbox.scrollTo(0, chatbox.scrollHeight);
+
+  const incomingChatLi = createChatLi("Thinking...", "incoming");
+  chatbox.appendChild(incomingChatLi);
+  chatbox.scrollTo(0, chatbox.scrollHeight);
+
+  setTimeout(async () => {
+    chatbox.removeChild(incomingChatLi);
+
+    let response;
+
+    if (data.valid) {
+      response = 'This document is valid\n';
+      response += 'content: \n' + data.data + '\n';
+    } else {
+      response = 'This document is invalid\n';
+    }
+    
+    //response = "await chat_gpt_rep1(userMessage)" + typeof data;
+
+    speakText(response);
+
+    const responseChatLi = createChatLi(response, "incoming");
+    chatbox.appendChild(responseChatLi);
+    chatbox.scrollTo(0, chatbox.scrollHeight);
+  }, 600);
+
+};
+
 
