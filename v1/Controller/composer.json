@@ -6,7 +6,8 @@
         "mpdf/mpdf": "^8.2",
         "endroid/qr-code": "^5.0",
         "web-token/jwt-framework": "^3.4",
-        "firebase/php-jwt": "^6.10"
+        "firebase/php-jwt": "^6.10",
+        "dompdf/dompdf": "^3.0"
 
     }
 }
