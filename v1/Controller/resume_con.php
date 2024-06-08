@@ -7,6 +7,8 @@ require_once __DIR__ . '/categoryC.php';
 require_once __DIR__ . '/JobC.php';
 require_once __DIR__ . '/applyController.php';
 
+require_once __DIR__ . '/vendor/autoload.php';
+
 class ResumeController
 {
     public function generateId($id_length)
@@ -403,6 +405,8 @@ class ResumeController
 
         return $resumes;
     }
+
+    
 
 
 }

@@ -217,8 +217,8 @@ $country_code = strtolower($user_infos['countryCode']);
 								<!-- eof blog -->
 
 								<!-- contacts -->
-								<li class="<?= ($active_page == 'msgs') ? 'active' : ''; ?>">
-									<a href="<?php echo $current_url . "/view/front_office/messenger/messaging.php" ?>">MessengUp</a>
+								<li class="<?= ($active_page == 'ResumeUp') ? 'active' : ''; ?>">
+									<a href="<?php echo $current_url . "/view/front_office/resume/resume_form.php" ?>">ResumeUp</a>
 								</li>
 								<!-- eof contacts -->
 

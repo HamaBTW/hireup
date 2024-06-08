@@ -14,28 +14,28 @@ $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
           <h3 class="widget-title title-menu">Explore</h3>
           <ul class="footer-menu">
             <li>
-              <a href="<?php echo $current_url . "./View/front_office/jobs management/jobs_list.php" ?>">Job Search</a>
+              <a href="<?php echo $current_url . "/View/front_office/jobs management/jobs_list.php" ?>">Job Search</a>
             </li>
             <li class="menu1">
-              <a href="<?php echo $current_url . "./View/front_office/profiles_management/subscription/subscriptionCards.php" ?>">Try Premium</a>
+              <a href="<?php echo $current_url . "/View/front_office/profiles_management/subscription/subscriptionCards.php" ?>">Try Premium</a>
             </li>
             <li>
-              <a href="<?php echo $current_url . "./View/front_office/ads/view_ads.php" ?>">Ads</a>
+              <a href="<?php echo $current_url . "/View/front_office/ads/view_ads.php" ?>">Ads</a>
             </li>
             <li class="menu1">
-              <a href="<?php echo $current_url . "./View/front_office/profiles_management/profile-settings-privacy.php" ?>">Settings</a>
+              <a href="<?php echo $current_url . "/View/front_office/profiles_management/profile-settings-privacy.php" ?>">Settings</a>
             </li>
             <li>
-              <a href="<?php echo $current_url . "./View/front_office/messenger/messaging.php" ?>">MessagUp</a>
+              <a href="<?php echo $current_url . "/View/front_office/resume/resume_form.php" ?>">ResumeUp</a>
             </li>
             <li class="menu1">
-              <a href="<?php echo $current_url . "./View/front_office/profiles_management/profile.php" ?>">Careers</a>
+              <a href="<?php echo $current_url . "/View/front_office/profiles_management/profile.php" ?>">Careers</a>
             </li>
             <li class="border-bottom-0">
-              <a href="<?php echo $current_url . "./View/front_office/reclamation/rec_list.php" ?>">Report</a>
+              <a href="<?php echo $current_url . "/View/front_office/reclamation/rec_list.php" ?>">Report</a>
             </li>
             <li class="menu1 border-bottom-0">
-              <a href="<?php echo $current_url . "./about.php" ?>">About</a>
+              <a href="<?php echo $current_url . "/about.php" ?>">About</a>
             </li>
           </ul>
         </div>

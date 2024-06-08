@@ -432,7 +432,6 @@ include ('./../../../View/callback.php');
                     <label for="salary">Salary</label>
                     <div class="input-group">
                       <input type="text" class="form-control" id="salary" name="salary">
-
                       <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('salary')"></i>
                     </div>
                     <span id="job_salary_error" class="text-danger"></span> <!-- Error message placeholder -->
