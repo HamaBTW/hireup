@@ -424,7 +424,7 @@ include ('./../../../View/callback.php')
         }
 
 
-        .form-group < span {
+        .form-group > span {
             color: red;
         }
     </style>

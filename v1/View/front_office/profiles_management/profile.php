@@ -1127,8 +1127,6 @@ $country_code = strtolower($user_infos['countryCode']);
                           ?>
                         </span></a>
                       <!-- Share Counter -->
-                      <a href="javascript:void(0)"><span class="share-counter"
-                          id="share-counter-<?php echo $post['id']; ?>">0 <i class="fa fa-share"></i></span></a>
                     </div>
                   </div>
                   <!-- Action Buttons -->
@@ -1203,6 +1201,7 @@ $country_code = strtolower($user_infos['countryCode']);
                         // Fetching profile information for the comment owner
                         //$profileId = $comment['auteur_id']; // Profile ID of the comment owner
                         $cmnt_sender_profile = $profileController->getProfileById($comment['sender_id']); // Assuming you have a method to fetch profile info by ID
+                        //if ($comment['auteur_id'] == $user_profile_id || $comment['sender_id'] == $user_profile_id) {
                         if ($comment['auteur_id'] == $user_profile_id || $comment['sender_id'] == $user_profile_id) {
                           $cmnt_is_mine = true;
                         } else {
@@ -1221,7 +1220,9 @@ $country_code = strtolower($user_infos['countryCode']);
                           echo '<div class="dropdown m-3">';
                           echo '<a href="javascript:void(0)" class="text-body text-opacity-50 comment-menu" id="comment-dropdown-' . $comment['id_commentaire'] . '"><i class="fas fa-ellipsis-h"></i></a>';
                           echo '<ul class="dropdown-menu" id="commentDropdownMenu-' . $comment['id_commentaire'] . '">';
-                          echo '<li><a class="dropdown-item" href="javascript:void(0)" onclick="openEditCommentModal(' . $comment['id_commentaire'] . ', \'' . $comment['contenu'] . '\')"><i class="fas fa-edit"></i> Edit Comment</a></li>';
+                          if ($comment['sender_id'] == $user_profile_id) {
+                            echo '<li><a class="dropdown-item" href="javascript:void(0)" onclick="openEditCommentModal(' . $comment['id_commentaire'] . ', \'' . $comment['contenu'] . '\')"><i class="fas fa-edit"></i> Edit Comment</a></li>';
+                          }
                           echo '<li><a class="dropdown-item" href="javascript:void(0)" onclick="deleteComment(' . $comment['id_commentaire'] . ')"><i class="fas fa-trash-alt"></i> Delete Comment</a></li>';
                           echo '</ul>';
                           echo '</div>';
