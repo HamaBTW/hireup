@@ -30,6 +30,24 @@ if (isset($_SESSION['user id'])) {
 
     // Fetch profile data from the database
     $profile = $profileController->getProfileById($profile_id);
+
+    // age calculation
+    // The user's birthday as a string
+    $birthday = $profile['profile_bday'];
+
+    // Parse the birthday into a DateTime object
+    $birthDate = new DateTime($birthday);
+
+    // Get the current date
+    $currentDate = new DateTime();
+
+    // Calculate the difference between the current date and the birthday
+    $age = $currentDate->diff($birthDate);
+
+    // Extract the age in years
+    $ageInYears = $age->y;
+
+
 }
 
 $block_call_back = 'true';
@@ -411,6 +429,74 @@ include ('./../../../View/callback.php')
         }
     </style>
 
+    <!-- dropdown menu -->
+    <style>
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+            width: 250px;
+        }
+
+        .dropdown-toggle {
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 16px;
+        }
+
+        .dropdown_menu {
+            display: none;
+            position: absolute;
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            z-index: 1;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown_menu .dropdown-item {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown_menu .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown_menu .dropdown-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown_menu .dropdown-item span {
+            flex-grow: 1;
+        }
+
+        .dropdown_menu .dropdown-item button {
+            margin-left: 5px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: #007bff;
+            font-size: 16px;
+        }
+
+        .dropdown_menu .dropdown-item button:hover {
+            color: #0056b3;
+        }
+    </style>
+
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 
     <!-- voice recognation -->
@@ -419,8 +505,6 @@ include ('./../../../View/callback.php')
 </head>
 
 <body>
-
-    <form id="resumeSubmitFormCv" name="resumeSubmitFormCv" action="./make_save.php" method="post" enctype="multipart/form-data">
 
     <div class="preloader">
         <div class="preloader_image"></div>
@@ -499,7 +583,8 @@ include ('./../../../View/callback.php')
 
                         <div class="px-30 ds-form">
 
-                            <form id="" action="" method="" enctype="multipart/form-data">
+                            <form id="resumeSubmitFormCv" action="./resume template/make_save.php" method="POST"
+                                enctype="multipart/form-data">
                                 <!-- CV input start -->
                                 <div class="row">
                                     <div class="col-sm-6">
@@ -560,14 +645,22 @@ include ('./../../../View/callback.php')
                                             <span id="adresse_error"></span> <!-- Error message placeholder -->
                                         </div>
 
+
+                                        <input type="hidden" id="resume_data" name="resume_data">
                                         <div class="col-c-mb-60 form-group">
 
-                                            <label for="resume_picture" class="custom-file-label"
+
+                                            <label for="resume_picture" class="custom-file-label mt-2"
                                                 style="background-color: #F2F2F2; color: black;"><b>Picture</b></label>
-                                            <input type="file" class="custom-file-input button" id="resume_picture" name="resume_picture"
-                                                accept="image/*">
+
+                                            <input type="file" class="custom-file-input button mb-2" id="resume_picture"
+                                                name="resume_picture" accept="image/*" onchange="validateImg()">
+
+
+                                            <span id="pic_error" class="mt-6"></span> <!-- Error message placeholder -->
 
                                         </div>
+
 
                                     </div>
 
@@ -662,16 +755,25 @@ include ('./../../../View/callback.php')
 
 
                                     <div class="form-group text-center">
+
                                         <button type="button" id="skills_form_submit" name="skills_form_submit"
-                                            onclick="validateSkillSubmit(); addSkill();" class="btn btn-info"><i
+                                            onclick="return skillSubmit()" class="btn btn-info"><i
                                                 class="fa fa-plus"></i>
                                             Skill</button>
 
                                         <span id="submit_skill_error"></span> <!-- Error message placeholder -->
+
+                                        <div class="dropdown-container mr-3">
+                                            <a href="javascript:void()" class="btn btn-outline-secondary"
+                                                id="dropdownToggle">My Skills <i class="fa fa-caret-down"></i></a>
+                                            <div class="dropdown_menu" id="dropdownMenu">
+                                                <!-- Items will be injected here via JavaScript -->
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 
-                                <div id="skills-output"></div>
 
                                 <div class="row">
                                     <div class="col-sm-6">
@@ -759,11 +861,22 @@ include ('./../../../View/callback.php')
 
 
                                     <div class="form-group text-center">
-                                        <button type="button" onclick="validateWorkSubmit(); addWork();" id="work_form_submit"
-                                            name="work_form_submit" class="btn btn-secondary"><i class="fa fa-plus"></i>
+                                        <button type="button" onclick="return workSubmit();" id="work_form_submit"
+                                            name="work_form_submit" class="btn btn-secondary"><i
+                                                class="fa fa-plus mr-3"></i>
                                             Experience</button>
 
                                         <span id="submit_work_error"></span> <!-- Error message placeholder -->
+
+                                        <div class="dropdown-container mr-3">
+                                            <a href="javascript:void()" class="btn btn-outline-secondary"
+                                                id="dropdownToggle2">My
+                                                Experiences <i class="fa fa-caret-down"></i></a>
+                                            <div class="dropdown_menu" id="dropdownMenu2">
+                                                <!-- Items will be injected here via JavaScript -->
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 
@@ -797,6 +910,19 @@ include ('./../../../View/callback.php')
                                         </div>
 
                                         <div class="form-group">
+
+
+
+                                            <div class="input-group">
+                                                <!-- 1 or +1 (>1) -->
+                                                <input type="text" onkeyup="validateDegree()" aria-required="true"
+                                                    size="200" value="" name="edu_degree" id="edu_degree"
+                                                    class="form-control" placeholder="Degree">
+                                            </div>
+                                            <span id="degree_error"></span> <!-- Error message placeholder -->
+                                        </div>
+
+                                        <div class="form-group">
                                             <div class="input-group">
                                                 <input type="text" onkeyup="validateEduStart()" aria-required="true"
                                                     size="200" value="" name="edu_start" id="edu_start"
@@ -814,18 +940,7 @@ include ('./../../../View/callback.php')
                                             <span id="edu_end_error"></span> <!-- Error message placeholder -->
                                         </div>
 
-                                        <div class="form-group">
 
-
-
-                                            <div class="input-group">
-                                                <!-- 1 or +1 (>1) -->
-                                                <input type="text" onkeyup="validateDegree()" aria-required="true"
-                                                    size="200" value="" name="edu_degree" id="edu_degree"
-                                                    class="form-control" placeholder="Degree">
-                                            </div>
-                                            <span id="degree_error"></span> <!-- Error message placeholder -->
-                                        </div>
 
 
                                     </div>
@@ -855,10 +970,21 @@ include ('./../../../View/callback.php')
 
 
                                     <div class="form-group text-center">
-                                        <button type="button" onclick="validateEduSubmit(); addEducation();" id="education_form_submit"
-                                            name="education_form_submit" class="btn btn-info"><i class="fa fa-plus"></i>
+                                        <button type="button" onclick="return educationSubmit()"
+                                            id="education_form_submit" name="education_form_submit"
+                                            class="btn btn-info"><i class="fa fa-plus"></i>
                                             Education</button>
                                         <span id="submit_edu_error"></span> <!-- Error message placeholder -->
+
+                                        <div class="dropdown-container mr-3">
+                                            <a href="javascript:void()" class="btn btn-outline-secondary"
+                                                id="dropdownToggle3">My
+                                                Education <i class="fa fa-caret-down"></i></a>
+                                            <div class="dropdown_menu" id="dropdownMenu3">
+                                                <!-- Items will be injected here via JavaScript -->
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 
@@ -871,8 +997,8 @@ include ('./../../../View/callback.php')
 
                                     <div class="form-group text-center">
                                         <button type="button" id="resume_form_submit" name="resume_submit"
-                                            class="btn btn-primary"
-                                            onclick="return resumeSubmit();">Submit CV</button>
+                                            class="btn btn-primary" onclick="return resumeSubmit();">Submit
+                                            CV</button>
                                         <span id="submit_cv_error"></span> <!-- Error message placeholder -->
                                     </div>
                                 </div>
@@ -893,7 +1019,42 @@ include ('./../../../View/callback.php')
     <!-- eof #canvas -->
 
 
-    </form>
+    <!-- Modal -->
+    <div class="modal fade" id="editSkillModal" tabindex="-1" aria-labelledby="editSkillModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSkillModalLabel">Edit Skill</h5>
+                    <button type="button" class="close" onclick="closeModal()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                
+                <div class="modal-body">
+                    <form id="editSkillForm">
+                        <div class="form-group">
+                            <label for="skillName">Skill Name</label>
+                            <input type="text" class="form-control" id="skillName" name="skillName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="skillProgress">Skill Progress</label>
+                            <input type="number" class="form-control" id="skillProgress" name="skillProgress" min="1"
+                                max="100" required oninput="updateProgressBar()">
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" id="progress-bar"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
 
     <script src="./../../../front office assets/js/compressed.js"></script>
     <script src="./../../../front office assets/js/main.js"></script>
@@ -913,14 +1074,137 @@ include ('./../../../View/callback.php')
 
     <script>
         function resumeSubmit() {
-            ok = validateEduSubmit(); 
+            ok = validateAddCV();
             if (ok) {
-                addEducation();
-                document.getElementById('resumeSubmitFormCv').submit();
+                makeDataResume();
+
+                myDict = loadResumeData()
+                // Convert dictionary to JSON string
+                const jsonString = JSON.stringify(myDict);
+                // console.log('jsonString : ')
+                // console.log(jsonString)
+
+                // Create a hidden input field
+                const hiddenInput = document.getElementById('resume_data');
+                // console.log('hiddenInput : ')
+                // console.log(hiddenInput)
+
+                form = document.getElementById('resumeSubmitFormCv');
+                // console.log('form : ')
+                // console.log(form)
+                // hiddenInput.type = 'hidden';
+                // hiddenInput.name = 'myDict';  // Name for the hidden input
+                hiddenInput.value = jsonString;
+
+                // Append the hidden input to the form
+                // const form = document.getElementById('resumeSubmitFormCv');
+                // form.appendChild(hiddenInput);
+
+                // Submit the form
+                form.submit();
             }
 
             return ok;
         }
+
+        function skillSubmit() {
+            ok = validateSkillSubmit();
+            if (ok) {
+                addSkill();
+            }
+
+            return ok;
+        }
+
+        function workSubmit() {
+            ok = validateWorkSubmit();
+            if (ok) {
+                addWork();
+            }
+
+            return ok;
+        }
+
+        function educationSubmit() {
+            ok = validateEduSubmit();
+            if (ok) {
+                addEducation();
+            }
+
+            return ok;
+        }
+
+
+        function showModal() {
+            const modal = document.getElementById('editSkillModal');
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            document.body.classList.add('modal-open');
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade show';
+            document.body.appendChild(backdrop);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('editSkillModal');
+            modal.classList.remove('show');
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.parentNode.removeChild(backdrop);
+            }
+        }
+
+
+    </script>
+
+    <script>
+
+        dropdownToggle = document.getElementById('dropdownToggle');
+        dropdownMenu = document.getElementById('dropdownMenu');
+
+        dropdownToggle2 = document.getElementById('dropdownToggle2');
+        dropdownMenu2 = document.getElementById('dropdownMenu2');
+
+        dropdownToggle3 = document.getElementById('dropdownToggle3');
+        dropdownMenu3 = document.getElementById('dropdownMenu3');
+
+
+
+
+        dropdownToggle.addEventListener('click', () => {
+            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+
+
+        dropdownToggle2.addEventListener('click', () => {
+            dropdownMenu2.style.display = dropdownMenu2.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!dropdownToggle2.contains(event.target) && !dropdownMenu2.contains(event.target)) {
+                dropdownMenu2.style.display = 'none';
+            }
+        });
+
+        dropdownToggle3.addEventListener('click', () => {
+            dropdownMenu3.style.display = dropdownMenu3.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!dropdownToggle3.contains(event.target) && !dropdownMenu3.contains(event.target)) {
+                dropdownMenu3.style.display = 'none';
+            }
+        });
+
+
     </script>
 
     <script>

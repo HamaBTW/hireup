@@ -4,6 +4,7 @@ var phoneError = document.getElementById("phone_error");
 var emailError = document.getElementById("email_error");
 var jobError = document.getElementById("job_error");
 var adressError = document.getElementById("adresse_error");
+var picError = document.getElementById("pic_error");
 var aboutError = document.getElementById("aboutMe_error");
 
 /* Skills Error */
@@ -99,6 +100,17 @@ function validateAdress() {
         return false;
     }
     adressError.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateImg() {
+    var res_pic = document.getElementById("resume_picture").value;
+
+    if (res_pic == "") {
+        picError.innerHTML = "Resume picture is required.";
+        return false;
+    }
+    picError.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
     return true;
 }
 
