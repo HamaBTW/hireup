@@ -307,8 +307,9 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
                 padding: 15px 15px 15px 15px !important;
                 font-size: 0.95rem !important;
                 text-transform: none;
-                    resize: vertical;" id="textarea-bot" placeholder="Enter a message..." spellcheck="false"
+                    resize: vertical;" id="textarea-bot" placeholder="Enter a message..." spellcheck="true"
       required></textarea>
+
     <span style="align-self: flex;
                 color: #40A2D8;
                 cursor: pointer;
@@ -317,6 +318,18 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
                 align-items: center;
                 font-size: 1.35rem;" class="material-symbols-rounded mb-4"><i class="far fa-paper-plane"></i>
     </span>
+
+    <p style="align-self: flex;
+              color: #40A2D8;
+              cursor: pointer;
+              height: 55px;
+              display: flex;
+              align-items: center;
+              font-size: 1.35rem;" id="mic-btn" onclick="imgIconClicked()"><i
+        class="fas fa-image" id="img-bot-add-btn"></i>
+    </p>
+    <input type="file" id="hiddenFileInputImgBot" name="hiddenFileInputImgBot" style="display: none;" accept="image/*">
+    <img id="imgPreview" src="" alt="Image Preview" style="display: none; width: 200px; height: auto;">
 
     <p style="align-self: flex;
               color: #40A2D8;
@@ -491,6 +504,36 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
   </div>
 </div>
 
+<script>
+
+  function imgIconClicked() {
+    document.getElementById('hiddenFileInputImgBot').click();
+  }
+
+  document.getElementById('hiddenFileInputImgBot').addEventListener('change', function (event) {
+    
+    current_btn = document.getElementById('img-bot-add-btn')
+    
+    const file = event.target.files[0];
+    if (file) {
+      if (current_btn.className == "fas fa-image") {
+        current_btn.className = "fa-solid fa-images";
+      }
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imgPreview = document.getElementById('imgPreview');
+        imgPreview.src = e.target.result;
+        imgPreview.style.display = 'block';
+      }
+      reader.readAsDataURL(file);
+    } else {
+      const imgPreview = document.getElementById('imgPreview');
+      imgPreview.src = null;
+      imgPreview.style.display = 'none';
+      current_btn.className = "fas fa-image";
+    }
+  });
+</script>
 
 <script>
   // Show the modal when the plus button is clicked
@@ -736,9 +779,9 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
     if (event.data) {
       console.log(event.data);
       var modal_reader = document.getElementById("popup-card-qr-code-reader");
-      
+
       if (event.data.message == "the qr is ready :") {
-        
+
         modal_reader.style.display = "none";
         closeChatModalHere();
         handleChatQrCodeDataGet(event.data.data);
