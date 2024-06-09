@@ -16,7 +16,8 @@
     <link rel="shortcut icon" type="image/png" href="assets/favicon.png"/>
     <link rel="stylesheet" href="CSS/main.css">
     <link rel="stylesheet" href="CSS/corner.css">
-    <title>HireUp To Do List</title>
+    <!-- <title>HireUp To Do List</title> -->
+    <title>To DoUp</title>
 
 </head>
 
@@ -27,7 +28,8 @@
             <div class="light-theme theme-selector"></div>
             <div class="darker-theme theme-selector"></div>
         </div>
-        <h1 id="title">Just do it.<div id="border"></div></h1>
+        <!-- <h1 id="title">Just do it.<div id="border"></div></h1> -->
+        <h1 id="title">To DoUp.<div id="border"></div></h1>
     </div>
 
   <div id="form">

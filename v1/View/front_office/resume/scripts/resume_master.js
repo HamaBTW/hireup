@@ -101,13 +101,20 @@ function clearSkill() {
 
 function loadSkill(id) {
     resume_data = loadResumeData();
-    skill = resume_data.skills[id];
-    return skill;
+    for(i=0; i<resume_data.skills.length; i++) {
+        if (resume_data.skills[i].id == id) {
+            return resume_data.skills[i];
+        }
+    }
+
+    return null;
+        
+
 }
 
 function addSkill() {
     resume_data = loadResumeData();
-    id = resume_data.skills.length;
+    id = (resume_data.skills.length).toString();
     skill = document.getElementById('resume_skills').value;
     skill_progress = document.getElementById('resume_progress').value;
     skill = makeSkill(id, skill, skill_progress);
@@ -133,10 +140,23 @@ function editSkill(id) {
     resume_data = loadResumeData();
     //skill = makeSkill(id);
     //resume_data.skills[id] = skill;
-    showModal();
+    showModal(id);
     saveResumeData(resume_data);
 }
 
+function updateSkill(id, skill) {
+    resume_data = loadResumeData();
+    for(i=0; i<resume_data.skills.length; i++) {
+        if (resume_data.skills[i].id == id) {
+            resume_data.skills[i] = skill;
+            return resume_data;
+        }
+    }
+
+    return resume_data;
+        
+
+}
 
 //work
 function makeWork(id, job_exp, company, start_date, end_date, description) {
@@ -159,13 +179,18 @@ function clearWork() {
 
 function loadWork(id) {
     resume_data = loadResumeData();
-    experience = resume_data.experiences[id];
-    return experience;
+    for(i=0; i<resume_data.experiences.length; i++) {
+        if (resume_data.experiences[i].id == id) {
+            return resume_data.experiences[i];
+        }
+    }
+
+    return null;
 }
 
 function addWork() {
     resume_data = loadResumeData();
-    id = resume_data.experiences.length;
+    id = (resume_data.experiences.length).toString();
 
     job_exp = document.getElementById('job_exp').value;
     company = document.getElementById('exp_company').value;
@@ -193,9 +218,20 @@ function removeWork(id) {
 
 function editWork(id) {
     resume_data = loadResumeData();
-    experience = makeWork(id);
-    //resume_data.experiences[id] = experiences;
+    showModalWork(id);
     saveResumeData(resume_data);
+}
+
+function updateWork(id, work) {
+    resume_data = loadResumeData();
+    for(i=0; i<resume_data.experiences.length; i++) {
+        if (resume_data.experiences[i].id == id) {
+            resume_data.experiences[i] = work;
+            return resume_data;
+        }
+    }
+
+    return resume_data;
 }
 
 //education
@@ -218,15 +254,22 @@ function clearEducation() {
 
 }
 
-function loadEducation(id) {
+function loadEducation(id){
+
     resume_data = loadResumeData();
-    education = resume_data.educations[id];
-    return education;
+    for(i=0; i<resume_data.educations.length; i++) {
+        if (resume_data.educations[i].id == id) {
+            return resume_data.educations[i];
+        }
+    }
+
+    return null;
+
 }
 
 function addEducation() {
     resume_data = loadResumeData();
-    id = resume_data.educations.length;
+    id = (resume_data.educations.length).toString();
 
     eduIns = document.getElementById('edu_institution').value;
     eduStart = document.getElementById('edu_start').value;
@@ -254,9 +297,23 @@ function removeEducation(id) {
 
 function editEducation(id) {
     resume_data = loadResumeData();
-    education = makeEducation(id);
-    resume_data.educations[id] = education;
+    showModalEducation(id);
     saveResumeData(resume_data);
+}
+
+function updateEducation(id, education) {
+
+    resume_data = loadResumeData();
+    for(i=0; i<resume_data.educations.length; i++) {
+        if (resume_data.educations[i].id == id) {
+            resume_data.educations[i] = education;
+
+            return resume_data;
+        }
+    }
+
+    return resume_data;
+
 }
 
 // generators
@@ -281,8 +338,8 @@ function loadSkillsToDropDown(skills) {
         item.innerHTML = `
                                         <span>${skill.name}</span>
                                         <div>
-                                            <a href="javascript:void(0);" onclick="editSkill(${skill.id})"><i class="fa fa-edit text-primary"></i></a>
-                                            <a href="javascript:void(0);" onclick="removeSkill(${skill.id})"><i class="fa fa-x text-danger"></i></a>
+                                            <a href="javascript:void(0);" onclick="editSkill('${skill.id}')"><i class="fa fa-edit text-primary"></i></a>
+                                            <a href="javascript:void(0);" onclick="removeSkill('${skill.id}')"><i class="fa fa-x text-danger"></i></a>
                                         </div>
                                     `;
         dropdownMenu_s.appendChild(item);
@@ -310,8 +367,8 @@ function loadWorksToDropDown(works) {
         item.innerHTML = `
                                         <span>${work.job_exp}</span>
                                         <div>
-                                            <a href="javascript:void(0);" onclick="editWork(${work.id})"><i class="fa fa-edit text-primary"></i></a>
-                                            <a href="javascript:void(0);" onclick="removeWork(${work.id})"><i class="fa fa-x text-danger"></i></a>
+                                            <a href="javascript:void(0);" onclick="editWork('${work.id}')"><i class="fa fa-edit text-primary"></i></a>
+                                            <a href="javascript:void(0);" onclick="removeWork('${work.id}')"><i class="fa fa-x text-danger"></i></a>
                                         </div>
                                     `;
         dropdownMenu_w.appendChild(item);
@@ -343,8 +400,8 @@ function loadEducationToDropDown(educs) {
         item.innerHTML = `
                                         <span>${educ.inst}</span>
                                         <div>
-                                            <a href="javascript:void(0);" onclick="editEducation(${educ.id})"><i class="fa fa-edit text-primary"></i></a>
-                                            <a href="javascript:void(0);" onclick="removeEducation(${educ.id})"><i class="fa fa-x text-danger"></i></a>
+                                            <a href="javascript:void(0);" onclick="editEducation('${educ.id}')"><i class="fa fa-edit text-primary"></i></a>
+                                            <a href="javascript:void(0);" onclick="removeEducation('${educ.id}')"><i class="fa fa-x text-danger"></i></a>
                                         </div>
                                     `;
         dropdownMenu_e.appendChild(item);
@@ -359,6 +416,162 @@ function makeDataResume() {
 }
 
 //modale
+
+//skill
+function loadSkillToModal(skill) {
+    console.log("loadSkillToModal");
+    console.log(skill);
+    document.getElementById('skillIdEd').value = skill.id;
+    document.getElementById('skillNameEd').value = skill.name;
+    document.getElementById('skillProgressEd').value = skill.progress;
+}
+
+
+function showModal(id) {
+    skill = loadSkill(id);
+    loadSkillToModal(skill);
+    const modal = document.getElementById('editSkillModal');
+    modal.classList.add('show');
+    modal.style.display = 'block';
+    document.body.classList.add('modal-open');
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    document.body.appendChild(backdrop);
+    updateProgressBar2();
+}
+
+function closeModal() {
+    const modal = document.getElementById('editSkillModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.parentNode.removeChild(backdrop);
+    }
+}
+
+function loadSkillFromModal() {
+    id = document.getElementById('skillIdEd').value,
+    name_sk = document.getElementById('skillNameEd').value,
+    progress = document.getElementById('skillProgressEd').value
+    skill = makeSkill(id, name_sk, progress);
+    data = updateSkill(id, skill);
+    saveResumeData(data);
+    loadSkillsToDropDown(data.skills);
+    closeModal();
+}
+
+
+//work
+function loadWorkToModal(work){
+    document.getElementById('job_id_ed').value = work.id;
+    document.getElementById('job_exp_ed').value = work.job_exp;
+    document.getElementById('exp_company_ed').value = work.company;
+    document.getElementById('exp_start_ed').value = work.start_date;
+    document.getElementById('exp_end_ed').value = work.end_date;
+    document.getElementById('exp_description_ed').value = work.description;
+}
+
+function showModalWork() {
+    work = loadWork(id);
+    loadWorkToModal(work);
+    const modal = document.getElementById('editWorkModal');
+    modal.classList.add('show');
+    modal.style.display = 'block';
+    document.body.classList.add('modal-open');
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    document.body.appendChild(backdrop);
+}
+
+function closeModalWork() {
+    const modal = document.getElementById('editWorkModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.parentNode.removeChild(backdrop);
+    }
+}
+
+function loadWorkFromModal() {
+    id = document.getElementById('job_id_ed').value;
+    job_exp = document.getElementById('job_exp_ed').value;
+    company = document.getElementById('exp_company_ed').value;
+    start_date = document.getElementById('exp_start_ed').value;
+    end_date = document.getElementById('exp_end_ed').value;
+    description = document.getElementById('exp_description_ed').value;
+    work = makeWork(id, job_exp, company, start_date, end_date, description);
+    data = updateWork(id, work);
+    saveResumeData(data);
+    loadWorksToDropDown(data.experiences);
+    closeModalWork();
+}
+
+
+//education
+function loadEduToModal(educ){
+    document.getElementById('edit_edu_id').value = educ.id;
+    document.getElementById('edit_edu_institution').value = educ.inst;
+    document.getElementById('edit_edu_start').value = educ.start_date;
+    document.getElementById('edit_edu_end').value = educ.end_date;
+    document.getElementById('edit_edu_degree').value = educ.degree;
+    document.getElementById('edit_edu_description').value = educ.description;
+}
+
+function showModalEducation() {
+    education = loadEducation(id);
+    loadEduToModal(education);
+    const modal = document.getElementById('editEduModal');
+    modal.classList.add('show');
+    modal.style.display = 'block';
+    document.body.classList.add('modal-open');
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    document.body.appendChild(backdrop);
+}
+
+function closeModalEducation() {
+    const modal = document.getElementById('editEduModal');
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+        backdrop.parentNode.removeChild(backdrop);
+    }
+}
+
+function loadEducationFromModal() {
+    id = document.getElementById('edit_edu_id').value;
+    eduIns = document.getElementById('edit_edu_institution').value;
+    eduStart = document.getElementById('edit_edu_start').value;
+    eduEnd = document.getElementById('edit_edu_end').value;
+    eduDegree = document.getElementById('edit_edu_degree').value;
+    eduDesc = document.getElementById('edit_edu_description').value;
+    education = makeEducation(id, eduIns, eduStart, eduEnd, eduDegree, eduDesc);
+    data = updateEducation(id, education);
+    saveResumeData(data);
+    loadEducationToDropDown(data.educations);
+    closeModalEducation();
+}
+
+
+//progress bar
+function updateProgressBar2() {
+    const input = document.getElementById('skillProgressEd');
+    const progressBar = document.getElementById('progress-bar2');
+    let value = input.value;
+
+    if (value < 1) value = 1;
+    if (value > 100) value = 100;
+
+    progressBar.style.width = value + '%';
+}
+
+// on load
 
 document.addEventListener('DOMContentLoaded', function() {
     // Function to execute on page load

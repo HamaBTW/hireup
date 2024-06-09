@@ -424,7 +424,7 @@ include ('./../../../View/callback.php')
         }
 
 
-        .form-group > span {
+        .form-group>span {
             color: red;
         }
     </style>
@@ -729,7 +729,8 @@ include ('./../../../View/callback.php')
                                         <div class="progress">
                                             <div class="progress-bar" id="progress-bar"></div>
                                         </div>
-                                        <span id="progress_error"></span> <!-- Error message placeholder -->
+                                        <span id="progress_error" class="text-danger"></span>
+                                        <!-- Error message placeholder -->
                                     </div>
 
                                 </div>
@@ -761,7 +762,7 @@ include ('./../../../View/callback.php')
                                                 class="fa fa-plus"></i>
                                             Skill</button>
 
-                                        <span id="submit_skill_error"></span> <!-- Error message placeholder -->
+
 
                                         <div class="dropdown-container mr-3">
                                             <a href="javascript:void()" class="btn btn-outline-secondary"
@@ -771,6 +772,11 @@ include ('./../../../View/callback.php')
                                             </div>
                                         </div>
 
+                                    </div>
+                                    <div class="form-group text-center"
+                                        style="text-align: center !important; justify-content: center !important;">
+                                        <span id="submit_skill_error" class="text-danger text-center"></span>
+                                        <!-- Error message placeholder -->
                                     </div>
                                 </div>
 
@@ -866,7 +872,7 @@ include ('./../../../View/callback.php')
                                                 class="fa fa-plus mr-3"></i>
                                             Experience</button>
 
-                                        <span id="submit_work_error"></span> <!-- Error message placeholder -->
+
 
                                         <div class="dropdown-container mr-3">
                                             <a href="javascript:void()" class="btn btn-outline-secondary"
@@ -877,6 +883,11 @@ include ('./../../../View/callback.php')
                                             </div>
                                         </div>
 
+                                    </div>
+                                    <div class="form-group text-center"
+                                        style="text-align: center !important; justify-content: center !important;">
+                                        <span id="submit_work_error" class="text-danger text-center"></span>
+                                        <!-- Error message placeholder -->
                                     </div>
                                 </div>
 
@@ -955,7 +966,8 @@ include ('./../../../View/callback.php')
                                                 cols="40" name="edu_description" id="edu_description"
                                                 class="form-control" placeholder="Description"></textarea>
                                         </div>
-                                        <span id="edu_desc_error"></span> <!-- Error message placeholder -->
+                                        <span id="edu_desc_error" class="text-danger"></span>
+                                        <!-- Error message placeholder -->
                                     </div>
                                 </div>
 
@@ -967,15 +979,12 @@ include ('./../../../View/callback.php')
 
                                 <div class="col-sm-12">
 
-
-
                                     <div class="form-group text-center">
                                         <button type="button" onclick="return educationSubmit()"
                                             id="education_form_submit" name="education_form_submit"
                                             class="btn btn-info"><i class="fa fa-plus"></i>
                                             Education</button>
-                                        <span id="submit_edu_error"></span> <!-- Error message placeholder -->
-
+                                            
                                         <div class="dropdown-container mr-3">
                                             <a href="javascript:void()" class="btn btn-outline-secondary"
                                                 id="dropdownToggle3">My
@@ -986,9 +995,16 @@ include ('./../../../View/callback.php')
                                         </div>
 
                                     </div>
-                                </div>
+                                    <div class="form-group text-center"
+                                        style="text-align: center !important; justify-content: center !important;">
+                                        <span id="submit_edu_error" class="text-danger text-center"></span>
+                                        <!-- Error message placeholder -->
+                                    </div>
 
-                                <div id="educations-output"></div>
+                                </div>
+                                
+
+                                <!-- <div id="educations-output"></div> -->
 
                                 <div class="divider-50"></div>
 
@@ -999,7 +1015,13 @@ include ('./../../../View/callback.php')
                                         <button type="button" id="resume_form_submit" name="resume_submit"
                                             class="btn btn-primary" onclick="return resumeSubmit();">Submit
                                             CV</button>
-                                        <span id="submit_cv_error"></span> <!-- Error message placeholder -->
+
+                                    </div>
+
+                                    <div class="form-group text-center"
+                                        style="text-align: center !important; justify-content: center !important;">
+                                        <span id="submit_cv_error" class="text-danger text-center"></span>
+                                        <!-- Error message placeholder -->
                                     </div>
                                 </div>
                             </form>
@@ -1019,10 +1041,11 @@ include ('./../../../View/callback.php')
     <!-- eof #canvas -->
 
 
-    <!-- Modal -->
+    <!-- Modal skill -->
     <div class="modal fade" id="editSkillModal" tabindex="-1" aria-labelledby="editSkillModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
+                <input type="hidden" id="skillIdEd">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editSkillModalLabel">Edit Skill</h5>
                     <button type="button" class="close" onclick="closeModal()">
@@ -1030,29 +1053,147 @@ include ('./../../../View/callback.php')
                     </button>
                 </div>
 
-                
+
                 <div class="modal-body">
                     <form id="editSkillForm">
                         <div class="form-group">
                             <label for="skillName">Skill Name</label>
-                            <input type="text" class="form-control" id="skillName" name="skillName" required>
+                            <input type="text" onkeyup="validateSkillNameEd();" class="form-control" id="skillNameEd"
+                                name="skillNameEd">
+                            <span id="skillName_error_ed" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label for="skillProgress">Skill Progress</label>
-                            <input type="number" class="form-control" id="skillProgress" name="skillProgress" min="1"
-                                max="100" required oninput="updateProgressBar()">
+                            <input type="number" onkeyup="validateSkillProgressEd();" class="form-control"
+                                id="skillProgressEd" name="skillProgressEd" min="1" max="100"
+                                oninput="updateProgressBar2()">
+
                         </div>
                         <div class="progress mb-3">
-                            <div class="progress-bar" id="progress-bar"></div>
+                            <div class="progress-bar" id="progress-bar2"></div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <span id="skillProgress_error_ed" class="text-danger"></span>
+
+                        <button type="button" class="btn btn-primary" onclick="modalSkillVerif();">Save changes</button>
+                        <span id="edit_skill_error" class="text-danger"></span>
                     </form>
                 </div>
+
+
 
 
             </div>
         </div>
     </div>
+
+    <!-- Modal work -->
+    <div class="modal fade" id="editWorkModal" tabindex="-1" aria-labelledby="editWorkModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <input type="hidden" id="job_id_ed">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editWorkModalLabel">Edit Work</h5>
+                    <button type="button" class="close" onclick="closeModalWork()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editWorkForm">
+                        <div class="form-group">
+                            <label for="job_exp">Job Experience</label>
+                            <input type="text" onkeyup="validateJobExperienceEd();" placeholder="Enter Job Experience"
+                                class="form-control" id="job_exp_ed" name="job_exp_ed">
+                            <span id="jobName_error_ed" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="exp_company">Company</label>
+                            <input type="text" onkeyup="validateCompanyEd();" placeholder="Enter Company Name"
+                                class="form-control" id="exp_company_ed" name="exp_company_ed">
+                            <span id="company_error_ed" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="exp_start">Start Date</label>
+                            <input type="text" class="form-control" id="exp_start_ed" name="exp_start_ed"
+                                placeholder="DD/MM/YYYY" onkeyup="validateWorkStartEd();">
+                            <span id="work_start_error_ed" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="exp_end">End Date</label>
+                            <input type="text" class="form-control" id="exp_end_ed" name="exp_end_ed"
+                                placeholder="DD/MM/YYYY" onkeyup="validateWorkEndEd();">
+                            <span id="work_end_error_ed" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="exp_description">Description</label>
+                            <textarea class="form-control" id="exp_description_ed" name="exp_description_ed" rows="3"
+                                placeholder="Enter Description" onkeyup="validateWorkDescriptionEd();"></textarea>
+                            <span id="work_desc_error_ed" class="text-danger"></span>
+                        </div>
+
+                        <button type="button" class="btn btn-primary" onclick="modalWorkVerif()">Save changes</button>
+                        <span id="edit_work_error" class="text-danger"></span>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal education -->
+    <div class="modal fade" id="editEduModal" tabindex="-1" aria-labelledby="editEduModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <input type="hidden" id="edit_edu_id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editEduModalLabel">Edit Education</h5>
+                    <button type="button" class="close" onclick="closeModalEducation()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editEduForm">
+                        <div class="form-group">
+                            <label for="edit_edu_institution">Institution</label>
+                            <input type="text" class="form-control" id="edit_edu_institution"
+                                name="edit_edu_institution" placeholder="Enter Institution Name"
+                                onkeyup="validateInstitutionEd();">
+                            <span id="institut_error_ed" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_edu_start">Start Date</label>
+                            <input type="text" class="form-control" id="edit_edu_start" name="edit_edu_start"
+                                placeholder="DD/MM/YYYY" onkeyup="validateEduStartEd();">
+                            <span id="edu_start_error_ed" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_edu_end">End Date</label>
+                            <input type="text" class="form-control" id="edit_edu_end" name="edit_edu_end"
+                                placeholder="DD/MM/YYYY" onkeyup="validateEduEndEd();">
+                            <span id="edu_end_error_ed" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_edu_degree">Degree</label>
+                            <input type="text" class="form-control" id="edit_edu_degree" name="edit_edu_degree"
+                                placeholder="Enter Degree" onkeyup="validateDegreeEd();">
+                            <span id="degree_error_ed" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_edu_description">Description</label>
+                            <textarea class="form-control" id="edit_edu_description" name="edit_edu_description"
+                                rows="3" placeholder="Enter Description"
+                                onkeyup="validateEduDescriptionEd();"></textarea>
+                            <span id="edu_desc_error_ed" class="text-danger"></span>
+                        </div>
+
+                        <button type="button" class="btn btn-primary" onclick="modalEducVerif()">Save changes</button>
+                        <span id="edit_edu_error" class="text-danger"></span>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
 
 
@@ -1070,7 +1211,7 @@ include ('./../../../View/callback.php')
 
 
     <script src="./scripts/resume_master.js"></script>
-    <script src="./scripts/resume_form_control.js"></script>>
+    <script src="./scripts/resume_form_control.js"></script>
 
     <script>
         function resumeSubmit() {
@@ -1135,26 +1276,33 @@ include ('./../../../View/callback.php')
         }
 
 
-        function showModal() {
-            const modal = document.getElementById('editSkillModal');
-            modal.classList.add('show');
-            modal.style.display = 'block';
-            document.body.classList.add('modal-open');
-            const backdrop = document.createElement('div');
-            backdrop.className = 'modal-backdrop fade show';
-            document.body.appendChild(backdrop);
+        function modalEducVerif() {
+            ok = validateEduSubmitEd();
+            if (ok) {
+                loadEducationFromModal();
+            }
+
+            return ok;
         }
 
-        function closeModal() {
-            const modal = document.getElementById('editSkillModal');
-            modal.classList.remove('show');
-            modal.style.display = 'none';
-            document.body.classList.remove('modal-open');
-            const backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) {
-                backdrop.parentNode.removeChild(backdrop);
+        function modalWorkVerif() {
+            ok = validateWorkSubmitEd();
+            if (ok) {
+                loadWorkFromModal();
             }
+
+            return ok;
         }
+
+        function modalSkillVerif() {
+            ok = validateSkillSubmitEd();
+            if (ok) {
+                loadSkillFromModal();
+            }
+
+            return ok;
+        }
+
 
 
     </script>

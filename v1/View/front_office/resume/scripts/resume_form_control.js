@@ -31,6 +31,27 @@ var addEduError = document.getElementById("submit_edu_error");
 var addCVError = document.getElementById("submit_cv_error");
 var addWorkError = document.getElementById("submit_work_error");
 
+/* update Errors */
+// Error elements for "Edit" modals
+var skillNameErrorEd = document.getElementById("skillName_error_ed");
+var skillProgressErrorEd = document.getElementById("skillProgress_error_ed");
+
+var jobNameErrorEd = document.getElementById("jobName_error_ed");
+var workStartErrorEd = document.getElementById("work_start_error_ed");
+var workEndErrorEd = document.getElementById("work_end_error_ed");
+var companyErrorEd = document.getElementById("company_error_ed");
+var workDescErrorEd = document.getElementById("work_desc_error_ed");
+
+var institutErrorEd = document.getElementById("institut_error_ed");
+var eduStartErrorEd = document.getElementById("edu_start_error_ed");
+var eduEndErrorEd = document.getElementById("edu_end_error_ed");
+var degreeErrorEd = document.getElementById("degree_error_ed");
+var eduDescErrorEd = document.getElementById("edu_desc_error_ed");
+
+var editSkillError = document.getElementById("edit_skill_error");
+var editEduError = document.getElementById("edit_edu_error");
+var editWorkError = document.getElementById("edit_work_error");
+
 function validateName() {
     var fname = document.getElementById("resume_name").value;
 
@@ -314,19 +335,21 @@ function validateAddEdu() {
 }
 
 function validateAddCV() {
-    var fname = document.getElementById("resume_name").value;
-    var phone = document.getElementById("resume_phone").value;
-    var email = document.getElementById("email").value;
-    var job = document.getElementById("resume_job").value;
-    var adress = document.getElementById("resume_adresse").value;
-    var about = document.getElementById("resume_about_me").value;
+    var fname = validateName();
+    var phone = validatePhone();
+    var email = validateEmail();
+    var job = validateJob();
+    var adress = validateAdress();
+    var imag = validateImg();
+    var about = validateAbout();
 
-    if (fname.length == 0 || phone.length == 0 || email.length == 0 || job.length == 0 || adress.length == 0 || about.length == 0) {
-        addCVError.innerHTML = "Please fill out all required fields.";
-        return false;
+    if (fname && phone && email && job && adress && imag && about) {
+        addCVError.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+        return true;
     }
-    addCVError.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
-    return true;
+    addCVError.innerHTML = "Please fill out all required fields.";
+    return false;
+    
 }
 
 function validateAddWork() {
@@ -520,3 +543,203 @@ document.getElementById("exp_start").addEventListener('input', formatDateInput);
 document.getElementById("exp_end").addEventListener('input', formatDateInput);
 document.getElementById("edu_start").addEventListener('input', formatDateInput);
 document.getElementById("edu_end").addEventListener('input', formatDateInput);
+
+
+
+
+
+/* **************************************************** */
+/* **************************************************** */
+/* **************************************************** */
+
+
+
+/* EDIT VALIDATIONS */
+
+function validateSkillNameEd() {
+    var skillNameEd = document.getElementById("skillNameEd").value;
+    if (skillNameEd.length == 0) {
+        skillNameErrorEd.innerHTML = "Skill Name is required.";
+        return false;
+    }
+    skillNameErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+
+function validateSkillProgressEd() {
+    var skillProgressEd = document.getElementById("skillProgressEd").value;
+    if (skillProgressEd.length == 0) {
+        skillProgressErrorEd.innerHTML = "Skill Progress is required.";
+        return false;
+    }
+    if (skillProgressEd < 1 || skillProgressEd > 100) {
+        skillProgressErrorEd.innerHTML = "Skill Progress must be between 1 and 100.";
+        return false;
+    }
+    skillProgressErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+// Work Experience validation for Edit modal
+function validateJobExperienceEd() {
+    var jobExpEd = document.getElementById("job_exp_ed").value;
+    if (jobExpEd.length == 0) {
+        jobNameErrorEd.innerHTML = "Job Experience is required.";
+        return false;
+    }
+    jobNameErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateCompanyEd() {
+    var companyEd = document.getElementById("exp_company_ed").value;
+    if (companyEd.length == 0) {
+        companyErrorEd.innerHTML = "Company is required.";
+        return false;
+    }
+    companyErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateWorkStartEd() {
+    var workStartEd = document.getElementById("exp_start_ed").value;
+    if (!validateDateFormatAndRange(workStartEd)) {
+        workStartErrorEd.innerHTML = "Invalid Start Date. Please enter a valid date in the format DD/MM/YYYY.";
+        return false;
+    }
+    workStartErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateWorkEndEd() {
+    var workEndEd = document.getElementById("exp_end_ed").value;
+    if (!validateDateFormatAndRange(workEndEd)) {
+        workEndErrorEd.innerHTML = "Invalid End Date. Please enter a valid date in the format DD/MM/YYYY.";
+        return false;
+    }
+    var workStartEd = document.getElementById("exp_start_ed").value;
+    if (new Date(workEndEd.split('/').reverse().join('-')) < new Date(workStartEd.split('/').reverse().join('-'))) {
+        workEndErrorEd.innerHTML = "End Date cannot be before Start Date.";
+        return false;
+    }
+    workEndErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateWorkDescriptionEd() {
+    var workDescEd = document.getElementById("exp_description_ed").value;
+    if (workDescEd.length == 0) {
+        workDescErrorEd.innerHTML = "Description is required.";
+        return false;
+    }
+    workDescErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+// Education validation for Edit modal
+function validateInstitutionEd() {
+    var institutionEd = document.getElementById("edit_edu_institution").value;
+    if (institutionEd.length == 0) {
+        institutErrorEd.innerHTML = "Institution is required.";
+        return false;
+    }
+    institutErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateEduStartEd() {
+    var eduStartEd = document.getElementById("edit_edu_start").value;
+    if (!validateDateFormatAndRange(eduStartEd)) {
+        eduStartErrorEd.innerHTML = "Invalid Start Date. Please enter a valid date in the format DD/MM/YYYY.";
+        return false;
+    }
+    eduStartErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateEduEndEd() {
+    var eduEndEd = document.getElementById("edit_edu_end").value;
+    if (!validateDateFormatAndRange(eduEndEd)) {
+        eduEndErrorEd.innerHTML = "Invalid End Date. Please enter a valid date in the format DD/MM/YYYY.";
+        return false;
+    }
+    var eduStartEd = document.getElementById("edit_edu_start").value;
+    if (new Date(eduEndEd.split('/').reverse().join('-')) < new Date(eduStartEd.split('/').reverse().join('-'))) {
+        eduEndErrorEd.innerHTML = "End Date cannot be before Start Date.";
+        return false;
+    }
+    eduEndErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateDegreeEd() {
+    var degreeEd = document.getElementById("edit_edu_degree").value;
+    if (degreeEd.length == 0) {
+        degreeErrorEd.innerHTML = "Degree is required.";
+        return false;
+    }
+    degreeErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+function validateEduDescriptionEd() {
+    var eduDescEd = document.getElementById("edit_edu_description").value;
+    if (eduDescEd.length == 0) {
+        eduDescErrorEd.innerHTML = "Description is required.";
+        return false;
+    }
+    eduDescErrorEd.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+// Function to validate Skill form submission for Edit modal
+function validateSkillSubmitEd() {
+    var skillsValidEd = validateSkillNameEd();
+    var progressValidEd = validateSkillProgressEd();
+
+    if (!skillsValidEd || !progressValidEd) {
+        editSkillError.innerHTML = "Please fill out all required fields correctly.";
+        return false;
+    }
+    editSkillError.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+// Function to validate Work Experience form submission for Edit modal
+function validateWorkSubmitEd() {
+    var jobExpValidEd = validateJobExperienceEd();
+    var workStartValidEd = validateWorkStartEd();
+    var workEndValidEd = validateWorkEndEd();
+    var companyValidEd = validateCompanyEd();
+    var workDescValidEd = validateWorkDescriptionEd();
+
+    if (!jobExpValidEd || !workStartValidEd || !workEndValidEd || !companyValidEd || !workDescValidEd) {
+        editWorkError.innerHTML = "Please fill out all required fields correctly.";
+        return false;
+    }
+    editWorkError.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+// Function to validate Education form submission for Edit modal
+function validateEduSubmitEd() {
+    var institutionValidEd = validateInstitutionEd();
+    var eduStartValidEd = validateEduStartEd();
+    var eduEndValidEd = validateEduEndEd();
+    var degreeValidEd = validateDegreeEd();
+    var eduDescValidEd = validateEduDescriptionEd();
+
+    if (!institutionValidEd || !eduStartValidEd || !eduEndValidEd || !degreeValidEd || !eduDescValidEd) {
+        editEduError.innerHTML = "Please fill out all required fields correctly.";
+        return false;
+    }
+    editEduError.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+    return true;
+}
+
+// Event listeners to format the date inputs for Edit modals
+document.getElementById("exp_start_ed").addEventListener('input', formatDateInput);
+document.getElementById("exp_end_ed").addEventListener('input', formatDateInput);
+document.getElementById("edit_edu_start").addEventListener('input', formatDateInput);
+document.getElementById("edit_edu_end").addEventListener('input', formatDateInput);

@@ -43,12 +43,12 @@ $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
       <div class="footer col-md-4 text-center animate" data-animation="fadeInUp">
         <div class="text-center">
           <div class="header_logo_center footer-logo-ds">
-            <a href="index.php" class="logo">
-              <span class="logo_text">Hire</span>
+            <a href="<?php echo $current_url . "/index.php" ?>" class="logo">
+              <!-- <span class="logo_text">Hire</span> -->
               <span class="logo-img-front-footer">
                 <img class="img-front" alt="" />
               </span>
-              <span class="logo_subtext">Up</span>
+              <!-- <span class="logo_subtext">Up</span> -->
             </a>
           </div>
           <!-- eof .header_left_logo -->
