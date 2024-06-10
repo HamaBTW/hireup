@@ -858,16 +858,18 @@ include ('./../../../View/callback.php');
                                                     }
                                                     ?>
 
-                                                    <?php if ($job_apply['status'] == "pending"  && ($current_profile_sub == "advanced" || $current_profile_sub == "premium")) { ?>
+                                                    <?php if ($job_apply['status'] == "pending" ) { ?>
                                                         <div>
                                                             <p class=".force_p mt-5">Chance of Success <a href="javascript:void(0)"
                                                                     onclick="show_success_data('<?php echo $job_apply['apply_id']; ?>')">View
                                                                     more</a></p>
                                                             <!-- progress bar -->
+                                                            <?php if ($current_profile_sub == "advanced" || $current_profile_sub == "premium") { ?>
                                                             <?php $value = $resumeController->getApplyRank($job_apply['apply_id']); ?>
                                                             <progress id="progressBar" max="100"
                                                                 value="<?php echo $value; ?>"></progress>
                                                             <!-- end progress bar -->
+                                                            <?php } ?>
                                                         </div>
                                                     <?php } ?>
 
