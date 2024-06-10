@@ -692,9 +692,14 @@ $country_code = strtolower($user_infos['countryCode']);
               <hr class="dropdown-divider">
             </li>
             <!-- Try Premium -->
+            <?php if ($current_profile_sub == "limited") { ?>
             <li><a class="dropdown-header text-primary"
                 href="./subscription/subscriptionCards.php?profile_id=<?php echo $profile['profile_id'] ?>">Try Premium
                 for $0</a></li>
+            <?php } else {?>
+              <li><a class="dropdown-header text-primary"
+                href="./subscription/subscriptionCards.php?profile_id=<?php echo $profile['profile_id'] ?>">Upgrade Plan</a></li>
+            <?php } ?>
             <!-- Divider -->
             <li>
               <hr class="dropdown-divider">
