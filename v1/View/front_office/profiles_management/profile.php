@@ -700,7 +700,7 @@ $country_code = strtolower($user_infos['countryCode']);
             </li>
             <!-- Settings & Privacy -->
             <li><a class="dropdown-item"
-                href="./profile-settings-privacy.php?profile_id=<?php echo $profile['profile_id'] ?>">
+                href="./settings_privacy/edit-profile.php?profile_id=<?php echo $profile['profile_id'] ?>">
                 <i class="fas fa-cogs"></i> Settings & Privacy</a></li>
             <!-- Help Link -->
             <li><a class="dropdown-item" href="./../../../about.php"><i class="fas fa-question-circle"></i> Help</a>

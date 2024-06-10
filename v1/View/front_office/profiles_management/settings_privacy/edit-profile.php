@@ -247,7 +247,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                             <hr class="dropdown-divider">
                         </li>
                         <li><a class="dropdown-item"
-                                href="../profile-settings-privacy.php?profile_id=<?php echo $profile['profile_id'] ?>">Settings
+                                href="./edit-profile.php?profile_id=<?php echo $profile['profile_id'] ?>">Settings
                                 & Privacy</a></li>
                         <li><a class="dropdown-item" href="#">Help</a></li>
                         <li><a class="dropdown-item"
@@ -280,11 +280,13 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             <nav class="nav nav-borders">
                 <a class="nav-link active ms-0"
                     href="edit-profile.php?profile_id=<?php echo $profile['profile_id'] ?>">Profile</a>
-                <a class="nav-link" href="./billing-profile.php?profile_id=<?php echo $profile['profile_id'] ?>">Billing</a>
+                <a class="nav-link ms-0"
+                    href="close_account.php?profile_id=<?php echo $profile['profile_id'] ?>">Close Account</a>
+                <!-- <a class="nav-link" href="./billing-profile.php?profile_id=<?php echo $profile['profile_id'] ?>">Billing</a>
                 <a class="nav-link"
                     href="./security-profile.php?profile_id=<?php echo $profile['profile_id'] ?>">Security</a>
                 <a class="nav-link"
-                    href="./notifications-profile.php?profile_id=<?php echo $profile['profile_id'] ?>">Notifications</a>
+                    href="./notifications-profile.php?profile_id=<?php echo $profile['profile_id'] ?>">Notifications</a> -->
             </nav>
             <hr class="mt-0 mb-4">
             <div class="row">

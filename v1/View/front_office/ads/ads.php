@@ -221,7 +221,7 @@ if (isset($_SESSION['user id'])) {
 			<?php
 			$add_type = "center";
 			require __DIR__ . '/../../../View/front_office/ads/ads_containers.php'
-				?>
+			?>
 			<!-- End Ad -->
 
 			<!-- Footer -->

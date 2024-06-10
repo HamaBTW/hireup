@@ -392,7 +392,7 @@ include ('./../../../View/callback.php');
                     <label for="job_title">Job Title</label>
                     <div class="input-group">
                       <input type="text" class="form-control" id="job_title" name="job_title">
-                      <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('job_title')"></i>
+                      <!-- <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('job_title')"></i> -->
                     </div>
                     <span id="job_title_error" class="text-danger"></span> <!-- Error message placeholder -->
                   </div>
@@ -401,7 +401,7 @@ include ('./../../../View/callback.php');
                     <label for="company">Company</label>
                     <div class="input-group">
                       <input type="text" class="form-control" id="company" name="company">
-                      <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('company')"></i>
+                      <!-- <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('company')"></i> -->
                     </div>
                     <span id="job_company_error" class="text-danger"></span> <!-- Error message placeholder -->
                   </div>
@@ -423,7 +423,7 @@ include ('./../../../View/callback.php');
                     <label for="description">Description</label>
                     <div class="input-group">
                       <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                      <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('description')"></i>
+                      <!-- <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('description')"></i> -->
                     </div>
                     <span id="job_desc_error" class="text-danger"></span> <!-- Error message placeholder -->
                   </div>
@@ -432,7 +432,7 @@ include ('./../../../View/callback.php');
                     <label for="salary">Salary</label>
                     <div class="input-group">
                       <input type="text" class="form-control" id="salary" name="salary">
-                      <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('salary')"></i>
+                      <!-- <i class="fa fa-microphone voice-icon" onclick="startSpeechRecognition('salary')"></i> -->
                     </div>
                     <span id="job_salary_error" class="text-danger"></span> <!-- Error message placeholder -->
                   </div>

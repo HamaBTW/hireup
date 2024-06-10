@@ -159,13 +159,13 @@ $html.=                 '<div class="conversation-item-wrapper">
                                     <p>' . $msg['message_content'] . '</p>
                                     <div class="conversation-item-time">' . $time . '</div>
                                 </div>
-                                <div class="conversation-item-dropdown">
+                                <!-- <div class="conversation-item-dropdown">
                                     <button type="button" class="conversation-item-dropdown-toggle"><i class="ri-more-2-line"></i></button>
                                     <ul class="conversation-item-dropdown-list">
                                         <li><a href="#"><i class="ri-share-forward-line"></i> Forward</a></li>
                                         <li><a href="#"><i class="ri-delete-bin-line"></i> Delete</a></li>
                                     </ul>
-                                </div>
+                                </div> -->
                             </div>
                         </div>';
 
@@ -202,13 +202,13 @@ $html.=                 '<div class="conversation-item-wrapper">
                                     <p>' . $msg['message_content'] . '</p>
                                     <div class="conversation-item-time">' . $time . '</div>
                                 </div>
-                                <div class="conversation-item-dropdown">
+                                <!-- <div class="conversation-item-dropdown">
                                     <button type="button" class="conversation-item-dropdown-toggle"><i class="ri-more-2-line"></i></button>
                                     <ul class="conversation-item-dropdown-list">
                                         <li><a href="#"><i class="ri-share-forward-line"></i> Forward</a></li>
                                         <li><a href="#"><i class="ri-delete-bin-line"></i> Delete</a></li>
                                     </ul>
-                                </div>
+                                </div> -->
                             </div>
                         </div>';
 

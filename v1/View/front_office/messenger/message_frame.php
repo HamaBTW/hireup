@@ -68,18 +68,15 @@ if (!$profile) {
                 <div>
                     <div class="conversation-user-name">
                         <?php echo $profile['profile_first_name'] . " " . $profile['profile_family_name']; ?></div>
-                    <div class="conversation-user-status online">online</div>
+                    <!-- <div class="conversation-user-status online">online</div> -->
                 </div>
             </div>
-            <div class="conversation-buttons">
-                <button type="button"><i class="ri-phone-fill"></i></button>
-                <button type="button"><i class="ri-vidicon-line"></i></button>
-                <button type="button"><i class="ri-information-line"></i></button>
-            </div>
+            
         </div>
         <div class="conversation-main">
             <ul class="conversation-wrapper">
-                <div class="coversation-divider"><span>Today</span></div>
+                <!-- <div class="coversation-divider"><span>Today</span></div> -->
+                <div class="coversation-divider"><span></span></div>
 
                 <!-- <li class="conversation-item me">
                                 <div class="conversation-item-side">

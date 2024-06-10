@@ -278,7 +278,7 @@ $country_code = strtolower($user_infos['countryCode']);
 												<li>
 													<hr class="dropdown-divider">
 												</li>
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/profiles_management/profile-settings-privacy.php"; ?>">Settings
+												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/profiles_management/settings_privacy/edit-profile.php"; ?>">Settings
 														& Privacy</a></li>
 												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="#">Help</a></li> <!-- REST -->
 												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="#">Language</a></li> <!-- REST -->

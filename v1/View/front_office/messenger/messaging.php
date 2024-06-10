@@ -78,9 +78,9 @@ $user_friends = $friendshipC->getFriends($profile_id);
                 </a>
                 <ul class="chat-sidebar-menu">
                     <li class="active"><a title="#" href="#" data-title="Chats"><i class="ri-chat-3-line"></i></a></li>
-                    <li><a title="#" href="#" data-title="Contacts"><i class="ri-contacts-line"></i></a></li>
+                    <!-- <li><a title="#" href="#" data-title="Contacts"><i class="ri-contacts-line"></i></a></li>
                     <li><a title="#" href="#" data-title="Documents"><i class="ri-folder-line"></i></a></li>
-                    <li><a title="#" href="#" data-title="Settings"><i class="ri-settings-line"></i></a></li>
+                    <li><a title="#" href="#" data-title="Settings"><i class="ri-settings-line"></i></a></li> -->
                     <li class="chat-sidebar-profile">
                         <button title="#" type="button" class="chat-sidebar-profile-toggle">
                             <img src="data:image/jpeg;base64,<?= base64_encode($profile['profile_photo']) ?>" alt="<?= $profile['profile_first_name'] ?>">
@@ -103,13 +103,13 @@ $user_friends = $friendshipC->getFriends($profile_id);
                     <div class="conversation-form">Chat</div>
                     </div>
                     </div>
-                    <form action="" class="content-sidebar-form">
+                    <!-- <form action="" class="content-sidebar-form">
                         <input type="search" class="content-sidebar-input" placeholder="Search...">
                         <button title="#" type="submit" class="content-sidebar-submit"><i class="ri-search-line"></i></button>
-                    </form>
+                    </form> -->
                     <div class="content-messages">
                         <ul class="content-messages-list" id="content-messages-list">
-                            <li class="content-message-title"><span>Recently</span></li>
+                            <li class="content-message-title"><span>Followers</span></li>
                             
                             <?php
                             foreach ($user_friends as $user_friend) {
@@ -190,10 +190,9 @@ $user_friends = $friendshipC->getFriends($profile_id);
                     <input type="hidden" name="msg_to_profile_id" id="msg_to_profile_id">
                     <input type="hidden" name="go_back_to" id="go_back_to">
                     <div class="conversation-form">
-                            <button type="button" class="conversation-form-button"><i class="ri-emotion-line"></i></button>
                             <div class="conversation-form-group">
-                                <textarea class="conversation-form-input" rows="1" placeholder="Type here..." id="msg_text_area" name="msg_text_area"></textarea>
-                                <button type="button" class="conversation-form-record"><i class="ri-mic-line"></i></button>
+                                <textarea class="conversation-form-input" rows="1" placeholder="Type here..." id="msg_text_area" name="msg_text_area" onkeydown="if(event.key === 'Enter'){event.preventDefault(); if(this.value.trim() !== '') { this.form.submit(); }};"></textarea>
+                                <!-- <button type="button" class="conversation-form-record"><i class="ri-mic-line"></i></button> -->
                             </div>
                             <button type="submit" class="conversation-form-button conversation-form-submit"><i class="ri-send-plane-2-line"></i></button>
                         </div>

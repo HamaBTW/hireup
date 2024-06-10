@@ -1,12 +1,11 @@
-
-<?php 
+<?php
 
 require_once __DIR__ . '/../../../Controller/profileController.php';
 
 
 if (session_status() == PHP_SESSION_NONE) {
-    session_set_cookie_params(0, '/', '', true, true);
-    session_start();
+  session_set_cookie_params(0, '/', '', true, true);
+  session_start();
 }
 
 $profileController1 = new ProfileC();
@@ -16,27 +15,27 @@ $user_profile_id1 = '';
 
 //get user_profile id
 if (isset($_SESSION['user id'])) {
-    $user_id1 = htmlspecialchars($_SESSION['user id']);
-    $user_profile_id1 = $profileController->getProfileIdByUserId($user_id1);
-    $profile1 = $profileController->getProfileById($user_profile_id1);
+  $user_id1 = htmlspecialchars($_SESSION['user id']);
+  $user_profile_id1 = $profileController->getProfileIdByUserId($user_id1);
+  $profile1 = $profileController->getProfileById($user_profile_id1);
 }
 
 //fetch subscription
 $subs_type = array(
-    "1-ADVANCED-SUBS" => "advanced",
-    "1-BASIC-SUBS" => "basic",
-    "1-PREMIUM-SUBS" => "premium",
-    "else" => "limited"
+  "1-ADVANCED-SUBS" => "advanced",
+  "1-BASIC-SUBS" => "basic",
+  "1-PREMIUM-SUBS" => "premium",
+  "else" => "limited"
 );
 
 
 $current_profile_sub = "";
 if (array_key_exists($profile1['profile_subscription'], $subs_type)) {
-    // If it exists, return the corresponding value
-    $current_profile_sub = $subs_type[$profile1['profile_subscription']];
+  // If it exists, return the corresponding value
+  $current_profile_sub = $subs_type[$profile1['profile_subscription']];
 } else {
-    // If not, return 'bb'
-    $current_profile_sub = $subs_type['else'];
+  // If not, return 'bb'
+  $current_profile_sub = $subs_type['else'];
 }
 
 
@@ -276,6 +275,74 @@ if (array_key_exists($profile1['profile_subscription'], $subs_type)) {
   }
 </style>
 
+<!-- dropdown menu -->
+<style>
+  .dropdown-container {
+    position: relative;
+    display: inline-block;
+    width: 250px;
+  }
+
+  .dropdown-toggle {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 16px;
+  }
+
+  .dropdown_menu {
+    display: none;
+    position: absolute;
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    z-index: 1;
+    margin-top: 5px;
+    overflow: hidden;
+  }
+
+  .dropdown_menu .dropdown-item {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s;
+  }
+
+  .dropdown_menu .dropdown-item:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown_menu .dropdown-item:hover {
+    background-color: #f1f1f1;
+  }
+
+  .dropdown_menu .dropdown-item span {
+    flex-grow: 1;
+  }
+
+  .dropdown_menu .dropdown-item button {
+    margin-left: 5px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #007bff;
+    font-size: 16px;
+  }
+
+  .dropdown_menu .dropdown-item button:hover {
+    color: #0056b3;
+  }
+</style>
+
 
 <?php
 $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
@@ -365,31 +432,34 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
     </span>
 
     <?php if ($current_profile_sub == "advanced" || $current_profile_sub == "premium") { ?>
-    <p style="align-self: flex;
+      <p style="align-self: flex;
               color: #40A2D8;
               cursor: pointer;
               height: 55px;
               display: flex;
               align-items: center;
-              font-size: 1.35rem;" id="mic-btn" onclick="imgIconClicked()"><i
-        class="fas fa-image" id="img-bot-add-btn"></i>
-    </p>
-    <input type="file" id="hiddenFileInputImgBot" name="hiddenFileInputImgBot" style="display: none;" accept="image/*">
-    <img id="imgPreview" src="" alt="Image Preview" style="display: none; width: 200px; height: auto;">
+              font-size: 1.35rem;" id="mic-btn" onclick="imgIconClicked()"><i class="fas fa-image"
+          id="img-bot-add-btn"></i>
+      </p>
+      <input type="file" id="hiddenFileInputImgBot" name="hiddenFileInputImgBot" style="display: none;" accept="image/*">
+      <div class="dropdown_menu" id="dropdownMenuBot">
+        <!-- Items will be injected here via JavaScript -->
+        <!-- <img id="imgPreview" src="" alt="Image Preview" style="display: none; width: 200px; height: auto;"> -->
+      </div>
     <?php } ?>
 
 
     <!-- voice to text mic btn -->
     <?php if ($current_profile_sub == "advanced" || $current_profile_sub == "premium") { ?>
-    <p style="align-self: flex;
+      <p style="align-self: flex;
               color: #40A2D8;
               cursor: pointer;
               height: 55px;
               display: flex;
               align-items: center;
               font-size: 1.35rem;" id="mic-btn" onclick="startSpeechRecognition('textarea-bot')"><i
-        class="fas fa-microphone"></i>
-    </p>
+          class="fas fa-microphone"></i>
+      </p>
     <?php } ?>
 
   </div>
@@ -433,102 +503,102 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
       style="color: #aaa; float: left; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
 
     <?php if ($current_profile_sub == "premium") { ?>
-    <h3>Resume Analyser</h3>
+      <h3>Resume Analyser</h3>
 
-    <form id="resumeForm"
-      action="<?= $current_website_link ?>/View/front_office/jobs management/chatbot_analyse_resume.php" method="post"
-      enctype="multipart/form-data">
-      <div class="button-container">
+      <form id="resumeForm"
+        action="<?= $current_website_link ?>/View/front_office/jobs management/chatbot_analyse_resume.php" method="post"
+        enctype="multipart/form-data">
+        <div class="button-container">
 
-        <div id="add-resume-file-div" class="shown-btn">
-          <button type="button" id="fileButton" class="pdf-button"
-            onclick="document.getElementById('hiddenFileInput').click();">
-            <!-- <button type="button" id="fileButton" class="btn btn-primary" onclick="document.getElementById('hiddenFileInput').click();"> -->
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-              stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M13.5 3H12H8C6.34315 3 5 4.34315 5 6V18C5 19.6569 6.34315 21 8 21H11M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V11.8125"
-                stroke="#fffffff" stroke-width="2"></path>
-              <path d="M17 15V18M17 21V18M17 18H14M17 18H20" stroke="#fffffff" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round"></path>
-            </svg>
-            Add Resume
-          </button>
-          <input type="file" id="hiddenFileInput" name="resumeFile" style="display: none;" accept="application/pdf">
+          <div id="add-resume-file-div" class="shown-btn">
+            <button type="button" id="fileButton" class="pdf-button"
+              onclick="document.getElementById('hiddenFileInput').click();">
+              <!-- <button type="button" id="fileButton" class="btn btn-primary" onclick="document.getElementById('hiddenFileInput').click();"> -->
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13.5 3H12H8C6.34315 3 5 4.34315 5 6V18C5 19.6569 6.34315 21 8 21H11M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V11.8125"
+                  stroke="#fffffff" stroke-width="2"></path>
+                <path d="M17 15V18M17 21V18M17 18H14M17 18H20" stroke="#fffffff" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+              </svg>
+              Add Resume
+            </button>
+            <input type="file" id="hiddenFileInput" name="resumeFile" style="display: none;" accept="application/pdf">
+          </div>
+
+          <div id="add-resume-file-agian-div" class="hidden-btn">
+            <button type="button" id="fileButton1" class="pdf-button"
+              onclick="document.getElementById('hiddenFileInput1').click();">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M13.5 3H12H8C6.34315 3 5 4.34315 5 6V18C5 19.6569 6.34315 21 8 21H11M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V11.8125"
+                  stroke="#fffffff" stroke-width="2"></path>
+                <path d="M17 15V18M17 21V18M17 18H14M17 18H20" stroke="#fffffff" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+              </svg>
+              Again <span class="refresh" style="display: inline-block; transform: rotate(90deg);">↻</span>
+            </button>
+            <input type="file" id="hiddenFileInput1" name="resumeFile1" style="display: none;" accept="application/pdf">
+          </div>
+
+          <div id="add-resume-file-result-div" class="hidden-btn">
+            <button type="button" id="resultButton" class="results-button" onclick="getResumeResult()">
+              <svg fill="#FFFFFF" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <style>
+                    .cls-1 {
+                      fill: none;
+                    }
+                  </style>
+                </defs>
+                <rect x="13.9999" y="23" width="8" height="2" />
+                <rect x="9.9999" y="23" width="2" height="2" />
+                <rect x="13.9999" y="18" width="8" height="2" />
+                <rect x="9.9999" y="18" width="2" height="2" />
+                <rect x="13.9999" y="13" width="8" height="2" />
+                <rect x="9.9999" y="13" width="2" height="2" />
+                <path
+                  d="M25,5H22V4a2,2,0,0,0-2-2H12a2,2,0,0,0-2,2V5H7A2,2,0,0,0,5,7V28a2,2,0,0,0,2,2H25a2,2,0,0,0,2-2V7A2,2,0,0,0,25,5ZM12,4h8V8H12ZM25,28H7V7h3v3H22V7h3Z"
+                  transform="translate(0 0)" />
+                <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32"
+                  height="32" />
+              </svg>
+              Result
+            </button>
+          </div>
+
+
+
         </div>
+      </form>
 
-        <div id="add-resume-file-agian-div" class="hidden-btn">
-          <button type="button" id="fileButton1" class="pdf-button"
-            onclick="document.getElementById('hiddenFileInput1').click();">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-              stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M13.5 3H12H8C6.34315 3 5 4.34315 5 6V18C5 19.6569 6.34315 21 8 21H11M13.5 3L19 8.625M13.5 3V7.625C13.5 8.17728 13.9477 8.625 14.5 8.625H19M19 8.625V11.8125"
-                stroke="#fffffff" stroke-width="2"></path>
-              <path d="M17 15V18M17 21V18M17 18H14M17 18H20" stroke="#fffffff" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round"></path>
-            </svg>
-            Again <span class="refresh" style="display: inline-block; transform: rotate(90deg);">↻</span>
-          </button>
-          <input type="file" id="hiddenFileInput1" name="resumeFile1" style="display: none;" accept="application/pdf">
-        </div>
-
-        <div id="add-resume-file-result-div" class="hidden-btn">
-          <button type="button" id="resultButton" class="results-button" onclick="getResumeResult()">
-            <svg fill="#FFFFFF" viewBox="0 0 32 32" id="icon" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <style>
-                  .cls-1 {
-                    fill: none;
-                  }
-                </style>
-              </defs>
-              <rect x="13.9999" y="23" width="8" height="2" />
-              <rect x="9.9999" y="23" width="2" height="2" />
-              <rect x="13.9999" y="18" width="8" height="2" />
-              <rect x="9.9999" y="18" width="2" height="2" />
-              <rect x="13.9999" y="13" width="8" height="2" />
-              <rect x="9.9999" y="13" width="2" height="2" />
-              <path
-                d="M25,5H22V4a2,2,0,0,0-2-2H12a2,2,0,0,0-2,2V5H7A2,2,0,0,0,5,7V28a2,2,0,0,0,2,2H25a2,2,0,0,0,2-2V7A2,2,0,0,0,25,5ZM12,4h8V8H12ZM25,28H7V7h3v3H22V7h3Z"
-                transform="translate(0 0)" />
-              <rect id="_Transparent_Rectangle_" data-name="&lt;Transparent Rectangle&gt;" class="cls-1" width="32"
-                height="32" />
-            </svg>
-            Result
-          </button>
-        </div>
-
-
-
-      </div>
-    </form>
-
-    <hr>
+      <hr>
 
     <?php } ?>
 
     <?php if ($current_profile_sub == "premium") { ?>
 
-    <h3>Document Validator</h3>
+      <h3>Document Validator</h3>
 
-    <div class="button-container">
+      <div class="button-container">
 
-      <div id="open-qr-code-reader-div" class="shown-btn">
-        <button type="button" id="fileButton" class="pdf-button" onclick="showQrCodeReaderPopUp()">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-            aria-hidden="true">
-            <path
-              d="M16.8772 15L21 17C21 17 21.5 15 21.5 12C21.5 9 21 7 21 7L16.8772 9M16.8772 15C16.9538 14.0994 17 13.0728 17 12C17 10.9272 16.9538 9.9006 16.8772 9M16.8772 15C16.7318 16.7111 16.477 17.9674 16.2222 18.2222C15.8333 18.6111 13.1111 19 10 19C6.88889 19 4.16667 18.6111 3.77778 18.2222C3.38889 17.8333 3 15.1111 3 12C3 8.88889 3.38889 6.16667 3.77778 5.77778C4.16667 5.38889 6.88889 5 10 5C13.1111 5 15.8333 5.38889 16.2222 5.77778C16.477 6.03256 16.7318 7.28891 16.8772 9"
-              stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-          Verify Doc
-        </button>
+        <div id="open-qr-code-reader-div" class="shown-btn">
+          <button type="button" id="fileButton" class="pdf-button" onclick="showQrCodeReaderPopUp()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+              aria-hidden="true">
+              <path
+                d="M16.8772 15L21 17C21 17 21.5 15 21.5 12C21.5 9 21 7 21 7L16.8772 9M16.8772 15C16.9538 14.0994 17 13.0728 17 12C17 10.9272 16.9538 9.9006 16.8772 9M16.8772 15C16.7318 16.7111 16.477 17.9674 16.2222 18.2222C15.8333 18.6111 13.1111 19 10 19C6.88889 19 4.16667 18.6111 3.77778 18.2222C3.38889 17.8333 3 15.1111 3 12C3 8.88889 3.38889 6.16667 3.77778 5.77778C4.16667 5.38889 6.88889 5 10 5C13.1111 5 15.8333 5.38889 16.2222 5.77778C16.477 6.03256 16.7318 7.28891 16.8772 9"
+                stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Verify Doc
+          </button>
+        </div>
+
       </div>
 
-    </div>
-
-    <hr>
+      <hr>
 
     <?php } ?>
 
@@ -567,13 +637,19 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
 <script>
 
   function imgIconClicked() {
-    document.getElementById('hiddenFileInputImgBot').click();
+    dropdownMenuBot = document.getElementById('dropdownMenuBot');
+    current_btn = document.getElementById('img-bot-add-btn')
+    if (current_btn.className == "fas fa-image") {
+      document.getElementById('hiddenFileInputImgBot').click();
+    } else {
+      dropdownMenuBot.style.display = dropdownMenuBot.style.display === 'block' ? 'none' : 'block';
+    }
   }
 
   document.getElementById('hiddenFileInputImgBot').addEventListener('change', function (event) {
-    
+
     current_btn = document.getElementById('img-bot-add-btn')
-    
+
     const file = event.target.files[0];
     if (file) {
       if (current_btn.className == "fas fa-image") {
@@ -581,8 +657,10 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
       }
       const reader = new FileReader();
       reader.onload = function (e) {
+        showImage();
         const imgPreview = document.getElementById('imgPreview');
         imgPreview.src = e.target.result;
+
         imgPreview.style.display = 'block';
         //console.log(e.target.result);
         base64String = e.target.result;
@@ -597,6 +675,71 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
       localStorage.removeItem('uploadedImageBase64');
     }
   });
+
+  function showImage() {
+
+
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+
+    item.style.padding = "12px 16px";
+    item.style.display = "flex";
+    item.style.justifyContent = "space-between";
+    item.style.alignItems = "center";
+    item.style.borderBottom = "1px solid #ddd";
+    item.style.transition = "background-color 0.3s";
+
+    item.innerHTML = `
+            <img  width='60' height='60' id="imgPreview" >
+            <div>
+                <button onclick="viewImgBot()">View</button>
+                <button onclick="deleteImgBot()">Delete</button>
+            </div>
+        `;
+    dropdownMenuBot = document.getElementById('dropdownMenuBot');
+    dropdownMenuBot.appendChild(item);
+
+  }
+
+  dropdownMenuBot = document.getElementById('dropdownMenuBot');
+  dropdownToggleBot = document.getElementById('img-bot-add-btn');
+  document.addEventListener('click', (event) => {
+    if (!dropdownToggleBot.contains(event.target) && !dropdownMenuBot.contains(event.target)) {
+      dropdownMenuBot.style.display = 'none';
+    }
+  });
+
+  function viewImgBot() {
+
+    title = 'Image';
+    const imgPreview = document.getElementById('imgPreview');
+    const img = new Image();
+    img.src = imgPreview.src;
+    
+    // Extract the image name from the src attribute
+    
+    // Open a new window
+    const w = window.open("");
+    
+    // Set the document title to the image name
+    w.document.title = title;
+    
+    // Write the image to the new window's document
+    w.document.write(`<html><head><title>${title}</title></head><body>${img.outerHTML}</body></html>`);
+}
+
+
+  function deleteImgBot() {
+    document.getElementById('hiddenFileInputImgBot').value = null;
+    const imgPreview = document.getElementById('imgPreview');
+    imgPreview.src = null;
+    imgPreview.style.display = 'none';
+    current_btn = document.getElementById('img-bot-add-btn')
+    current_btn.className = "fas fa-image";
+    localStorage.removeItem('uploadedImageBase64');
+    dropdownMenuBot = document.getElementById('dropdownMenuBot');
+    dropdownMenuBot.style.display = 'none';
+  }
 </script>
 
 <script>
