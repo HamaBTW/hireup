@@ -160,6 +160,24 @@ if ($order_by == 'category') {
 // exit();
 
 
+//fetch subscription
+$subs_type = array(
+    "1-ADVANCED-SUBS" => "advanced",
+    "1-BASIC-SUBS" => "basic",
+    "1-PREMIUM-SUBS" => "premium",
+    "else" => "limited"
+);
+
+$current_profile_sub = "";
+if (array_key_exists($profile['profile_subscription'], $subs_type)) {
+    // If it exists, return the corresponding value
+    $current_profile_sub = $subs_type[$profile['profile_subscription']];
+} else {
+    // If not, return 'bb'
+    $current_profile_sub = $subs_type['else'];
+}
+
+
 
 $block_call_back = 'false';
 $access_level = "else";
@@ -964,7 +982,7 @@ include ('./../../../View/callback.php');
                                                 <?php } ?>
                                             </div>
 
-                                            <?php if ($status == "pending") { ?>
+                                            <?php if ($status == "pending"  && ($current_profile_sub == "advanced" || $current_profile_sub == "premium")) { ?>
                                                 <div>
                                                     <p class="mt-5">Chance of Success <a href="javascript:void(0)"
                                                             onclick="show_success_data('<?php echo $current_apply['apply_id']; ?>')">View

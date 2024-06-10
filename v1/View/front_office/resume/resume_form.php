@@ -50,9 +50,33 @@ if (isset($_SESSION['user id'])) {
 
 }
 
-$block_call_back = 'true';
-$access_level = "none";
-include ('./../../../View/callback.php')
+//fetch subscription
+$subs_type = array(
+    "1-ADVANCED-SUBS" => "advanced",
+    "1-BASIC-SUBS" => "basic",
+    "1-PREMIUM-SUBS" => "premium",
+    "else" => "limited"
+);
+
+$current_profile_sub = "";
+if (array_key_exists($profile['profile_subscription'], $subs_type)) {
+    // If it exists, return the corresponding value
+    $current_profile_sub = $subs_type[$profile['profile_subscription']];
+} else {
+    // If not, return 'bb'
+    $current_profile_sub = $subs_type['else'];
+}
+
+if ($current_profile_sub == "limited") {
+
+    header("Location: ./../profiles_management/subscription/subscriptionCards.php");
+    exit;
+
+}
+
+$block_call_back = 'false';
+$access_level = "else";
+include ('./../../../View/callback.php');
 
 
 

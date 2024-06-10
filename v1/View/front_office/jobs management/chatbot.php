@@ -1,3 +1,48 @@
+
+<?php 
+
+require_once __DIR__ . '/../../../Controller/profileController.php';
+
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_set_cookie_params(0, '/', '', true, true);
+    session_start();
+}
+
+$profileController1 = new ProfileC();
+
+$user_id1 = '';
+$user_profile_id1 = '';
+
+//get user_profile id
+if (isset($_SESSION['user id'])) {
+    $user_id1 = htmlspecialchars($_SESSION['user id']);
+    $user_profile_id1 = $profileController->getProfileIdByUserId($user_id1);
+    $profile1 = $profileController->getProfileById($user_profile_id1);
+}
+
+//fetch subscription
+$subs_type = array(
+    "1-ADVANCED-SUBS" => "advanced",
+    "1-BASIC-SUBS" => "basic",
+    "1-PREMIUM-SUBS" => "premium",
+    "else" => "limited"
+);
+
+
+$current_profile_sub = "";
+if (array_key_exists($profile1['profile_subscription'], $subs_type)) {
+    // If it exists, return the corresponding value
+    $current_profile_sub = $subs_type[$profile1['profile_subscription']];
+} else {
+    // If not, return 'bb'
+    $current_profile_sub = $subs_type['else'];
+}
+
+
+
+?>
+
 <style>
   .pdf-button {
     border: none;
@@ -319,6 +364,7 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
                 font-size: 1.35rem;" class="material-symbols-rounded mb-4"><i class="far fa-paper-plane"></i>
     </span>
 
+    <?php if ($current_profile_sub == "advanced" || $current_profile_sub == "premium") { ?>
     <p style="align-self: flex;
               color: #40A2D8;
               cursor: pointer;
@@ -330,7 +376,11 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
     </p>
     <input type="file" id="hiddenFileInputImgBot" name="hiddenFileInputImgBot" style="display: none;" accept="image/*">
     <img id="imgPreview" src="" alt="Image Preview" style="display: none; width: 200px; height: auto;">
+    <?php } ?>
 
+
+    <!-- voice to text mic btn -->
+    <?php if ($current_profile_sub == "advanced" || $current_profile_sub == "premium") { ?>
     <p style="align-self: flex;
               color: #40A2D8;
               cursor: pointer;
@@ -340,6 +390,7 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
               font-size: 1.35rem;" id="mic-btn" onclick="startSpeechRecognition('textarea-bot')"><i
         class="fas fa-microphone"></i>
     </p>
+    <?php } ?>
 
   </div>
 </div>
@@ -381,6 +432,7 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
     <span class="close" onclick="closeChatModalHere()"
       style="color: #aaa; float: left; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
 
+    <?php if ($current_profile_sub == "premium") { ?>
     <h3>Resume Analyser</h3>
 
     <form id="resumeForm"
@@ -454,6 +506,10 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
 
     <hr>
 
+    <?php } ?>
+
+    <?php if ($current_profile_sub == "premium") { ?>
+
     <h3>Document Validator</h3>
 
     <div class="button-container">
@@ -473,6 +529,8 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
     </div>
 
     <hr>
+
+    <?php } ?>
 
     <h3>Costum</h3>
     <ul>
@@ -504,6 +562,8 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
   </div>
 </div>
 
+
+
 <script>
 
   function imgIconClicked() {
@@ -524,6 +584,9 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
         const imgPreview = document.getElementById('imgPreview');
         imgPreview.src = e.target.result;
         imgPreview.style.display = 'block';
+        //console.log(e.target.result);
+        base64String = e.target.result;
+        localStorage.setItem('uploadedImageBase64ForHiry', base64String);
       }
       reader.readAsDataURL(file);
     } else {
@@ -531,6 +594,7 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
       imgPreview.src = null;
       imgPreview.style.display = 'none';
       current_btn.className = "fas fa-image";
+      localStorage.removeItem('uploadedImageBase64');
     }
   });
 </script>
@@ -539,7 +603,9 @@ $current_website_link = "http://$_SERVER[HTTP_HOST]/hireup/v1";
   // Show the modal when the plus button is clicked
   document.getElementById('plus-btn').onclick = function () {
 
-    initResumeBtns();
+    <?php if ($current_profile_sub == "premium") { ?>
+      initResumeBtns();
+    <?php } ?>
 
     document.getElementById('questionModal').style.display = "block";
 

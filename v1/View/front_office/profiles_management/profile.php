@@ -420,12 +420,14 @@ $country_code = strtolower($user_infos['countryCode']);
         <!-- Buttons Bar -->
         <div class="d-flex">
 
-        <!-- calendar Dropdown -->
+        <!-- To Do List Dropdown -->
+        <?php if ($current_profile_sub != "limited") { ?>
         <div class="dropdown">
-            <button class="btn rounded_button_bar me-3" id="calendarsDropdown" data-bs-toggle="dropdown" onclick="window.open('./../todo list/index.php', '_blank')">
+            <button class="btn rounded_button_bar me-3" id="TodolistDropdown" data-bs-toggle="dropdown" onclick="window.open('./../todo list/index.php', '_blank')">
             <i class="fa-solid fa-list-check"></i>
             </button>
         </div>
+        <?php } ?>
 
           <!-- calendar Dropdown -->
           <div class="dropdown">
@@ -768,12 +770,6 @@ $country_code = strtolower($user_infos['countryCode']);
                 </li>
                 <li class="position-relative">
                   <a class="text-white bg-secondary d-flex align-items-center justify-content-center p-2 fs-4 rounded-circle"
-                    href="#" style="width: 48px; height: 48px; text-decoration: none;">
-                    <i class="fab fa-twitter"></i>
-                  </a>
-                </li>
-                <li class="position-relative">
-                  <a class="text-white bg-secondary d-flex align-items-center justify-content-center p-2 fs-4 rounded-circle"
                     href="https://www.instagram.com/hire.up.tn/"
                     style="width: 48px; height: 48px; text-decoration: none;" target="_blanck">
                     <i class="fab fa-instagram"></i>
@@ -975,17 +971,6 @@ $country_code = strtolower($user_infos['countryCode']);
                       </div>
                     </div>
                     <!-- Buttons -->
-                    <div class="d-flex justify-content-between align-items-center">
-                      <!-- Photo/Video Button -->
-                      <button type="button" id="btn_outline_custom" class="flex-grow-1 me-1"><i
-                          class="fa fa-regular fa-image text-black me-2"></i>Photo/Video</button>
-                      <!-- Event Button -->
-                      <button type="button" id="btn_outline_custom" class="flex-grow-1 me-1"><i
-                          class="fa fa-regular fa-calendar text-success me-2"></i>Event</button>
-                      <!-- Write Article Button -->
-                      <button type="button" id="btn_outline_custom" class="flex-grow-1"><i
-                          class="fa fa-regular fa-newspaper text-danger me-2"></i>Write Article</button>
-                    </div>
                   </form>
                 </div>
               </div>

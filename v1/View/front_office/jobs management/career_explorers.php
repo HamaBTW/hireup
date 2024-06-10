@@ -96,6 +96,27 @@ $userId = $user_profile_id;
 
 // Fetch all jobs sorted by profile education
 $jobs = $applyController->applyListForProfileID($userId);
+
+
+
+//fetch subscription
+$subs_type = array(
+    "1-ADVANCED-SUBS" => "advanced",
+    "1-BASIC-SUBS" => "basic",
+    "1-PREMIUM-SUBS" => "premium",
+    "else" => "limited"
+);
+
+$current_profile_sub = "";
+if (array_key_exists($profile['profile_subscription'], $subs_type)) {
+    // If it exists, return the corresponding value
+    $current_profile_sub = $subs_type[$profile['profile_subscription']];
+} else {
+    // If not, return 'bb'
+    $current_profile_sub = $subs_type['else'];
+}
+
+
 /*$apllies = $applyController->applyList();
 foreach ($apllies as $aplly) {
     $job_id = $aplly["apply_job_id"];
@@ -837,7 +858,7 @@ include ('./../../../View/callback.php');
                                                     }
                                                     ?>
 
-                                                    <?php if ($job_apply['status'] == "pending") { ?>
+                                                    <?php if ($job_apply['status'] == "pending"  && ($current_profile_sub == "advanced" || $current_profile_sub == "premium")) { ?>
                                                         <div>
                                                             <p class=".force_p mt-5">Chance of Success <a href="javascript:void(0)"
                                                                     onclick="show_success_data('<?php echo $job_apply['apply_id']; ?>')">View

@@ -30,17 +30,60 @@ function invokePhpFunction(pub_id) {
 </script>
 
 <?php 
+
+    require_once __DIR__ . '/../../../Controller/profileController.php';
+
+
+    if (session_status() == PHP_SESSION_NONE) {
+    session_set_cookie_params(0, '/', '', true, true);
+    session_start();
+    }
+
+
+    $profileController = new ProfileC();
+
+
+    $user_id = '';
+    $user_profile_id = '';
+
+    //get user_profile id
+    if (isset($_SESSION['user id'])) {
+    $user_id = htmlspecialchars($_SESSION['user id']);
+    $user_profile_id = $profileController->getProfileIdByUserId($user_id);
+    $profile = $profileController->getProfileById($user_profile_id);
+
+    }
+
   
   require_once __DIR__ . "/../../../Controller/pub_con.php";
 
   $pubC = new pubCon("dmd");
+
+  //fetch subscription
+    $subs_type = array(
+        "1-ADVANCED-SUBS" => "advanced",
+        "1-BASIC-SUBS" => "basic",
+        "1-PREMIUM-SUBS" => "premium",
+        "else" => "limited"
+    );
+    
+    $current_profile_sub = "";
+    if (array_key_exists($profile['profile_subscription'], $subs_type)) {
+        // If it exists, return the corresponding value
+        $current_profile_sub = $subs_type[$profile['profile_subscription']];
+    } else {
+        // If not, return 'bb'
+        $current_profile_sub = $subs_type['else'];
+    }
+
+
 
 ?>
 
 
 <?php
 
-if ($add_type == "center") {
+if ($add_type == "center" && $current_profile_sub == "limited") {
 
 ?>
 
@@ -61,7 +104,7 @@ if ($add_type == "center") {
 
 <?php
 
-if ($add_type == "left") {
+if ($add_type == "left" && $current_profile_sub == "limited") {
 
 ?>
 
@@ -81,7 +124,7 @@ if ($add_type == "left") {
 
 <?php
 
-if ($add_type == "right") {
+if ($add_type == "right" && $current_profile_sub == "limited") {
 
 ?>
 

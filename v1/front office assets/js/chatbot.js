@@ -154,9 +154,18 @@ async function chat_gpt_rep(user_msg) {
       xhr.setRequestHeader('Content-Type', 'application/json'); // Specify JSON content type
 
       // Prepare the data to send
-      const dataToSend = {
-        newContent: user_msg, // Replace with your content
-      };
+      savedImageBase64ForHiry = localStorage.getItem('uploadedImageBase64ForHiry');
+      if (savedImageBase64ForHiry == null) {
+        dataToSend = {
+          newContent: user_msg, // Replace with your content
+          user_img: null
+        };
+      } else {
+        dataToSend = {
+          newContent: user_msg, // Replace with your content
+          user_img: savedImageBase64ForHiry
+        };
+      } 
 
       // Send the data as JSON
       xhr.send(JSON.stringify(dataToSend));

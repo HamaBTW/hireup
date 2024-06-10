@@ -16,7 +16,7 @@ class AiManager(ft.UserControl):
     + by default the instance of this class will weak-up the ai
     """
 
-    DEFAULT_AI_MODELS = ['llava', 'llama2-uncensored']
+    DEFAULT_AI_MODELS = ['llava', 'llama2-uncensored', 'gemma']
     DEFAULT_AI_MODEL = 'llava'
     DEFAULT_API_URL = 'http://localhost:11434/api/generate'
     DEFAULT_HEADERS = {'content-type': 'application/json'}
