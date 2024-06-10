@@ -29,15 +29,18 @@ $subs_type = array(
 	"else" => "limited"
 );
 
-$current_profile_sub = "";
-if (array_key_exists($profile['profile_subscription'], $subs_type)) {
-	// If it exists, return the corresponding value
-	$current_profile_sub = $subs_type[$profile['profile_subscription']];
+if (isset($profile)) {
+	$current_profile_sub = "";
+	if (array_key_exists($profile['profile_subscription'], $subs_type)) {
+		// If it exists, return the corresponding value
+		$current_profile_sub = $subs_type[$profile['profile_subscription']];
+	} else {
+		// If not, return 'bb'
+		$current_profile_sub = $subs_type['else'];
+	}
 } else {
-	// If not, return 'bb'
 	$current_profile_sub = $subs_type['else'];
 }
-
 
 
 $folder_name = "/hireup/v1/";

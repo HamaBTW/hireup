@@ -349,6 +349,24 @@ include ('./../../../View/callback.php');
         }
     </style>
 
+    <style>
+        .profile-post-pic {
+            width: 55px;
+            /* Adjust as needed */
+            height: 55px;
+            /* Adjust as needed */
+            border-radius: 50%;
+            /* To make the image circular */
+            margin-right: 10px;
+            /* Adjust spacing between profile picture and message */
+        }
+
+        #job_profile_id {
+            background-color: #f5f5f5;
+            padding: 1.5%;
+        }
+    </style>
+
 
 
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
@@ -624,6 +642,18 @@ include ('./../../../View/callback.php');
                                 </div>
 
                                 <?php foreach ($jobs as $job): ?>
+                                    <?php $job_profile = $profileController->getProfileById($job['jobs_profile']); ?>
+
+                                    <div class="flex-fill ps-2 mb-2 mt-2" id="job_profile_id">
+                                        <a
+                                            href="./../profiles_management/profile.php?profile_id=<?php echo $job_profile ?>"><img
+                                                src="data:image/jpeg;base64,<?= base64_encode($job_profile['profile_photo']) ?>"
+                                                alt="Profile picture" class="profile-post-pic"></a>
+                                        <a href="profile.php"
+                                            class="text-decoration-none fw-bold"><?= $job_profile['profile_first_name'] . ' ' . $job_profile['profile_family_name'] ?></a>
+                                        <!-- Dropdown menu -->
+
+                                    </div>
                                     <!-- Display job image if exists -->
                                     <?php if (!empty($job['job_image'])): ?>
                                         <div class="item-media post-thumbnail embed-responsive-3by2">
@@ -778,13 +808,13 @@ include ('./../../../View/callback.php');
 
 
 
-                                
+
                                 <!-- #post-## -->
 
-                                
+
                             </main>
 
-                            
+
 
                             <div class="d-none d-lg-block divider-110"></div>
                         </div>

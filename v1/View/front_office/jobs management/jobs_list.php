@@ -520,6 +520,24 @@ include ('./../../../View/callback.php');
         }
     </style>
 
+    <style>
+        .profile-post-pic {
+            width: 55px;
+            /* Adjust as needed */
+            height: 55px;
+            /* Adjust as needed */
+            border-radius: 50%;
+            /* To make the image circular */
+            margin-right: 10px;
+            /* Adjust spacing between profile picture and message */
+        }
+
+        #job_profile_id {
+            background-color: #f5f5f5;
+            padding: 1.5%;
+        }
+    </style>
+
 
 
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
@@ -843,12 +861,25 @@ include ('./../../../View/callback.php');
                                 <!-- end decline aplly modal -->
 
 
-                                <?php 
-                                    $i = 0; 
-                                    $max_jobs_before_showing = 4;
+                                <?php
+                                $i = 0;
+                                $max_jobs_before_showing = 4;
                                 ?>
 
                                 <?php foreach ($jobs as $job): ?>
+                                    <?php $job_profile = $profileController->getProfileById($job['jobs_profile']); ?>
+                                    <!-- Display job image if exists -->
+
+                                    <div class="flex-fill ps-2 mb-2 mt-2" id="job_profile_id">
+                                        <a
+                                            href="./../profiles_management/profile.php?profile_id=<?php echo $job_profile ?>"><img
+                                                src="data:image/jpeg;base64,<?= base64_encode($job_profile['profile_photo']) ?>"
+                                                alt="Profile picture" class="profile-post-pic"></a>
+                                        <a href="profile.php"
+                                            class="text-decoration-none fw-bold"><?= $job_profile['profile_first_name'] . ' ' . $job_profile['profile_family_name'] ?></a>
+                                        <!-- Dropdown menu -->
+                                        
+                                    </div>
                                     <?php
                                     $i = $i + 1;
 
@@ -982,7 +1013,7 @@ include ('./../../../View/callback.php');
                                                 <?php } ?>
                                             </div>
 
-                                            <?php if ($status == "pending"  && ($current_profile_sub == "advanced" || $current_profile_sub == "premium")) { ?>
+                                            <?php if ($status == "pending" && ($current_profile_sub == "advanced" || $current_profile_sub == "premium")) { ?>
                                                 <div>
                                                     <p class="mt-5">Chance of Success <a href="javascript:void(0)"
                                                             onclick="show_success_data('<?php echo $current_apply['apply_id']; ?>')">View
@@ -997,17 +1028,17 @@ include ('./../../../View/callback.php');
                                         </div>
                                     </article>
                                     <br>
-                                <?php 
+                                    <?php
                                     if ($i % $max_jobs_before_showing === 0) {
                                         $categoryC->GenerateCategoryIntrestedSection($user_profile_id);
                                     }
-                                ?>
+                                    ?>
                                 <?php endforeach; ?>
 
-                                <?php  
-                                    if ($i <= $max_jobs_before_showing) {
-                                        $categoryC->GenerateCategoryIntrestedSection($user_profile_id);
-                                    }
+                                <?php
+                                if ($i <= $max_jobs_before_showing) {
+                                    $categoryC->GenerateCategoryIntrestedSection($user_profile_id);
+                                }
                                 ?>
 
                                 <!-- #post-## -->
