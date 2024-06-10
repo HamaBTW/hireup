@@ -263,8 +263,11 @@ $subscriptions = $subscriptionController->getAllSubscriptions();
                                                 href="#">Get Started</button>
                                             <?php } else { ; ?>
                                             <button type="button"
-                                                class="btn btn-<?php echo $subscriptionIndex % 3 === 0 ? 'success' : ($subscriptionIndex % 3 === 1 ? 'warning' : 'info'); ?> btn-2"
+                                                class="btn btn-warning btn-2"
                                                 href="#" disabled>Subscribed</button>
+                                            <button type="button"
+                                                class="btn btn-danger btn-2"
+                                                onclick="window.location.href = 'cancel_sub.php'">cancel</button>
                                             <?php } ; ?>
 
 
