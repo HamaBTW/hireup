@@ -866,7 +866,23 @@ include ('./../../../View/callback.php');
                                 $max_jobs_before_showing = 4;
                                 ?>
 
-                                <?php foreach ($jobs as $job): ?>
+                                <?php
+                                $ads_spacing_counter = 0;
+                                foreach ($jobs as $job):
+                                    $ads_spacing_counter++;
+                                    if ($current_profile_sub == "limited") {
+                                        if ($ads_spacing_counter > 3) {
+                                            $ads_spacing_counter = 0;
+                                            echo '<div class="card mb-3">';
+                                            echo '<h5 style="margin-top: 15px; margin-left: 15px;">Ad</h5>';
+
+                                            $add_type = "center";
+                                            require __DIR__ . '/../../../View/front_office/ads/ads_containers.php';
+                                            echo '</div>';
+                                        }
+                                    }
+                                    ?>
+
                                     <?php $job_profile = $profileController->getProfileById($job['jobs_profile']); ?>
                                     <!-- Display job image if exists -->
 
@@ -878,7 +894,7 @@ include ('./../../../View/callback.php');
                                         <a href="profile.php"
                                             class="text-decoration-none fw-bold"><?= $job_profile['profile_first_name'] . ' ' . $job_profile['profile_family_name'] ?></a>
                                         <!-- Dropdown menu -->
-                                        
+
                                     </div>
                                     <?php
                                     $i = $i + 1;
@@ -1038,6 +1054,20 @@ include ('./../../../View/callback.php');
                                 <?php
                                 if ($i <= $max_jobs_before_showing) {
                                     $categoryC->GenerateCategoryIntrestedSection($user_profile_id);
+                                }
+                                ?>
+
+                                <?php
+                                if ($current_profile_sub == "limited") {
+                                    if ($ads_spacing_counter <= 3) {
+                                        $ads_spacing_counter = 0;
+                                        echo '<div class="card mb-3">';
+                                        echo '<h5 style="margin-top: 15px; margin-left: 15px;">Ad</h5>';
+
+                                        $add_type = "center";
+                                        require __DIR__ . '/../../../View/front_office/ads/ads_containers.php';
+                                        echo '</div>';
+                                    }
                                 }
                                 ?>
 
@@ -1621,6 +1651,37 @@ include ('./../../../View/callback.php');
 
     </script>
     <!-- End category Intrests Slider -->
+
+    <!-- ads -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+    <script>
+        const postUrl = 'http://localhost/hireup/v1/view/front_office/ads/jobClicked.php';
+        function invokePhpFunction(pub_id) {
+            console.log('job Clicked');
+            // Make an AJAX request to your PHP script to execute the desired function
+            // Example using jQuery AJAX:
+            $.ajax({
+                // url: 'jobClicked.php?id='+pub_id, // Replace 'your_php_script.php' with the path to your PHP script
+                url: postUrl + '?id=' + pub_id, // Replace 'your_php_script.php' with the path to your PHP script
+                type: 'POST',
+                data: { action: 'jobClicked' }, // Pass any necessary data to your PHP function
+                success: function (response) {
+                    // Handle the response if needed
+                    console.log(response);
+                    if (response == "1 records UPDATED successfully <br>true") {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle errors
+                    console.error(xhr.responseText);
+                    return false;
+                }
+            });
+        }
+    </script>
 
 </body>
 
