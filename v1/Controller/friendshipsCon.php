@@ -309,6 +309,57 @@ class FriendshipCon {
         return $html;
     }
 
+    function generateProfileFriendsPageHTML($profiles, $main_profile_id)
+    {
+        $html = ''; // Initialize an empty string to store the generated HTML markup
+
+        $profileController = new ProfileC();
+        $friendshipC = new FriendshipCon("friendships");
+
+        // Loop through each profile
+        foreach ($profiles as $prof) {
+
+            $profile = $profileController->getProfileById($prof);
+
+
+            // Generate HTML markup for the profile
+            $html .= '<div class="col-md-6 col-xl-4 mb-3">';
+            $html .= '<div class="card h-100">';
+            $html .= '<div class="card-body d-flex align-items-center gap-3">';
+            $html .= '<a href="profile.php?profile_id=' . $profile['profile_id'] . '">';
+            $html .= '<img src="data:image/jpeg;base64,' . base64_encode($profile['profile_photo']) . '" alt="' . $profile['profile_first_name'] . ' ' . $profile['profile_family_name'] . '" class="friend-profile-picture ml-3">';
+            $html .= '</a>';
+
+            $html .= '<div class="flex-grow-1">';
+            $html .= '<a href="profile.php?profile_id=' . $profile['profile_id'] . '" class="profile-link"><h5 class="fw-semibold mb-0">' . $profile['profile_first_name'] . ' ' . $profile['profile_family_name'] . '</h5></a>';
+            $html .= '<span class="fs-7 d-flex align-items-center">' . $profile['profile_current_position'] .  '</span>';
+
+            $follow_status = $friendshipC->getFriendshipStatus($profile['profile_id'], $main_profile_id);
+
+            $html .= '<div class="mt-2">';
+            if ($follow_status == 'friends') {
+                $html .= '<button class="btn btn-secondary btn-sm rounded-pill px-4 py-2 me-2" onclick="window.location.href = \'./../friendships/remove_friendship.php?profile_id=' . $profile['profile_id'] . '\'"><i class="fa fa-check me-2"></i><b>Following</b></button>';
+            } elseif ($follow_status == 'pending') {
+                if ($friendshipC->getFriendshipSender($profile['profile_id'], $main_profile_id) == $main_profile_id) {
+                    $html .= '<button class="btn btn-primary btn-sm rounded-pill px-4 py-2 me-2" onclick="window.location.href = \'./../friendships/remove_friendship.php?profile_id=' .  $profile['profile_id'] . '\'"><i class="fas me-2" style="font-size: 15px">&#xf110;</i><b>Pending</b></button>';
+                } else {
+                    $html .= '<button class="btn btn-accept-user btn-sm rounded-pill px-4 py-2 me-2" onclick="window.location.href = \'./../friendships/accept_friendship.php?profile_id=' .  $profile['profile_id'] . '\'"><i class="fas me-2">&#xF055;</i><b>Accept</b></button>';
+                    $html .= '<button class="btn btn-refuse-user btn-sm rounded-pill px-4 py-2" onclick="window.location.href = \'./../friendships/remove_friendship.php?profile_id=' .  $profile['profile_id'] . '\'"><i class="fas me-2">&#xf057;</i><b>Refuse</b></button>';
+                }
+            } else {
+                $html .= '<button class="btn btn-primary btn-sm rounded-pill px-4 py-2 me-2" onclick="window.location.href = \'./../friendships/add_friendship.php?profile_id=' . $profile['profile_id'] . '\'"><i class="fa fa-plus me-2"></i><b>Follow</b></button>';
+            }
+            $html .= '</div>'; // Close mt-2
+            $html .= '</div>'; // Close flex-grow-1
+
+            $html .= '</div>'; // Close card-body
+            $html .= '</div>'; // Close card
+            $html .= '</div>'; // Close col
+        }
+
+        return $html;
+    }
+
 }
 
 ?>

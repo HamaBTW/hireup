@@ -1,5 +1,45 @@
 <?php
 
+require_once __DIR__ . '/../../Controller/profileController.php';
+
+
+if (session_status() == PHP_SESSION_NONE) {
+	session_set_cookie_params(0, '/', '', true, true);
+	session_start();
+}
+
+$profileController = new ProfileC();
+
+$user_id = '';
+$current_profile_id = '';
+$user_profile_id = '';
+
+//get user_profile id
+if (isset($_SESSION['user id'])) {
+	$user_id = htmlspecialchars($_SESSION['user id']);
+	$user_profile_id = $profileController->getProfileIdByUserId($user_id);
+	$profile = $profileController->getProfileById($user_profile_id);
+}
+
+//fetch subscription
+$subs_type = array(
+	"1-ADVANCED-SUBS" => "advanced",
+	"1-BASIC-SUBS" => "basic",
+	"1-PREMIUM-SUBS" => "premium",
+	"else" => "limited"
+);
+
+$current_profile_sub = "";
+if (array_key_exists($profile['profile_subscription'], $subs_type)) {
+	// If it exists, return the corresponding value
+	$current_profile_sub = $subs_type[$profile['profile_subscription']];
+} else {
+	// If not, return 'bb'
+	$current_profile_sub = $subs_type['else'];
+}
+
+
+
 $folder_name = "/hireup/v1/";
 $current_url = "http://{$_SERVER['HTTP_HOST']}{$folder_name}";
 
@@ -99,66 +139,89 @@ $country_code = strtolower($user_infos['countryCode']);
 					<div class="button-container">
 
 						<?php if ($user_id) {
-						?>
+							?>
 							<!-- Profile Dropdown -->
 							<div class="dropdown ms-auto">
-								<a href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" class="d-flex align-items-center justify-content-center mx-3" style="height: 100%;">
-									<img src="data:image/jpeg;base64,<?= base64_encode($profile['profile_photo']) ?>" alt="Profile Photo" class="rounded-circle" width="50" height="50">
+								<a href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown"
+									aria-expanded="false" class="d-flex align-items-center justify-content-center mx-3"
+									style="height: 100%;">
+									<img src="data:image/jpeg;base64,<?= base64_encode($profile['profile_photo']) ?>"
+										alt="Profile Photo" class="rounded-circle" width="50" height="50">
 								</a>
-								
+
 								<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
 									<h5 class="dropdown-header">Account</h5>
-									<li ><a class="dropdown-item" href="<?php echo $current_url . "/view/front_office/profiles_management/profile.php" ?>">Profile</a>
+									<li><a class="dropdown-item"
+											href="<?php echo $current_url . "/view/front_office/profiles_management/profile.php" ?>">Profile</a>
 									</li>
 
 									<?php
 									if ($user_role == 'admin') {
-									?>
-										<li><a class="dropdown-item text-success" href="<?php echo $current_url . "/view/back_office/main dashboard" ?>">Dashboard</a></li>
-									<?php
+										?>
+										<li><a class="dropdown-item text-success"
+												href="<?php echo $current_url . "/view/back_office/main dashboard" ?>">Dashboard</a>
+										</li>
+										<?php
 									}
 									?>
-									<li ><a class="dropdown-item" href="<?php echo $current_url . "/view/front_office/jobs management/career_explorers.php" ?>">Career Explorers</a>
+									<li><a class="dropdown-item"
+											href="<?php echo $current_url . "/view/front_office/jobs management/career_explorers.php" ?>">Career
+											Explorers</a>
 
 									<li>
 										<hr class="dropdown-divider">
 									</li>
-									<li><a class="dropdown-header"  href="<?php echo $current_url . "/view/front_office/profiles_management/subscription/subscriptionCards.php"; ?>">Try
-											Premium for $0</a></li>
+									<?php if ($current_profile_sub == "limited") { ?>
+										<li><a class="dropdown-header"
+												href="<?php echo $current_url . "/view/front_office/profiles_management/subscription/subscriptionCards.php"; ?>">Try
+												Premium for $0</a></li>
+									<?php } else { ?>
+
+										<li><a class="dropdown-header"
+												href="<?php echo $current_url . "/view/front_office/profiles_management/subscription/subscriptionCards.php"; ?>">Upgrade
+												Plan</a></li>
+									<?php } ?>
 									<li>
 										<hr class="dropdown-divider">
 									</li>
-									<li ><a class="dropdown-item"  href="<?php echo $current_url . "/view/front_office/profiles_management/profile-settings-privacy.php"; ?>">Settings
+									<li><a class="dropdown-item"
+											href="<?php echo $current_url . "/view/front_office/profiles_management/profile-settings-privacy.php"; ?>">Settings
 											& Privacy</a></li>
-									<li ><a class="dropdown-item"  href="#">Help</a></li> <!-- REST -->
-									<li ><a class="dropdown-item"  href="#">Language</a></li> <!-- REST -->
+									<li><a class="dropdown-item" href="#">Help</a></li> <!-- REST -->
+									<li><a class="dropdown-item" href="#">Language</a></li> <!-- REST -->
 									<li>
 										<hr class="dropdown-divider">
 									</li>
 									<h5 class="dropdown-header" style="color: gray !important;">Manage</h5>
-									<li ><a class="dropdown-item" href="#">Posts & Activity</a></li>
-									<li ><a class="dropdown-item" href="<?php echo $current_url . "/view/front_office/jobs management/jobs_list.php"; ?>">Jobs</a></li>
+									<li><a class="dropdown-item" href="#">Posts & Activity</a></li>
+									<li><a class="dropdown-item"
+											href="<?php echo $current_url . "/view/front_office/jobs management/jobs_list.php"; ?>">Jobs</a>
+									</li>
 									<li>
 										<hr class="dropdown-divider">
 									</li>
 									<!-- Reporting Header -->
 									<h5 class="dropdown-header" style="color: gray !important;">Report</h5>
-									<li ><a class="dropdown-item" href="javascript:void(0)" onclick="openPopup()">Give Feedback</a></li>
+									<li><a class="dropdown-item" href="javascript:void(0)" onclick="openPopup()">Give
+											Feedback</a></li>
 									<li>
 										<hr class="dropdown-divider">
 									</li>
-									<li><a class="dropdown-item" href="<?php echo $current_url . "/View/front_office/Sign In & Sign Up/logout.php"; ?>">Logout</a>
+									<li><a class="dropdown-item"
+											href="<?php echo $current_url . "/View/front_office/Sign In & Sign Up/logout.php"; ?>">Logout</a>
 									</li>
 								</ul>
 							</div>
-						<?php
+							<?php
 						} else {
-						?>
-							<a class="transparent-button" href="<?php echo $current_url . "View/front_office/Sign In & Sign Up\authentication-login.php"; ?>">Sign
+							?>
+							<a class="transparent-button"
+								href="<?php echo $current_url . "View/front_office/Sign In & Sign Up\authentication-login.php"; ?>">Sign
 								In</a>
-							<a class="primary-button" href="<?php echo $current_url . "View/front_office/Sign In & Sign Up/authentication-register.php"; ?>">Sign
+							<a class="primary-button"
+								href="<?php echo $current_url . "View/front_office/Sign In & Sign Up/authentication-register.php"; ?>">Sign
 								Up</a>
-						<?php
+							<?php
 						}
 						?>
 					</div>
@@ -203,11 +266,13 @@ $country_code = strtolower($user_infos['countryCode']);
 								<!-- eof pages -->
 
 								<li class="<?= ($active_page == 'jobs') ? 'active' : ''; ?>">
-									<a href="<?php echo $current_url . "/view/front_office/jobs management/jobs_list.php" ?>">Jobs</a>
+									<a
+										href="<?php echo $current_url . "/view/front_office/jobs management/jobs_list.php" ?>">Jobs</a>
 								</li>
 
 								<li class="<?= ($active_page == 'report') ? 'active' : ''; ?>">
-									<a href="<?php echo $current_url . "/view/front_office/reclamation/rec_list.php" ?>">Report</a>
+									<a
+										href="<?php echo $current_url . "/view/front_office/reclamation/rec_list.php" ?>">Report</a>
 								</li>
 
 								<!-- blog -->
@@ -218,7 +283,8 @@ $country_code = strtolower($user_infos['countryCode']);
 
 								<!-- contacts -->
 								<li class="<?= ($active_page == 'ResumeUp') ? 'active' : ''; ?>">
-									<a href="<?php echo $current_url . "/view/front_office/resume/resume_form.php" ?>">ResumeUp</a>
+									<a
+										href="<?php echo $current_url . "/view/front_office/resume/resume_form.php" ?>">ResumeUp</a>
 								</li>
 								<!-- eof contacts -->
 
@@ -246,69 +312,110 @@ $country_code = strtolower($user_infos['countryCode']);
 								<div class="button-container">
 
 									<?php if ($user_id) {
-									?>
+										?>
 										<!-- Profile Dropdown -->
 										<div class="dropdown ms-auto">
-											<a href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" class="d-flex align-items-center justify-content-center mx-3" style="height: 100%;">
-												<img src="data:image/jpeg;base64,<?= base64_encode($profile['profile_photo']) ?>" alt="Profile Photo" class="rounded-circle" width="50" height="50">
+											<a href="#" role="button" id="profileDropdown" data-bs-toggle="dropdown"
+												aria-expanded="false"
+												class="d-flex align-items-center justify-content-center mx-3"
+												style="height: 100%;">
+												<img src="data:image/jpeg;base64,<?= base64_encode($profile['profile_photo']) ?>"
+													alt="Profile Photo" class="rounded-circle" width="50" height="50">
 												<!-- <span class="iconify ml-0 mb-5" data-icon="flag:tn-4x3"></span> -->
-												<span class="iconify ml-0 mb-5" data-icon="flag:<?php echo $country_code ; ?>-4x3"></span>
+												<span class="iconify ml-0 mb-5"
+													data-icon="flag:<?php echo $country_code; ?>-4x3"></span>
 											</a>
 											<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
 												<h5 class="dropdown-header" style="color: gray !important;">Account</h5>
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/profiles_management/profile.php" ?>">Profile</a>
+												<li style="color: black !important;"><a class="dropdown-item"
+														style="color: black !important;"
+														href="<?php echo $current_url . "/view/front_office/profiles_management/profile.php" ?>">Profile</a>
 												</li>
 
 												<?php
 												if ($user_role == 'admin') {
-												?>
-													<li><a class="dropdown-item text-success" href="<?php echo $current_url . "/view/back_office/main dashboard" ?>">Dashboard</a></li>
-												<?php
+													?>
+													<li><a class="dropdown-item text-success"
+															href="<?php echo $current_url . "/view/back_office/main dashboard" ?>">Dashboard</a>
+													</li>
+													<?php
 												}
 												?>
 
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/jobs management/career_explorers.php" ?>">Career Explorers</a>
+												<li style="color: black !important;"><a class="dropdown-item"
+														style="color: black !important;"
+														href="<?php echo $current_url . "/view/front_office/jobs management/career_explorers.php" ?>">Career
+														Explorers</a>
 												</li>
 
 												<li>
 													<hr class="dropdown-divider">
 												</li>
-												<li style="color: black !important;"><a class="dropdown-header" style="color: #0B60B0 !important; text-decoration: none;" href="<?php echo $current_url . "/view/front_office/profiles_management/subscription/subscriptionCards.php"; ?>">Try
-														Premium for $0</a></li>
+												<?php if ($current_profile_sub == "limited") { ?>
+													<li style="color: black !important;"><a class="dropdown-header"
+															style="color: #0B60B0 !important; text-decoration: none;"
+															href="<?php echo $current_url . "/view/front_office/profiles_management/subscription/subscriptionCards.php"; ?>">Try
+															Premium for $0</a></li>
+												<?php } else { ?>
+
+													<li style="color: black !important;"><a class="dropdown-header"
+															style="color: #0B60B0 !important; text-decoration: none;"
+															href="<?php echo $current_url . "/view/front_office/profiles_management/subscription/subscriptionCards.php"; ?>">Upgrade
+															Plan</a></li>
+												<?php } ?>
+
+
 												<li>
 													<hr class="dropdown-divider">
 												</li>
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/profiles_management/settings_privacy/edit-profile.php"; ?>">Settings
+												<li style="color: black !important;"><a class="dropdown-item"
+														style="color: black !important;"
+														href="<?php echo $current_url . "/view/front_office/profiles_management/settings_privacy/edit-profile.php"; ?>">Settings
 														& Privacy</a></li>
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="#">Help</a></li> <!-- REST -->
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="#">Language</a></li> <!-- REST -->
+												<li style="color: black !important;"><a class="dropdown-item"
+														style="color: black !important;" href="#">Help</a></li>
+												<!-- REST -->
+												<li style="color: black !important;"><a class="dropdown-item"
+														style="color: black !important;" href="#">Language</a></li>
+												<!-- REST -->
 												<li>
 													<hr class="dropdown-divider">
 												</li>
 												<h5 class="dropdown-header" style="color: gray !important;">Manage</h5>
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/jobs management/jobs_list.php"; ?>">Jobs</a></li>
-												<li><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/view/front_office/interests/interests.php"; ?>">Interests</a></li>
+												<li style="color: black !important;"><a class="dropdown-item"
+														style="color: black !important;"
+														href="<?php echo $current_url . "/view/front_office/jobs management/jobs_list.php"; ?>">Jobs</a>
+												</li>
+												<li><a class="dropdown-item" style="color: black !important;"
+														href="<?php echo $current_url . "/view/front_office/interests/interests.php"; ?>">Interests</a>
+												</li>
 												<li>
 													<hr class="dropdown-divider">
 												</li>
 												<!-- Reporting Header -->
 												<h5 class="dropdown-header" style="color: gray !important;">Report</h5>
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="javascript:void(0)" onclick="openPopup()">Give Feedback</a></li>
+												<li style="color: black !important;"><a class="dropdown-item"
+														style="color: black !important;" href="javascript:void(0)"
+														onclick="openPopup()">Give Feedback</a></li>
 												<li>
 													<hr class="dropdown-divider">
 												</li>
-												<li style="color: black !important;"><a class="dropdown-item" style="color: black !important;" href="<?php echo $current_url . "/View/front_office/Sign In & Sign Up/logout.php"; ?>">Logout</a>
+												<li style="color: black !important;"><a class="dropdown-item"
+														style="color: black !important;"
+														href="<?php echo $current_url . "/View/front_office/Sign In & Sign Up/logout.php"; ?>">Logout</a>
 												</li>
 											</ul>
 										</div>
-									<?php
+										<?php
 									} else {
-									?>
-										<a class="transparent-button" href="<?php echo $current_url . "View/front_office/Sign In & Sign Up\authentication-login.php"; ?>">Sign
+										?>
+										<a class="transparent-button"
+											href="<?php echo $current_url . "View/front_office/Sign In & Sign Up\authentication-login.php"; ?>">Sign
 											In</a>
-										<a class="primary-button" href="<?php echo $current_url . "View/front_office/Sign In & Sign Up/authentication-register.php"; ?>">Sign
+										<a class="primary-button"
+											href="<?php echo $current_url . "View/front_office/Sign In & Sign Up/authentication-register.php"; ?>">Sign
 											Up</a>
-									<?php
+										<?php
 									}
 									?>
 								</div>

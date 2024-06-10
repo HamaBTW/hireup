@@ -27,7 +27,7 @@
 	</script>
 
 	<!-- voice recognation -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
 
 </head>
 
@@ -218,10 +218,19 @@ if (isset($_SESSION['user id'])) {
 			</section>
 
 			<!-- Ad -->
-			<?php
-			$add_type = "center";
-			require __DIR__ . '/../../../View/front_office/ads/ads_containers.php'
-			?>
+			<section class="candidate-page text-center">
+				<div class="container">
+					<div class="row">
+						<div class="card mb-3">
+							<h4 class="text-center" style="margin-top: 15px; margin-left: 15px;">Ad</h4>
+							<?php
+							$add_type = "center";
+							require __DIR__ . '/../../../View/front_office/ads/ads_containers.php'
+								?>
+						</div>
+					</div>
+				</div>
+			</section>
 			<!-- End Ad -->
 
 			<!-- Footer -->
@@ -250,7 +259,8 @@ if (isset($_SESSION['user id'])) {
 
 
 	<!-- voice recognation -->
-	<script type="text/javascript" src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
+	<script type="text/javascript"
+		src="./../../../View\front_office\voice recognation\voice_recognation_and_navigation.js"></script>
 
 
 	<?php

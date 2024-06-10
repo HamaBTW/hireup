@@ -420,14 +420,15 @@ $country_code = strtolower($user_infos['countryCode']);
         <!-- Buttons Bar -->
         <div class="d-flex">
 
-        <!-- To Do List Dropdown -->
-        <?php if ($current_profile_sub != "limited") { ?>
-        <div class="dropdown">
-            <button class="btn rounded_button_bar me-3" id="TodolistDropdown" data-bs-toggle="dropdown" onclick="window.open('./../todo list/index.php', '_blank')">
-            <i class="fa-solid fa-list-check"></i>
-            </button>
-        </div>
-        <?php } ?>
+          <!-- To Do List Dropdown -->
+          <?php if ($current_profile_sub != "limited") { ?>
+            <div class="dropdown">
+              <button class="btn rounded_button_bar me-3" id="TodolistDropdown" data-bs-toggle="dropdown"
+                onclick="window.open('./../todo list/index.php', '_blank')">
+                <i class="fa-solid fa-list-check"></i>
+              </button>
+            </div>
+          <?php } ?>
 
           <!-- calendar Dropdown -->
           <div class="dropdown">
@@ -718,7 +719,7 @@ $country_code = strtolower($user_infos['countryCode']);
             <li><a class="dropdown-item" href="./../jobs management/jobs_list.php"><i class="fas fa-briefcase"></i>
                 Jobs</a></li>
             <li><a class="dropdown-item" href="./../interests/interests.php"><i class="fa fa-heart"></i>
-              Interests</a></li>
+                Interests</a></li>
             <!-- Divider -->
             <li>
               <hr class="dropdown-divider">
@@ -991,7 +992,23 @@ $country_code = strtolower($user_infos['countryCode']);
           <!-- Profile Picture Post -->
           <div class="col-md-12">
             <!-- Sample post card -->
-            <?php foreach ($posts as $post) { ?>
+            <?php
+            
+            $ads_spacing_counter = 0;
+            foreach ($posts as $post) {
+              $ads_spacing_counter++;
+              if ($current_profile_sub == "limited") {
+              if ($ads_spacing_counter > 3) {
+                $ads_spacing_counter = 0;
+                echo '<div class="card mb-3">';
+                echo '<h5 style="margin-top: 15px; margin-left: 15px;">Ad</h5>';
+
+                $add_type = "center";
+                require __DIR__ . '/../../../View/front_office/ads/ads_containers.php';
+                echo '</div>';
+              }
+            }
+              ?>
               <?php
               $post_openion_data = $post_openion_con->countLikesDislikes($post['id']);
               $post_liked_nb = $post_openion_data['nblikes'];
@@ -1228,7 +1245,7 @@ $country_code = strtolower($user_infos['countryCode']);
                         var commentDropdownBtn_<?php echo $comment['id_commentaire']; ?> = document.getElementById("comment-dropdown-<?php echo $comment['id_commentaire']; ?>");
                         var commentDropdownMenu_<?php echo $comment['id_commentaire']; ?> = document.getElementById("commentDropdownMenu-<?php echo $comment['id_commentaire']; ?>");
 
-                        commentDropdownBtn_<?php echo $comment['id_commentaire']; ?>.                           addEventListener("click", function(event) {
+                        commentDropdownBtn_<?php echo $comment['id_commentaire']; ?>.                            addEventListener("click", function(event) {
                           event.stopPropagation(); // Prevent parent click event
                           if (commentDropdownMenu_<?php echo $comment['id_commentaire']; ?>.classList.contains("show")) {
                             commentDropdownMenu_<?php echo $comment['id_commentaire']; ?>.classList.remove("show");
@@ -1293,6 +1310,20 @@ $country_code = strtolower($user_infos['countryCode']);
                 </div>
               </div>
             <?php } ?>
+
+            <?php
+            if ($current_profile_sub == "limited") {
+            if ($ads_spacing_counter <= 3) {
+              $ads_spacing_counter = 0;
+              echo '<div class="card mb-3">';
+              echo '<h5 style="margin-top: 15px; margin-left: 15px;">Ad</h5>';
+
+              $add_type = "center";
+              require __DIR__ . '/../../../View/front_office/ads/ads_containers.php';
+              echo '</div>';
+            }
+            }
+            ?>
           </div>
           <!-- Add more post cards as needed -->
         </div>
@@ -1350,8 +1381,12 @@ $country_code = strtolower($user_infos['countryCode']);
               <!-- Show All Button (Only shown if number of friends is more than 4) -->
               <!-- You can use JavaScript to toggle visibility of this button based on the number of friends -->
 
-              <div>
+              <!-- <div>
                 <button class="btn show-all-button w-100"><strong>Show All</strong></button>
+              </div> -->
+              <!-- Show All Button -->
+              <div>
+                <button class="btn show-all-button w-100" data-bs-toggle="modal" data-bs-target="#friendsModal"><strong>Show All</strong></button>
               </div>
 
             </div>
@@ -1361,7 +1396,14 @@ $country_code = strtolower($user_infos['countryCode']);
 
         <!-- People you may know -->
         <div class="card mb-3">
-          <!-- People you may know content -->
+        <?php if ($current_profile_sub == "limited") { 
+          echo '<h5 style="margin-top: 15px; margin-left: 15px;">Ad</h5>';
+          //<!-- People you may know content -->
+          $add_type = "right";
+          require __DIR__ . '/../../../View/front_office/ads/ads_containers.php';
+          }
+          ?>
+          <!-- End Ad -->
         </div>
       </div>
     </div>
@@ -1501,7 +1543,28 @@ $country_code = strtolower($user_infos['countryCode']);
       </div>
     </div>
 
+    <!-- Friends Modal -->
+    <div class="modal fade" style="z-index: 99999999990 !important;" id="friendsModal" tabindex="-1" aria-labelledby="friendsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="friendsModalLabel">Friends</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <?php echo $friendshipC->generateProfileFriendsPageHTML($profile_friends, $profile['profile_id']); ?>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     
+
+
 
 
     <?php
@@ -1930,6 +1993,37 @@ $country_code = strtolower($user_infos['countryCode']);
     include './../jobs management/chatbot.php';
     ?>
     <script src="./../../../front office assets/js/chatbot.js"></script>
+
+    <!-- ads -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      const postUrl = 'http://localhost/hireup/v1/view/front_office/ads/jobClicked.php';
+      function invokePhpFunction(pub_id) {
+        console.log('job Clicked');
+        // Make an AJAX request to your PHP script to execute the desired function
+        // Example using jQuery AJAX:
+        $.ajax({
+          // url: 'jobClicked.php?id='+pub_id, // Replace 'your_php_script.php' with the path to your PHP script
+          url: postUrl + '?id=' + pub_id, // Replace 'your_php_script.php' with the path to your PHP script
+          type: 'POST',
+          data: { action: 'jobClicked' }, // Pass any necessary data to your PHP function
+          success: function (response) {
+            // Handle the response if needed
+            console.log(response);
+            if (response == "1 records UPDATED successfully <br>true") {
+              return true;
+            } else {
+              return false;
+            }
+          },
+          error: function (xhr, status, error) {
+            // Handle errors
+            console.error(xhr.responseText);
+            return false;
+          }
+        });
+      }
+    </script>
 
 </body>
 

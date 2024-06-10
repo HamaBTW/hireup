@@ -3,12 +3,14 @@
 <!-- Container for Ads -->
 
 <script>
+const postUrl = 'http://localhost/hireup/v1/view/front_office/ads/jobClicked.php';
 function invokePhpFunction(pub_id) {
 	console.log('job Clicked');
     // Make an AJAX request to your PHP script to execute the desired function
     // Example using jQuery AJAX:
     $.ajax({
-        url: 'jobClicked.php?id='+pub_id, // Replace 'your_php_script.php' with the path to your PHP script
+       // url: 'jobClicked.php?id='+pub_id, // Replace 'your_php_script.php' with the path to your PHP script
+        url: postUrl+'?id='+pub_id, // Replace 'your_php_script.php' with the path to your PHP script
         type: 'POST',
         data: { action: 'jobClicked' }, // Pass any necessary data to your PHP function
         success: function(response) {
