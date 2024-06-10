@@ -32,16 +32,16 @@ if (session_status() == PHP_SESSION_NONE) {
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                     <span class="hide-menu">Home</span>
                 </li>
-                <li class="sidebar-item <?= ($active_page == 'main_dashboard') ? 'selected' : ''; ?>">
+                <!-- <li class="sidebar-item <?//= ($active_page == 'main_dashboard') ? 'selected' : ''; ?>">
                     <a class="sidebar-link"
-                        href="./<?= $userC->generateNavLink($nb_adds_for_link, 'View\back_office\main dashboard\index.php'); ?>"
+                        href="./<?//= $userC->generateNavLink($nb_adds_for_link, 'View\back_office\main dashboard\index.php'); ?>"
                         aria-expanded="false">
                         <span>
                             <i class="ti ti-layout-dashboard"></i>
                         </span>
                         <span class="hide-menu">Dashboard</span>
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-small-cap">
                     <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                     <span class="hide-menu">Managements</span>
