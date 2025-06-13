@@ -11,6 +11,9 @@
 // // Convert data array to JSON format
 // $data_json = json_encode($data);
 
+header("Location: ./../users managment/users_management.php");
+exit();
+
 if (session_status() == PHP_SESSION_NONE) {
   session_set_cookie_params(0, '/', '', true, true);
   session_start();
