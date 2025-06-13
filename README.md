@@ -1,7 +1,7 @@
 # HireUp - Comprehensive Recruitment & Employment Platform
 
 <div align="center">
-  <img src="./front%20office%20assets/images/HireUp_darkMode.png" alt="HireUp Logo" height="100">
+  <img src="./v1/front%20office%20assets/images/HireUp_darkMode.png" alt="HireUp Logo" height="100">
 </div>
 
 ## 🚀 Overview
